@@ -1,0 +1,2461 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <title>EZBath Photo Checklist</title>
+    <link rel="stylesheet" href="assets/css/responsive-fixes.css">
+    <link rel="stylesheet" href="assets/css/styles.css">
+    <script src="assets/js/toast-notifications.js" defer></script>
+    <script src="assets/js/loading-spinner.js" defer></script>
+    <style>
+        :root {
+            --color-primary: #1a1a2e;
+            --color-secondary: #16213e;
+            --color-tertiary: #0f3460;
+            --color-accent-blue: #3498db;
+            --color-accent-green: #2ecc71;
+            --color-accent-gold: #f1c40f;
+            --color-surface: #ffffff;
+            --color-surface-muted: #f5f7fb;
+            --border-soft: rgba(52, 152, 219, 0.15);
+            --shadow-lg: 0 16px 50px rgba(0, 0, 0, 0.35);
+            --shadow-card: 0 12px 32px rgba(0, 0, 0, 0.14);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-secondary) 50%, var(--color-tertiary) 100%);
+            min-height: 100vh;
+            padding: 100px 18px 50px 18px;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: -80px;
+            left: -180px;
+            width: 480px;
+            height: 480px;
+            background: radial-gradient(circle, rgba(52, 152, 219, 0.15) 0%, transparent 70%);
+            border-radius: 50%;
+            animation: pulse 8s ease-in-out infinite;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        body::after {
+            content: '';
+            position: fixed;
+            bottom: -140px;
+            right: -200px;
+            width: 520px;
+            height: 520px;
+            background: radial-gradient(circle, rgba(46, 204, 113, 0.12) 0%, transparent 70%);
+            border-radius: 50%;
+            animation: pulse 10s ease-in-out infinite reverse;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        @keyframes pulse {
+
+            0%,
+            100% {
+                transform: scale(1);
+                opacity: 0.6;
+            }
+
+            50% {
+                transform: scale(1.1);
+                opacity: 0.8;
+            }
+        }
+
+        /* NAV */
+        .navbar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            background: rgba(26, 26, 46, 0.95);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 1000;
+            border-bottom: 1px solid rgba(52, 152, 219, 0.3);
+            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.35);
+        }
+
+        .nav-brand {
+            font-size: 20px;
+            font-weight: 700;
+            background: linear-gradient(135deg, #3498db 0%, #2ecc71 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .nav-buttons {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .nav-btn {
+            background: rgba(52, 152, 219, 0.15);
+            border: 1px solid rgba(52, 152, 219, 0.4);
+            color: #d7e9ff;
+            padding: 8px 16px;
+            border-radius: 10px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.25s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .nav-btn:hover {
+            background: rgba(52, 152, 219, 0.25);
+            transform: translateY(-1px);
+        }
+
+        /* LAYOUT */
+        .page-shell {
+            max-width: 1100px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 1;
+        }
+
+        .container {
+            max-width: 1100px;
+            margin: 0 auto 30px auto;
+            background: rgba(255, 255, 255, 0.98);
+            border-radius: 18px;
+            overflow: hidden;
+            box-shadow: var(--shadow-card);
+            position: relative;
+            z-index: 1;
+            border: 1px solid var(--border-soft);
+        }
+
+        .header {
+            background: linear-gradient(135deg, var(--color-accent-blue) 0%, var(--color-accent-green) 100%);
+            color: white;
+            padding: 28px 24px 30px 24px;
+            text-align: center;
+            box-shadow: 0 6px 18px rgba(52, 152, 219, 0.35);
+            position: relative;
+        }
+
+        .header h1 {
+            font-size: 26px;
+            margin-bottom: 5px;
+            font-weight: 700;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .header .subtitle {
+            font-size: 14px;
+            opacity: 0.95;
+            letter-spacing: 0.3px;
+        }
+
+        .back-btn {
+            position: absolute;
+            left: 24px;
+            top: 22px;
+            padding: 10px 16px;
+            background: rgba(255, 255, 255, 0.16);
+            border: 1px solid rgba(255, 255, 255, 0.28);
+            color: #ffffff;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 13px;
+            transition: all 0.2s ease;
+        }
+
+        .back-btn:hover {
+            background: rgba(255, 255, 255, 0.22);
+            transform: translateY(-1px);
+        }
+
+        .progress-bar {
+            background: #f8fafc;
+            padding: 18px 20px;
+            border-bottom: 1px solid #e5edf7;
+        }
+
+        .progress-info {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            font-size: 13px;
+            color: #4a5568;
+            font-weight: 600;
+        }
+
+        .progress-track {
+            width: 100%;
+            height: 10px;
+            background: #e5edf7;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--color-accent-blue) 0%, var(--color-accent-green) 100%);
+            transition: width 0.3s;
+            border-radius: 10px;
+        }
+
+        .session-bar {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 12px;
+            padding: 16px 20px 0 20px;
+        }
+
+        .session-field {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .session-field label {
+            font-weight: 700;
+            font-size: 13px;
+            color: #1f2937;
+        }
+
+        .session-input {
+            padding: 10px 12px;
+            border: 1px solid #d5deec;
+            border-radius: 10px;
+            background: #fff;
+            font-size: 14px;
+            transition: border-color 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .session-input:focus {
+            outline: none;
+            border-color: #3498db;
+            box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.18);
+        }
+
+        .photo-list {
+            padding: 22px 24px 28px 24px;
+        }
+
+        .photo-item {
+            background: var(--color-surface-muted);
+            border: 1px solid #e5edf7;
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 16px;
+            transition: all 0.25s ease;
+            box-shadow: 0 6px 14px rgba(0, 0, 0, 0.04);
+        }
+
+        .photo-item.completed {
+            border-color: rgba(46, 204, 113, 0.4);
+            background: #f1fbf5;
+            box-shadow: 0 10px 24px rgba(46, 204, 113, 0.14);
+        }
+
+        .photo-item.active {
+            border-color: rgba(52, 152, 219, 0.6);
+            background: #eef5ff;
+            box-shadow: 0 10px 28px rgba(52, 152, 219, 0.14);
+        }
+
+        .photo-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 10px;
+        }
+
+        .photo-number {
+            display: inline-block;
+            width: 35px;
+            height: 35px;
+            background: linear-gradient(135deg, #3498db, #2ecc71);
+            color: white;
+            border-radius: 50%;
+            text-align: center;
+            line-height: 35px;
+            font-weight: bold;
+            font-size: 16px;
+        }
+
+        .photo-item.completed .photo-number {
+            background: linear-gradient(135deg, #2ecc71, #27ae60);
+        }
+
+        .photo-title {
+            flex: 1;
+            margin-left: 12px;
+            font-size: 15px;
+            font-weight: 600;
+            color: #1f2937;
+        }
+
+        .photo-status {
+            font-size: 20px;
+        }
+
+        .photo-preview {
+            margin-top: 10px;
+            border-radius: 8px;
+            overflow: hidden;
+            display: none;
+            background: #fff;
+            border: 1px solid #e5edf7;
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.08);
+        }
+
+        .photo-preview.show {
+            display: block;
+        }
+
+        .photo-preview img {
+            width: 100%;
+            height: auto;
+            display: block;
+        }
+
+        .photo-actions {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-top: 10px;
+            width: 100%;
+        }
+
+        .btn {
+            padding: 12px;
+            border: none;
+            border-radius: 10px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.25s ease;
+            text-align: center;
+            background: #eef5ff;
+            color: #1f2937;
+        }
+
+        .btn:active {
+            transform: scale(0.98);
+        }
+
+        .btn-camera {
+            background: linear-gradient(135deg, #3498db 0%, #2ecc71 100%);
+            color: white;
+            font-weight: 600;
+            box-shadow: 0 6px 16px rgba(52, 152, 219, 0.35);
+            width: 100%;
+        }
+
+        .btn-camera:hover {
+            box-shadow: 0 10px 24px rgba(52, 152, 219, 0.4);
+            transform: translateY(-1px);
+        }
+
+        .btn-upload {
+            background: linear-gradient(135deg, #9b59b6 0%, #8e44ad 100%);
+            color: white;
+            font-weight: 600;
+            box-shadow: 0 6px 16px rgba(155, 89, 182, 0.35);
+            width: 100%;
+        }
+
+        .btn-upload:hover {
+            box-shadow: 0 10px 24px rgba(155, 89, 182, 0.4);
+            transform: translateY(-1px);
+        }
+
+        .photo-buttons {
+            display: flex;
+            gap: 8px;
+            width: 100%;
+        }
+
+        .photo-buttons .btn {
+            flex: 1;
+            padding: 10px 8px;
+            font-size: 13px;
+        }
+
+        .btn-retake {
+            background: #e74c3c;
+            color: white;
+        }
+
+        .btn-confirm {
+            background: #27ae60;
+            color: white;
+        }
+
+        .camera-input {
+            display: none;
+        }
+
+        /* Camera Modal Styles */
+        .camera-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.95);
+            z-index: 9999;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .camera-modal.active {
+            display: flex;
+        }
+
+        .camera-modal video {
+            max-width: 100%;
+            max-height: 70vh;
+            border-radius: 12px;
+            background: #000;
+        }
+
+        .camera-modal .camera-controls {
+            display: flex;
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .camera-modal .btn-capture {
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            background: #fff;
+            border: 4px solid #3498db;
+            cursor: pointer;
+            transition: transform 0.1s;
+        }
+
+        .camera-modal .btn-capture:hover {
+            transform: scale(1.1);
+        }
+
+        .camera-modal .btn-capture:active {
+            transform: scale(0.95);
+            background: #3498db;
+        }
+
+        .camera-modal .btn-close-camera {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        .camera-modal .btn-close-camera:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        .camera-modal .camera-status {
+            color: white;
+            margin-bottom: 15px;
+            font-size: 14px;
+        }
+
+        .window-section {
+            background: #eef5ff;
+            border: 1px solid rgba(52, 152, 219, 0.2);
+            border-radius: 12px;
+            padding: 18px;
+            margin: 20px 0;
+            box-shadow: 0 6px 16px rgba(52, 152, 219, 0.08);
+        }
+
+        .window-section h3 {
+            color: #1f2937;
+            margin-bottom: 12px;
+            font-size: 16px;
+            font-weight: 700;
+        }
+
+        .measurement-container {
+            display: flex;
+            gap: 8px;
+            align-items: flex-end;
+            margin-bottom: 10px;
+            width: 100%;
+            max-width: 100%;
+        }
+
+        .measurement-input {
+            padding: 8px 10px;
+            border: 2px solid rgba(52, 152, 219, 0.35);
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            background: #ffffff;
+            color: #333;
+            width: 100%;
+            min-width: 0;
+            box-sizing: border-box;
+        }
+
+        .measurement-whole {
+            flex: 1.5;
+            min-width: 60px;
+        }
+
+        .measurement-fraction {
+            flex: 1;
+            min-width: 50px;
+        }
+
+        .measurement-label {
+            font-size: 13px;
+            color: #666;
+            font-weight: 600;
+            margin-bottom: 3px;
+        }
+
+        .measurement-input:focus {
+            outline: none;
+            border-color: #3498db;
+            box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.15);
+        }
+
+        .measurement-input::placeholder {
+            color: #999;
+            font-weight: 400;
+        }
+
+        .measurement-preview {
+            font-size: 12px;
+            color: #666;
+            font-style: italic;
+            margin-bottom: 10px;
+        }
+
+        .plumbing-checkbox {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 10px;
+            padding: 10px;
+            background: #eef5ff;
+            border-radius: 8px;
+            border: 1px solid rgba(52, 152, 219, 0.2);
+        }
+
+        .plumbing-checkbox input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+        }
+
+        .plumbing-checkbox label {
+            font-size: 13px;
+            color: #666;
+            font-weight: 600;
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .export-section {
+            background: #f8fafc;
+            padding: 22px 20px 30px 20px;
+            border-top: 1px solid #e5edf7;
+        }
+
+        .export-buttons {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        .btn-export {
+            background: #3498db;
+            color: white;
+            padding: 15px;
+        }
+
+        .btn-data {
+            background: linear-gradient(135deg, #8e44ad, #9b59b6);
+            color: white;
+        }
+
+        .btn-download {
+            background: #27ae60;
+            color: white;
+            padding: 15px;
+        }
+
+        .btn-clear {
+            background: #c0392b;
+            color: white;
+            padding: 15px;
+            grid-column: span 2;
+            box-shadow: 0 8px 18px rgba(192, 57, 43, 0.25);
+        }
+
+        .question-section {
+            margin: 30px 0;
+            padding: 22px;
+            background: #eef5ff;
+            border-radius: 14px;
+            border: 1px solid rgba(52, 152, 219, 0.25);
+            box-shadow: 0 10px 24px rgba(0, 0, 0, 0.06);
+        }
+
+        .question-section h3 {
+            margin: 0 0 12px 0;
+            color: #1f2937;
+            font-size: 18px;
+            font-weight: 700;
+        }
+
+        .question-actions {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .question-actions .btn {
+            flex: 1;
+            min-width: 160px;
+        }
+
+        .question-actions .btn-camera {
+            width: auto;
+        }
+
+        .btn-ghost {
+            background: transparent;
+            border: 2px solid rgba(52, 152, 219, 0.55);
+            color: #1a4f7a;
+        }
+
+        .btn-ghost:hover {
+            background: rgba(52, 152, 219, 0.08);
+        }
+
+        .description-input {
+            margin-bottom: 10px;
+            width: 100%;
+        }
+
+        .measurement-toggle {
+            color: #1a4f7a;
+            font-size: 14px;
+            margin-bottom: 8px;
+            display: block;
+        }
+
+        /* Camera Modal */
+        .camera-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.95);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .camera-modal.active {
+            display: flex;
+        }
+
+        .camera-content {
+            width: 100%;
+            max-width: 600px;
+            padding: 20px;
+        }
+
+        .camera-preview {
+            width: 100%;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+
+        .camera-controls {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        .btn-cancel {
+            background: #666;
+            color: white;
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 20px;
+            }
+
+            .photo-title {
+                font-size: 14px;
+            }
+
+            .measurement-container {
+                gap: 6px;
+            }
+
+            .measurement-input {
+                padding: 6px 8px;
+                font-size: 13px;
+            }
+
+            .measurement-label {
+                font-size: 12px;
+            }
+
+            .btn {
+                padding: 10px;
+                font-size: 14px;
+            }
+
+            .export-buttons {
+                grid-template-columns: 1fr;
+            }
+
+            .btn-clear {
+                grid-column: span 1;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .measurement-container {
+                gap: 4px;
+            }
+
+            .measurement-whole {
+                flex: 1.2;
+                min-width: 50px;
+            }
+
+            .measurement-fraction {
+                flex: 0.8;
+                min-width: 40px;
+            }
+
+            .measurement-input {
+                padding: 5px 6px;
+                font-size: 12px;
+            }
+
+            .measurement-label {
+                font-size: 11px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <nav class="navbar">
+        <div class="nav-brand">EZBaths Portal</div>
+        <div class="nav-buttons">
+            <a class="nav-btn" href="index.html">🏠 Home</a>
+            <a class="nav-btn" href="tools.html">🛠️ Tools</a>
+        </div>
+    </nav>
+    <main class="page-shell">
+        <div class="container">
+            <!-- HEADER -->
+            <div class="header">
+                <button class="back-btn" onclick="goBack()">← Back</button>
+                <h1><img src="assets/app_icons/bathtub.svg" alt="EZ Bath"
+                        style="width: 32px; height: 32px; vertical-align: middle; margin-right: 10px;"> EZBath Photo
+                    Checklist</h1>
+                <p class="subtitle" id="customerDisplay">Job Site Documentation</p>
+            </div>
+
+            <!-- Session Info -->
+            <div class="session-bar">
+                <div class="session-field">
+                    <label for="customerName">Name (for filenames)</label>
+                    <input type="text" id="customerName" class="session-input" placeholder="e.g., Smith">
+                </div>
+                <div class="session-field">
+                    <label for="sessionDate">Date</label>
+                    <input type="date" id="sessionDate" class="session-input">
+                </div>
+            </div>
+
+            <!-- PROGRESS BAR -->
+            <div class="progress-bar">
+                <div class="progress-info">
+                    <span><strong id="completedCount">0</strong> of <strong id="totalCount">16</strong> items</span>
+                    <span id="progressPercent">0%</span>
+                </div>
+                <div class="progress-track">
+                    <div class="progress-fill" id="progressFill" style="width: 0%"></div>
+                </div>
+            </div>
+
+            <!-- PHOTO LIST -->
+            <div class="photo-list">
+
+                <!-- PHOTO CHECKLIST -->
+                <div class="photo-list" id="photoList">
+                    <!-- Photos 1-12: Standard -->
+                    <div class="photo-item" data-photo-id="1">
+                        <div class="photo-header">
+                            <span class="photo-number">1</span>
+                            <span class="photo-title">Driving up to the house</span>
+                            <span class="photo-status">⭕</span>
+                        </div>
+                        <div class="photo-actions">
+                            <div class="photo-buttons">
+                                <button class="btn btn-camera" onclick="openCamera(1)">📷 Take</button>
+                                <button class="btn btn-upload" onclick="uploadPhoto(1)">📁 Upload</button>
+                            </div>
+                        </div>
+                        <div class="photo-preview" id="preview-1">
+                            <img id="img-1" src="" alt="Photo 1">
+                            <div class="photo-actions">
+                                <button class="btn btn-retake" onclick="retakePhoto(1)">🔄 Delete & Retake</button>
+                                <button class="btn btn-confirm" onclick="confirmPhoto(1)">✓ Looks Good</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="photo-item" data-photo-id="2">
+                        <div class="photo-header">
+                            <span class="photo-number">2</span>
+                            <span class="photo-title">Hallway leading to the bathroom</span>
+                            <span class="photo-status">⭕</span>
+                        </div>
+                        <div class="photo-actions">
+                            <div class="photo-buttons">
+                                <button class="btn btn-camera" onclick="openCamera(2)">📷 Take</button>
+                                <button class="btn btn-upload" onclick="uploadPhoto(2)">📁 Upload</button>
+                            </div>
+                        </div>
+                        <div class="photo-preview" id="preview-2">
+                            <img id="img-2" src="" alt="Photo 2">
+                            <div class="photo-actions">
+                                <button class="btn btn-retake" onclick="retakePhoto(2)">🔄 Delete & Retake</button>
+                                <button class="btn btn-confirm" onclick="confirmPhoto(2)">✓ Looks Good</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="photo-item" data-photo-id="3">
+                        <div class="photo-header">
+                            <span class="photo-number">3</span>
+                            <span class="photo-title">Entire wet area – front view</span>
+                            <span class="photo-status">⭕</span>
+                        </div>
+                        <div class="photo-actions">
+                            <div class="photo-buttons">
+                                <button class="btn btn-camera" onclick="openCamera(3)">📷 Take</button>
+                                <button class="btn btn-upload" onclick="uploadPhoto(3)">📁 Upload</button>
+                            </div>
+                        </div>
+                        <div class="photo-preview" id="preview-3">
+                            <img id="img-3" src="" alt="Photo 3">
+                            <div class="photo-actions">
+                                <button class="btn btn-retake" onclick="retakePhoto(3)">🔄 Delete & Retake</button>
+                                <button class="btn btn-confirm" onclick="confirmPhoto(3)">✓ Looks Good</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="photo-item" data-photo-id="4">
+                        <div class="photo-header">
+                            <span class="photo-number">4</span>
+                            <span class="photo-title">Entire left wall view (remove all peripherals)</span>
+                            <span class="photo-status">⭕</span>
+                        </div>
+                        <div class="photo-actions">
+                            <div class="photo-buttons">
+                                <button class="btn btn-camera" onclick="openCamera(4)">📷 Take</button>
+                                <button class="btn btn-upload" onclick="uploadPhoto(4)">📁 Upload</button>
+                            </div>
+                        </div>
+                        <div class="photo-preview" id="preview-4">
+                            <img id="img-4" src="" alt="Photo 4">
+                            <div class="photo-actions">
+                                <button class="btn btn-retake" onclick="retakePhoto(4)">🔄 Delete & Retake</button>
+                                <button class="btn btn-confirm" onclick="confirmPhoto(4)">✓ Looks Good</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="photo-item" data-photo-id="5">
+                        <div class="photo-header">
+                            <span class="photo-number">5</span>
+                            <span class="photo-title">Entire right wall view (remove all peripherals)</span>
+                            <span class="photo-status">⭕</span>
+                        </div>
+                        <div class="photo-actions">
+                            <div class="photo-buttons">
+                                <button class="btn btn-camera" onclick="openCamera(5)">📷 Take</button>
+                                <button class="btn btn-upload" onclick="uploadPhoto(5)">📁 Upload</button>
+                            </div>
+                        </div>
+                        <div class="photo-preview" id="preview-5">
+                            <img id="img-5" src="" alt="Photo 5">
+                            <div class="photo-actions">
+                                <button class="btn btn-retake" onclick="retakePhoto(5)">🔄 Delete & Retake</button>
+                                <button class="btn btn-confirm" onclick="confirmPhoto(5)">✓ Looks Good</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="photo-item" data-photo-id="6">
+                        <div class="photo-header">
+                            <span class="photo-number">6</span>
+                            <span class="photo-title">Measure and photo of left wall depth</span>
+                            <span class="photo-status">⭕</span>
+                        </div>
+                        <div class="photo-actions">
+                            <div class="measurement-container">
+                                <div style="flex: 1;">
+                                    <div class="measurement-label">Inches (whole)</div>
+                                    <input type="number" id="measurement-whole-6" placeholder="32"
+                                        class="measurement-input measurement-whole" min="0">
+                                </div>
+                                <div style="flex: 0.6;">
+                                    <div class="measurement-label">Fraction</div>
+                                    <input type="text" id="measurement-fraction-6" placeholder="7/8"
+                                        class="measurement-input measurement-fraction" pattern="[0-9]+/[0-9]+">
+                                </div>
+                            </div>
+                            <div class="plumbing-checkbox">
+                                <input type="checkbox" id="plumbing-6">
+                                <label for="plumbing-6">🚰 This wall has plumbing</label>
+                            </div>
+                            <div class="measurement-preview" id="measurement-preview-6">Decimal: --</div>
+                            <div class="photo-buttons">
+                                <button class="btn btn-camera" onclick="openCamera(6)">📷 Take</button>
+                                <button class="btn btn-upload" onclick="uploadPhoto(6)">📁 Upload</button>
+                            </div>
+                        </div>
+                        <div class="photo-preview" id="preview-6">
+                            <img id="img-6" src="" alt="Photo 6">
+                            <div class="photo-actions">
+                                <button class="btn btn-retake" onclick="retakePhoto(6)">🔄 Delete & Retake</button>
+                                <button class="btn btn-confirm" onclick="confirmPhoto(6)">✓ Looks Good</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="photo-item" data-photo-id="7">
+                        <div class="photo-header">
+                            <span class="photo-number">7</span>
+                            <span class="photo-title">Measure and photo of right wall depth</span>
+                            <span class="photo-status">⭕</span>
+                        </div>
+                        <div class="photo-actions">
+                            <div class="measurement-container">
+                                <div style="flex: 1;">
+                                    <div class="measurement-label">Inches (whole)</div>
+                                    <input type="number" id="measurement-whole-7" placeholder="32"
+                                        class="measurement-input measurement-whole" min="0">
+                                </div>
+                                <div style="flex: 0.6;">
+                                    <div class="measurement-label">Fraction</div>
+                                    <input type="text" id="measurement-fraction-7" placeholder="7/8"
+                                        class="measurement-input measurement-fraction" pattern="[0-9]+/[0-9]+">
+                                </div>
+                            </div>
+                            <div class="plumbing-checkbox">
+                                <input type="checkbox" id="plumbing-7">
+                                <label for="plumbing-7">🚰 This wall has plumbing</label>
+                            </div>
+                            <div class="measurement-preview" id="measurement-preview-7">Decimal: --</div>
+                            <div class="photo-buttons">
+                                <button class="btn btn-camera" onclick="openCamera(7)">📷 Take</button>
+                                <button class="btn btn-upload" onclick="uploadPhoto(7)">📁 Upload</button>
+                            </div>
+                        </div>
+                        <div class="photo-preview" id="preview-7">
+                            <img id="img-7" src="" alt="Photo 7">
+                            <div class="photo-actions">
+                                <button class="btn btn-retake" onclick="retakePhoto(7)">🔄 Delete & Retake</button>
+                                <button class="btn btn-confirm" onclick="confirmPhoto(7)">✓ Looks Good</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="photo-item" data-photo-id="8">
+                        <div class="photo-header">
+                            <span class="photo-number">8</span>
+                            <span class="photo-title">Measure and photo of soap dish wall depth</span>
+                            <span class="photo-status">⭕</span>
+                        </div>
+                        <div class="photo-actions">
+                            <div class="measurement-container">
+                                <div style="flex: 1;">
+                                    <div class="measurement-label">Inches (whole)</div>
+                                    <input type="number" id="measurement-whole-8" placeholder="12"
+                                        class="measurement-input measurement-whole" min="0">
+                                </div>
+                                <div style="flex: 0.6;">
+                                    <div class="measurement-label">Fraction</div>
+                                    <input type="text" id="measurement-fraction-8" placeholder="3/4"
+                                        class="measurement-input measurement-fraction" pattern="[0-9]+/[0-9]+">
+                                </div>
+                            </div>
+                            <div class="plumbing-checkbox">
+                                <input type="checkbox" id="plumbing-8">
+                                <label for="plumbing-8">🚰 This wall has plumbing</label>
+                            </div>
+                            <div class="measurement-preview" id="measurement-preview-8">Decimal: --</div>
+                            <div class="photo-buttons">
+                                <button class="btn btn-camera" onclick="openCamera(8)">📷 Take</button>
+                                <button class="btn btn-upload" onclick="uploadPhoto(8)">📁 Upload</button>
+                            </div>
+                        </div>
+                        <div class="photo-preview" id="preview-8">
+                            <img id="img-8" src="" alt="Photo 8">
+                            <div class="photo-actions">
+                                <button class="btn btn-retake" onclick="retakePhoto(8)">🔄 Delete & Retake</button>
+                                <button class="btn btn-confirm" onclick="confirmPhoto(8)">✓ Looks Good</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="photo-item" data-photo-id="9">
+                        <div class="photo-header">
+                            <span class="photo-number">9</span>
+                            <span class="photo-title">Measure and photo of ceiling height (FLOOR to CEILING)</span>
+                            <span class="photo-status">⭕</span>
+                        </div>
+                        <div class="photo-actions">
+                            <div class="measurement-container">
+                                <div style="flex: 1;">
+                                    <div class="measurement-label">Inches (whole)</div>
+                                    <input type="number" id="measurement-whole-9" placeholder="96"
+                                        class="measurement-input measurement-whole" min="0">
+                                </div>
+                                <div style="flex: 0.6;">
+                                    <div class="measurement-label">Fraction</div>
+                                    <input type="text" id="measurement-fraction-9" placeholder="1/2"
+                                        class="measurement-input measurement-fraction" pattern="[0-9]+/[0-9]+">
+                                </div>
+                            </div>
+                            <div class="measurement-preview" id="measurement-preview-9">Decimal: --</div>
+                            <div class="photo-buttons">
+                                <button class="btn btn-camera" onclick="openCamera(9)">📷 Take</button>
+                                <button class="btn btn-upload" onclick="uploadPhoto(9)">📁 Upload</button>
+                            </div>
+                        </div>
+                        <div class="photo-preview" id="preview-9">
+                            <img id="img-9" src="" alt="Photo 9">
+                            <div class="photo-actions">
+                                <button class="btn btn-retake" onclick="retakePhoto(9)">🔄 Delete & Retake</button>
+                                <button class="btn btn-confirm" onclick="confirmPhoto(9)">✓ Looks Good</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="photo-item" data-photo-id="10">
+                        <div class="photo-header">
+                            <span class="photo-number">10</span>
+                            <span class="photo-title">Downward photo of bath or tub floor</span>
+                            <span class="photo-status">⭕</span>
+                        </div>
+                        <div class="photo-actions">
+                            <div class="photo-buttons">
+                                <button class="btn btn-camera" onclick="openCamera(10)">📷 Take</button>
+                                <button class="btn btn-upload" onclick="uploadPhoto(10)">📁 Upload</button>
+                            </div>
+                        </div>
+                        <div class="photo-preview" id="preview-10">
+                            <img id="img-10" src="" alt="Photo 10">
+                            <div class="photo-actions">
+                                <button class="btn btn-retake" onclick="retakePhoto(10)">🔄 Delete & Retake</button>
+                                <button class="btn btn-confirm" onclick="confirmPhoto(10)">✓ Looks Good</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="photo-item" data-photo-id="11">
+                        <div class="photo-header">
+                            <span class="photo-number">11</span>
+                            <span class="photo-title">Entire ceiling above tub</span>
+                            <span class="photo-status">⭕</span>
+                        </div>
+                        <div class="photo-actions">
+                            <div class="photo-buttons">
+                                <button class="btn btn-camera" onclick="openCamera(11)">📷 Take</button>
+                                <button class="btn btn-upload" onclick="uploadPhoto(11)">📁 Upload</button>
+                            </div>
+                        </div>
+                        <div class="photo-preview" id="preview-11">
+                            <img id="img-11" src="" alt="Photo 11">
+                            <div class="photo-actions">
+                                <button class="btn btn-retake" onclick="retakePhoto(11)">🔄 Delete & Retake</button>
+                                <button class="btn btn-confirm" onclick="confirmPhoto(11)">✓ Looks Good</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="photo-item" data-photo-id="12">
+                        <div class="photo-header">
+                            <span class="photo-number">12</span>
+                            <span class="photo-title">Height of shower above tub</span>
+                            <span class="photo-status">⭕</span>
+                        </div>
+                        <div class="photo-actions">
+                            <div class="measurement-container">
+                                <div style="flex: 1.5; min-width: 60px;">
+                                    <div class="measurement-label">Inches (whole)</div>
+                                    <input type="number" id="measurement-whole-12" placeholder="72"
+                                        class="measurement-input measurement-whole" min="0">
+                                </div>
+                                <div style="flex: 1; min-width: 50px;">
+                                    <div class="measurement-label">Fraction</div>
+                                    <input type="text" id="measurement-fraction-12" placeholder="1/4"
+                                        class="measurement-input measurement-fraction" pattern="[0-9]+/[0-9]+">
+                                </div>
+                            </div>
+                            <div class="measurement-preview" id="measurement-preview-12">Decimal: --</div>
+                            <div class="photo-buttons">
+                                <button class="btn btn-camera" onclick="openCamera(12)">📷 Take</button>
+                                <button class="btn btn-upload" onclick="uploadPhoto(12)">📁 Upload</button>
+                            </div>
+                        </div>
+                        <div class="photo-preview" id="preview-12">
+                            <img id="img-12" src="" alt="Photo 12">
+                            <div class="photo-actions">
+                                <button class="btn btn-retake" onclick="retakePhoto(12)">🔄 Delete & Retake</button>
+                                <button class="btn btn-confirm" onclick="confirmPhoto(12)">✓ Looks Good</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- WINDOW SECTION (IF APPLICABLE) -->
+                    <div class="window-section">
+                        <h3>📏 If Window Present - Take These Photos:</h3>
+
+                        <div class="photo-item" data-photo-id="13">
+                            <div class="photo-header">
+                                <span class="photo-number">13</span>
+                                <span class="photo-title">Width of the tub</span>
+                                <span class="photo-status">⭕</span>
+                            </div>
+                            <div class="photo-actions">
+                                <div class="measurement-container">
+                                    <div style="flex: 1.5; min-width: 60px;">
+                                        <div class="measurement-label">Inches (whole)</div>
+                                        <input type="number" id="measurement-whole-13" placeholder="30"
+                                            class="measurement-input measurement-whole" min="0">
+                                    </div>
+                                    <div style="flex: 1; min-width: 50px;">
+                                        <div class="measurement-label">Fraction</div>
+                                        <input type="text" id="measurement-fraction-13" placeholder="1/2"
+                                            class="measurement-input measurement-fraction" pattern="[0-9]+/[0-9]+">
+                                    </div>
+                                </div>
+                                <div class="measurement-preview" id="measurement-preview-13">Decimal: --</div>
+                                <div class="photo-buttons">
+                                    <button class="btn btn-camera" onclick="openCamera(13)">📷 Take</button>
+                                    <button class="btn btn-upload" onclick="uploadPhoto(13)">📁 Upload</button>
+                                </div>
+                            </div>
+                            <div class="photo-preview" id="preview-13">
+                                <img id="img-13" src="" alt="Photo 13">
+                                <div class="photo-actions">
+                                    <button class="btn btn-retake" onclick="retakePhoto(13)">🔄 Delete & Retake</button>
+                                    <button class="btn btn-confirm" onclick="confirmPhoto(13)">✓ Looks Good</button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- WINDOW MEASUREMENT QUESTION -->
+                        <div class="question-section">
+                            <h3>📏 Do you need to measure a window?</h3>
+                            <div class="question-actions">
+                                <button class="btn btn-camera" onclick="toggleWindowPhotos(true)">
+                                    ✓ Yes, Show Window Photos
+                                </button>
+                                <button class="btn btn-ghost" onclick="toggleWindowPhotos(false)">
+                                    ✗ No, Skip Window Photos
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- WINDOW PHOTOS (Hidden by default) -->
+                        <div id="window-photos-container" style="display: none;">
+                            <div class="photo-item" data-photo-id="14">
+                                <div class="photo-header">
+                                    <span class="photo-number">14</span>
+                                    <span class="photo-title">Window – measure and photo of width</span>
+                                    <span class="photo-status">⭕</span>
+                                </div>
+                                <div class="photo-actions">
+                                    <div class="measurement-container">
+                                        <div style="flex: 1;">
+                                            <div class="measurement-label">Inches (whole)</div>
+                                            <input type="number" id="measurement-whole-14" placeholder="36"
+                                                class="measurement-input measurement-whole" min="0">
+                                        </div>
+                                        <div style="flex: 0.6;">
+                                            <div class="measurement-label">Fraction</div>
+                                            <input type="text" id="measurement-fraction-14" placeholder="7/8"
+                                                class="measurement-input measurement-fraction" pattern="[0-9]+/[0-9]+">
+                                        </div>
+                                    </div>
+                                    <div class="measurement-preview" id="measurement-preview-14">Decimal: --</div>
+                                    <div class="photo-buttons">
+                                        <button class="btn btn-camera" onclick="openCamera(14)">📷 Take</button>
+                                        <button class="btn btn-upload" onclick="uploadPhoto(14)">📁 Upload</button>
+                                    </div>
+                                </div>
+                                <div class="photo-preview" id="preview-14">
+                                    <img id="img-14" src="" alt="Photo 14">
+                                    <div class="photo-actions">
+                                        <button class="btn btn-retake" onclick="retakePhoto(14)">🔄 Delete &
+                                            Retake</button>
+                                        <button class="btn btn-confirm" onclick="confirmPhoto(14)">✓ Looks Good</button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="photo-item" data-photo-id="15">
+                                <div class="photo-header">
+                                    <span class="photo-number">15</span>
+                                    <span class="photo-title">Window – measure and photo of height</span>
+                                    <span class="photo-status">⭕</span>
+                                </div>
+                                <div class="photo-actions">
+                                    <div class="measurement-container">
+                                        <div style="flex: 1;">
+                                            <div class="measurement-label">Inches (whole)</div>
+                                            <input type="number" id="measurement-whole-15" placeholder="48"
+                                                class="measurement-input measurement-whole" min="0">
+                                        </div>
+                                        <div style="flex: 0.6;">
+                                            <div class="measurement-label">Fraction</div>
+                                            <input type="text" id="measurement-fraction-15" placeholder="7/8"
+                                                class="measurement-input measurement-fraction" pattern="[0-9]+/[0-9]+">
+                                        </div>
+                                    </div>
+                                    <div class="measurement-preview" id="measurement-preview-15">Decimal: --</div>
+                                    <div class="photo-buttons">
+                                        <button class="btn btn-camera" onclick="openCamera(15)">📷 Take</button>
+                                        <button class="btn btn-upload" onclick="uploadPhoto(15)">📁 Upload</button>
+                                    </div>
+                                </div>
+                                <div class="photo-preview" id="preview-15">
+                                    <img id="img-15" src="" alt="Photo 15">
+                                    <div class="photo-actions">
+                                        <button class="btn btn-retake" onclick="retakePhoto(15)">🔄 Delete &
+                                            Retake</button>
+                                        <button class="btn btn-confirm" onclick="confirmPhoto(15)">✓ Looks Good</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- ADDITIONAL PHOTOS QUESTION -->
+                        <div class="question-section">
+                            <h3>📸 Do you need to take more pictures?</h3>
+                            <div class="question-actions">
+                                <button class="btn btn-camera" onclick="showAdditionalPhotos()">
+                                    ✓ Yes, Show 5 More Photo Slots
+                                </button>
+                                <button class="btn btn-ghost" onclick="hideAdditionalPhotos()">
+                                    ✗ No, I'm Done
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- ADDITIONAL PHOTOS CONTAINER (Hidden by default) -->
+                        <div id="additional-photos-container" style="display: none;">
+                            <!-- Photo 16 -->
+                            <div class="photo-item" data-photo-id="16">
+                                <div class="photo-header">
+                                    <span class="photo-number">16</span>
+                                    <span class="photo-title">Additional Photo</span>
+                                    <span class="photo-status">⭕</span>
+                                </div>
+                                <div class="photo-actions">
+                                    <input type="text" id="description-16"
+                                        placeholder="Describe what this photo is for..."
+                                        class="measurement-input description-input">
+                                    <div id="measurement-section-16" style="display: none;">
+                                        <label class="measurement-toggle">
+                                            <input type="checkbox" id="needs-measurement-16"
+                                                onclick="toggleMeasurement(16)">
+                                            This photo needs measurements
+                                        </label>
+                                        <div id="measurement-inputs-16" style="display: none;">
+                                            <div class="measurement-container">
+                                                <div style="flex: 1;">
+                                                    <div class="measurement-label">Inches (whole)</div>
+                                                    <input type="number" id="measurement-whole-16" placeholder="32"
+                                                        class="measurement-input measurement-whole" min="0">
+                                                </div>
+                                                <div style="flex: 0.6;">
+                                                    <div class="measurement-label">Fraction</div>
+                                                    <input type="text" id="measurement-fraction-16" placeholder="7/8"
+                                                        class="measurement-input measurement-fraction"
+                                                        pattern="[0-9]+/[0-9]+">
+                                                </div>
+                                            </div>
+                                            <div class="measurement-preview" id="measurement-preview-16">Decimal: --
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="photo-buttons">
+                                        <button class="btn btn-camera" onclick="openCamera(16)">📷 Take</button>
+                                        <button class="btn btn-upload" onclick="uploadPhoto(16)">📁 Upload</button>
+                                    </div>
+                                </div>
+                                <div class="photo-preview" id="preview-16">
+                                    <img id="img-16" src="" alt="Photo 16">
+                                    <div class="photo-actions">
+                                        <button class="btn btn-retake" onclick="retakePhoto(16)">🔄 Delete &
+                                            Retake</button>
+                                        <button class="btn btn-confirm" onclick="confirmPhoto(16)">✓ Looks Good</button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Photo 17 -->
+                            <div class="photo-item" data-photo-id="17">
+                                <div class="photo-header">
+                                    <span class="photo-number">17</span>
+                                    <span class="photo-title">Additional Photo</span>
+                                    <span class="photo-status">⭕</span>
+                                </div>
+                                <div class="photo-actions">
+                                    <input type="text" id="description-17"
+                                        placeholder="Describe what this photo is for..."
+                                        class="measurement-input description-input">
+                                    <div id="measurement-section-17" style="display: none;">
+                                        <label class="measurement-toggle">
+                                            <input type="checkbox" id="needs-measurement-17"
+                                                onclick="toggleMeasurement(17)">
+                                            This photo needs measurements
+                                        </label>
+                                        <div id="measurement-inputs-17" style="display: none;">
+                                            <div class="measurement-container">
+                                                <div style="flex: 1;">
+                                                    <div class="measurement-label">Inches (whole)</div>
+                                                    <input type="number" id="measurement-whole-17" placeholder="32"
+                                                        class="measurement-input measurement-whole" min="0">
+                                                </div>
+                                                <div style="flex: 0.6;">
+                                                    <div class="measurement-label">Fraction</div>
+                                                    <input type="text" id="measurement-fraction-17" placeholder="7/8"
+                                                        class="measurement-input measurement-fraction"
+                                                        pattern="[0-9]+/[0-9]+">
+                                                </div>
+                                            </div>
+                                            <div class="measurement-preview" id="measurement-preview-17">Decimal: --
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="photo-buttons">
+                                        <button class="btn btn-camera" onclick="openCamera(17)">📷 Take</button>
+                                        <button class="btn btn-upload" onclick="uploadPhoto(17)">📁 Upload</button>
+                                    </div>
+                                </div>
+                                <div class="photo-preview" id="preview-17">
+                                    <img id="img-17" src="" alt="Photo 17">
+                                    <div class="photo-actions">
+                                        <button class="btn btn-retake" onclick="retakePhoto(17)">🔄 Delete &
+                                            Retake</button>
+                                        <button class="btn btn-confirm" onclick="confirmPhoto(17)">✓ Looks Good</button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Photo 18 -->
+                            <div class="photo-item" data-photo-id="18">
+                                <div class="photo-header">
+                                    <span class="photo-number">18</span>
+                                    <span class="photo-title">Additional Photo</span>
+                                    <span class="photo-status">⭕</span>
+                                </div>
+                                <div class="photo-actions">
+                                    <input type="text" id="description-18"
+                                        placeholder="Describe what this photo is for..."
+                                        class="measurement-input description-input">
+                                    <div id="measurement-section-18" style="display: none;">
+                                        <label class="measurement-toggle">
+                                            <input type="checkbox" id="needs-measurement-18"
+                                                onclick="toggleMeasurement(18)">
+                                            This photo needs measurements
+                                        </label>
+                                        <div id="measurement-inputs-18" style="display: none;">
+                                            <div class="measurement-container">
+                                                <div style="flex: 1;">
+                                                    <div class="measurement-label">Inches (whole)</div>
+                                                    <input type="number" id="measurement-whole-18" placeholder="32"
+                                                        class="measurement-input measurement-whole" min="0">
+                                                </div>
+                                                <div style="flex: 0.6;">
+                                                    <div class="measurement-label">Fraction</div>
+                                                    <input type="text" id="measurement-fraction-18" placeholder="7/8"
+                                                        class="measurement-input measurement-fraction"
+                                                        pattern="[0-9]+/[0-9]+">
+                                                </div>
+                                            </div>
+                                            <div class="measurement-preview" id="measurement-preview-18">Decimal: --
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="photo-buttons">
+                                        <button class="btn btn-camera" onclick="openCamera(18)">📷 Take</button>
+                                        <button class="btn btn-upload" onclick="uploadPhoto(18)">📁 Upload</button>
+                                    </div>
+                                </div>
+                                <div class="photo-preview" id="preview-18">
+                                    <img id="img-18" src="" alt="Photo 18">
+                                    <div class="photo-actions">
+                                        <button class="btn btn-retake" onclick="retakePhoto(18)">🔄 Delete &
+                                            Retake</button>
+                                        <button class="btn btn-confirm" onclick="confirmPhoto(18)">✓ Looks Good</button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Photo 19 -->
+                            <div class="photo-item" data-photo-id="19">
+                                <div class="photo-header">
+                                    <span class="photo-number">19</span>
+                                    <span class="photo-title">Additional Photo</span>
+                                    <span class="photo-status">⭕</span>
+                                </div>
+                                <div class="photo-actions">
+                                    <input type="text" id="description-19"
+                                        placeholder="Describe what this photo is for..."
+                                        class="measurement-input description-input">
+                                    <div id="measurement-section-19" style="display: none;">
+                                        <label class="measurement-toggle">
+                                            <input type="checkbox" id="needs-measurement-19"
+                                                onclick="toggleMeasurement(19)">
+                                            This photo needs measurements
+                                        </label>
+                                        <div id="measurement-inputs-19" style="display: none;">
+                                            <div class="measurement-container">
+                                                <div style="flex: 1;">
+                                                    <div class="measurement-label">Inches (whole)</div>
+                                                    <input type="number" id="measurement-whole-19" placeholder="32"
+                                                        class="measurement-input measurement-whole" min="0">
+                                                </div>
+                                                <div style="flex: 0.6;">
+                                                    <div class="measurement-label">Fraction</div>
+                                                    <input type="text" id="measurement-fraction-19" placeholder="7/8"
+                                                        class="measurement-input measurement-fraction"
+                                                        pattern="[0-9]+/[0-9]+">
+                                                </div>
+                                            </div>
+                                            <div class="measurement-preview" id="measurement-preview-19">Decimal: --
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="photo-buttons">
+                                        <button class="btn btn-camera" onclick="openCamera(19)">📷 Take</button>
+                                        <button class="btn btn-upload" onclick="uploadPhoto(19)">📁 Upload</button>
+                                    </div>
+                                </div>
+                                <div class="photo-preview" id="preview-19">
+                                    <img id="img-19" src="" alt="Photo 19">
+                                    <div class="photo-actions">
+                                        <button class="btn btn-retake" onclick="retakePhoto(19)">🔄 Delete &
+                                            Retake</button>
+                                        <button class="btn btn-confirm" onclick="confirmPhoto(19)">✓ Looks Good</button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Photo 20 -->
+                            <div class="photo-item" data-photo-id="20">
+                                <div class="photo-header">
+                                    <span class="photo-number">20</span>
+                                    <span class="photo-title">Additional Photo</span>
+                                    <span class="photo-status">⭕</span>
+                                </div>
+                                <div class="photo-actions">
+                                    <input type="text" id="description-20"
+                                        placeholder="Describe what this photo is for..."
+                                        class="measurement-input description-input">
+                                    <div id="measurement-section-20" style="display: none;">
+                                        <label class="measurement-toggle">
+                                            <input type="checkbox" id="needs-measurement-20"
+                                                onclick="toggleMeasurement(20)">
+                                            This photo needs measurements
+                                        </label>
+                                        <div id="measurement-inputs-20" style="display: none;">
+                                            <div class="measurement-container">
+                                                <div style="flex: 1;">
+                                                    <div class="measurement-label">Inches (whole)</div>
+                                                    <input type="number" id="measurement-whole-20" placeholder="32"
+                                                        class="measurement-input measurement-whole" min="0">
+                                                </div>
+                                                <div style="flex: 0.6;">
+                                                    <div class="measurement-label">Fraction</div>
+                                                    <input type="text" id="measurement-fraction-20" placeholder="7/8"
+                                                        class="measurement-input measurement-fraction"
+                                                        pattern="[0-9]+/[0-9]+">
+                                                </div>
+                                            </div>
+                                            <div class="measurement-preview" id="measurement-preview-20">Decimal: --
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="photo-buttons">
+                                        <button class="btn btn-camera" onclick="openCamera(20)">📷 Take</button>
+                                        <button class="btn btn-upload" onclick="uploadPhoto(20)">📁 Upload</button>
+                                    </div>
+                                </div>
+                                <div class="photo-preview" id="preview-20">
+                                    <img id="img-20" src="" alt="Photo 20">
+                                    <div class="photo-actions">
+                                        <button class="btn btn-retake" onclick="retakePhoto(20)">🔄 Delete &
+                                            Retake</button>
+                                        <button class="btn btn-confirm" onclick="confirmPhoto(20)">✓ Looks Good</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+                <!-- EXPORT SECTION -->
+                <div class="export-section">
+                    <div class="export-buttons">
+                        <button class="btn btn-download" onclick="downloadAllPhotos()">
+                            💾 Download All Photos
+                        </button>
+                        <button class="btn btn-export" onclick="sharePhotos()">
+                            📤 Share Photos
+                        </button>
+                        <button class="btn btn-export btn-data" onclick="EZAPPData.exportPhotos()">
+                            📦 Export Photos Data
+                        </button>
+                        <button class="btn btn-clear" onclick="clearAllPhotos()">
+                            🗑️ Clear & Start Over
+                            <div style="font-size: 11px; opacity: 0.9; margin-top: 5px; font-weight: normal;">
+                                (clears photos, measurements, and local cache)
+                            </div>
+                        </button>
+                        <button class="btn btn-ghost" onclick="clearPhotoCache()">
+                            🧹 Clear Photo Cache
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Camera Input (Hidden - fallback for camera) -->
+            <input type="file" id="cameraInput" class="camera-input" accept="image/*" capture="environment">
+
+            <!-- Upload Input (Hidden - for gallery/file upload) -->
+            <input type="file" id="uploadInput" class="camera-input" accept="image/*">
+
+            <!-- Camera Modal -->
+            <div id="cameraModal" class="camera-modal">
+                <button class="btn-close-camera" onclick="closeCameraModal()">✕ Close</button>
+                <div class="camera-status" id="cameraStatus">Initializing camera...</div>
+                <video id="cameraVideo" autoplay playsinline></video>
+                <div class="camera-controls">
+                    <button class="btn-capture" onclick="capturePhoto()" title="Take Photo"></button>
+                </div>
+            </div>
+
+    </main>
+
+    <script>
+        // Photo data storage
+        let photoData = {};
+        let videoData = null;
+        let currentPhotoId = null;
+        const totalPhotos = 15; // 15 photos only
+        const PHOTO_CACHE_KEY = 'photo_cache_photopage';
+        const LEGACY_CACHE_KEY = 'ezbath_photos';
+
+        // Photo descriptions for file naming and frame labels
+        const photoDescriptions = {
+            1: "House Exterior",
+            2: "Hallway",
+            3: "Wet Area Front",
+            4: "Left Wall",
+            5: "Right Wall",
+            6: "Left Wall Depth",
+            7: "Right Wall Depth",
+            8: "Soap Wall Depth",
+            9: "Ceiling Height",
+            10: "Tub Floor",
+            11: "Ceiling Above Tub",
+            12: "Shower Height",
+            13: "Tub Width",
+            14: "Window Width",
+            15: "Window Height"
+        };
+
+        // Convert fraction to decimal
+        function fractionToDecimal(fraction) {
+            if (!fraction || !fraction.includes('/')) return 0;
+
+            const parts = fraction.trim().split('/');
+            if (parts.length !== 2) return 0;
+
+            const numerator = parseFloat(parts[0]);
+            const denominator = parseFloat(parts[1]);
+
+            if (isNaN(numerator) || isNaN(denominator) || denominator === 0) return 0;
+
+            return numerator / denominator;
+        }
+
+        // Calculate total measurement from whole and fraction
+        function calculateMeasurement(photoId) {
+            const wholeInput = document.getElementById(`measurement-whole-${photoId}`);
+            const fractionInput = document.getElementById(`measurement-fraction-${photoId}`);
+            const preview = document.getElementById(`measurement-preview-${photoId}`);
+
+            if (!wholeInput || !fractionInput || !preview) return null;
+
+            const whole = parseFloat(wholeInput.value) || 0;
+            const fractionValue = fractionToDecimal(fractionInput.value);
+            const total = whole + fractionValue;
+
+            // Update preview
+            if (whole === 0 && fractionValue === 0) {
+                preview.textContent = 'Decimal: --';
+            } else {
+                preview.textContent = `Decimal: ${total.toFixed(3)}" inches`;
+            }
+
+            return total;
+        }
+
+        // Setup measurement input listeners
+        function setupMeasurementListeners() {
+            const measurementPhotoIds = [6, 7, 8, 9, 12, 13, 14, 15, 16, 17, 18, 19, 20];
+
+            measurementPhotoIds.forEach(photoId => {
+                const wholeInput = document.getElementById(`measurement-whole-${photoId}`);
+                const fractionInput = document.getElementById(`measurement-fraction-${photoId}`);
+
+                if (wholeInput) {
+                    wholeInput.addEventListener('input', () => calculateMeasurement(photoId));
+                }
+
+                if (fractionInput) {
+                    fractionInput.addEventListener('input', () => calculateMeasurement(photoId));
+                }
+            });
+        }
+
+        function getSessionName() {
+            const nameInput = document.getElementById('customerName');
+            return (nameInput?.value || '').trim();
+        }
+
+        function getSessionDate() {
+            const dateInput = document.getElementById('sessionDate');
+            return (dateInput?.value || '').trim();
+        }
+
+        // Get customer last name from session input (fallback: "Customer")
+        function getCustomerLastName() {
+            const sessionName = getSessionName() || 'Customer';
+            const nameParts = sessionName.split(' ');
+            return nameParts[nameParts.length - 1];
+        }
+
+        // Generate filename: [lastName].[pictureNumber].[measurement]
+        function generateFilename(photoId, measurement = null) {
+            const lastName = getCustomerLastName();
+            const pictureNumber = photoId.toString().padStart(2, '0');
+            const sessionDate = getSessionDate();
+
+            // Get description for additional photos (16-20)
+            let description = '';
+            if (photoId >= 16 && photoId <= 20) {
+                const descriptionInput = document.getElementById(`description-${photoId}`);
+                if (descriptionInput && descriptionInput.value.trim()) {
+                    // Clean description for filename (remove spaces and special chars)
+                    description = descriptionInput.value.trim()
+                        .replace(/[^a-zA-Z0-9]/g, '_')
+                        .substring(0, 30); // Limit length
+                }
+            }
+
+            if (measurement && measurement > 0) {
+                const measurementStr = measurement.toFixed(3).replace(/\.?0+$/, ''); // Remove trailing zeros
+                return [lastName, sessionDate, pictureNumber, description, measurementStr].filter(Boolean).join('.');
+            }
+
+            const baseParts = [lastName, sessionDate, pictureNumber, description].filter(Boolean);
+            return baseParts.join('.') || `Photo.${pictureNumber}`;
+        }
+
+        function updateSessionDisplay() {
+            const display = document.getElementById('customerDisplay');
+            if (!display) return;
+            const name = getSessionName();
+            const date = getSessionDate();
+            const parts = [];
+            if (name) parts.push(`Name: ${name}`);
+            if (date) parts.push(`Date: ${date}`);
+            display.textContent = parts.length ? parts.join(' • ') : 'Job Site Documentation';
+        }
+
+        // Initialize
+        window.onload = function () {
+            loadSavedPhotos();
+            updateProgress();
+            setupMeasurementListeners(); // Setup live measurement preview
+
+            // Update display when name/date change
+            const nameInput = document.getElementById('customerName');
+            const dateInput = document.getElementById('sessionDate');
+            nameInput?.addEventListener('input', updateSessionDisplay);
+            dateInput?.addEventListener('input', updateSessionDisplay);
+            updateSessionDisplay();
+
+            // Set up the camera input handler once
+            const cameraInput = document.getElementById('cameraInput');
+            if (cameraInput) {
+                cameraInput.addEventListener('change', handlePhotoCapture);
+            }
+
+            // Set up the upload input handler
+            const uploadInput = document.getElementById('uploadInput');
+            if (uploadInput) {
+                uploadInput.addEventListener('change', handleUploadedPhoto);
+            }
+        };
+
+        // Camera stream reference
+        let cameraStream = null;
+
+        // Open camera for specific photo - Uses getUserMedia for direct camera access
+        function openCamera(photoId) {
+            currentPhotoId = photoId;
+
+            const modal = document.getElementById('cameraModal');
+            const video = document.getElementById('cameraVideo');
+            const status = document.getElementById('cameraStatus');
+
+            modal.classList.add('active');
+            status.textContent = 'Requesting camera access...';
+
+            // Request camera access
+            navigator.mediaDevices.getUserMedia({
+                video: {
+                    facingMode: 'environment',
+                    width: { ideal: 1920 },
+                    height: { ideal: 1080 }
+                },
+                audio: false
+            })
+                .then(stream => {
+                    cameraStream = stream;
+                    video.srcObject = stream;
+                    status.textContent = 'Camera ready - tap the button to capture';
+                })
+                .catch(err => {
+                    console.error('Camera error:', err);
+                    status.textContent = 'Camera not available. Using file picker...';
+
+                    // Fallback to file input
+                    setTimeout(() => {
+                        closeCameraModal();
+                        const input = document.getElementById('cameraInput');
+                        if (input) {
+                            input.value = '';
+                            input.click();
+                        }
+                    }, 1500);
+                });
+        }
+
+        // Capture photo from video stream
+        function capturePhoto() {
+            const video = document.getElementById('cameraVideo');
+
+            if (!video.srcObject) {
+                alert('Camera not ready');
+                return;
+            }
+
+            // Create canvas to capture frame
+            const canvas = document.createElement('canvas');
+            canvas.width = video.videoWidth;
+            canvas.height = video.videoHeight;
+
+            const ctx = canvas.getContext('2d');
+            ctx.drawImage(video, 0, 0);
+
+            // Get image data
+            const imageData = canvas.toDataURL('image/jpeg', 0.92);
+
+            // Close camera modal
+            closeCameraModal();
+
+            // Process the captured photo
+            processPhoto(imageData);
+        }
+
+        // Process captured photo (same as file input handler)
+        function processPhoto(imageData) {
+            const photoItem = document.querySelector(`[data-photo-id="${currentPhotoId}"]`);
+            const preview = document.getElementById(`preview-${currentPhotoId}`);
+            const img = document.getElementById(`img-${currentPhotoId}`);
+
+            // Show preview
+            img.src = imageData;
+            preview.classList.add('show');
+
+            // Store temporarily (not confirmed yet)
+            photoData[currentPhotoId] = {
+                data: imageData,
+                confirmed: false,
+                timestamp: new Date().toISOString()
+            };
+
+            // Scroll to photo for review
+            photoItem.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+
+        // Close camera modal
+        function closeCameraModal() {
+            const modal = document.getElementById('cameraModal');
+            const video = document.getElementById('cameraVideo');
+
+            // Stop camera stream
+            if (cameraStream) {
+                cameraStream.getTracks().forEach(track => track.stop());
+                cameraStream = null;
+            }
+
+            video.srcObject = null;
+            modal.classList.remove('active');
+        }
+
+        // Upload photo from gallery/files
+        function uploadPhoto(photoId) {
+            currentPhotoId = photoId;
+            const uploadInput = document.getElementById('uploadInput');
+            if (uploadInput) {
+                uploadInput.value = '';
+                uploadInput.click();
+            }
+        }
+
+        // Handle uploaded photo
+        function handleUploadedPhoto(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            // Validate file type
+            if (!file.type.startsWith('image/')) {
+                alert('Please select an image file.');
+                return;
+            }
+
+            const reader = new FileReader();
+            reader.onload = function (e) {
+                processPhoto(e.target.result);
+            };
+            reader.readAsDataURL(file);
+        }
+
+        // Handle photo capture
+        function handlePhotoCapture(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function (e) {
+                const photoItem = document.querySelector(`[data-photo-id="${currentPhotoId}"]`);
+                const preview = document.getElementById(`preview-${currentPhotoId}`);
+                const img = document.getElementById(`img-${currentPhotoId}`);
+
+                // Show preview
+                img.src = e.target.result;
+                preview.classList.add('show');
+
+                // Store temporarily (not confirmed yet)
+                photoData[currentPhotoId] = {
+                    data: e.target.result,
+                    confirmed: false,
+                    timestamp: new Date().toISOString()
+                };
+
+                // Scroll to photo for review
+                photoItem.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            };
+            reader.readAsDataURL(file);
+        }
+
+        // Add frame with label to photo
+        function addPhotoFrame(imageData, photoId, measurement, callback) {
+            const img = new Image();
+            img.crossOrigin = 'anonymous';
+            img.onload = function () {
+                const canvas = document.createElement('canvas');
+                const ctx = canvas.getContext('2d');
+
+                // Calculate frame dimensions
+                const frameHeight = Math.max(40, Math.round(img.height * 0.06)); // 6% of image height, min 40px
+                const padding = Math.round(frameHeight * 0.3);
+
+                // Set canvas size (image + frame at bottom)
+                canvas.width = img.width;
+                canvas.height = img.height + frameHeight;
+
+                // Draw the photo
+                ctx.drawImage(img, 0, 0);
+
+                // Draw frame background (dark semi-transparent bar)
+                ctx.fillStyle = 'rgba(26, 26, 46, 0.9)'; // Match app theme
+                ctx.fillRect(0, img.height, canvas.width, frameHeight);
+
+                // Add subtle top border on frame
+                ctx.strokeStyle = 'rgba(52, 152, 219, 0.5)';
+                ctx.lineWidth = 2;
+                ctx.beginPath();
+                ctx.moveTo(0, img.height);
+                ctx.lineTo(canvas.width, img.height);
+                ctx.stroke();
+
+                // Build label text
+                const customerName = getCustomerLastName();
+                const photoNum = photoId.toString().padStart(2, '0');
+
+                // Get description
+                let description = '';
+                if (photoId >= 16 && photoId <= 20) {
+                    const descInput = document.getElementById(`description-${photoId}`);
+                    description = descInput?.value?.trim() || `Additional Photo ${photoId - 15}`;
+                } else {
+                    description = photoDescriptions[photoId] || `Photo ${photoId}`;
+                }
+
+                // Check for plumbing flag (photos 6-8)
+                let plumbingFlag = '';
+                if (photoId >= 6 && photoId <= 8) {
+                    const plumbingCheckbox = document.getElementById(`plumbing-${photoId}`);
+                    if (plumbingCheckbox?.checked) {
+                        plumbingFlag = ' 🚰';
+                    }
+                }
+
+                // Format measurement
+                let measurementText = '';
+                if (measurement && measurement > 0) {
+                    measurementText = ` - ${measurement.toFixed(2)}"`;
+                }
+
+                // Combine label: Name - ## - Description - Measurement
+                const labelText = `${customerName} - ${photoNum} - ${description}${plumbingFlag}${measurementText}`;
+
+                // Calculate font size (responsive to image size)
+                const fontSize = Math.max(14, Math.round(frameHeight * 0.45));
+                ctx.font = `bold ${fontSize}px -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif`;
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+
+                // Draw text shadow for better readability
+                ctx.fillStyle = 'rgba(0, 0, 0, 0.5)';
+                ctx.fillText(labelText, canvas.width / 2 + 1, img.height + (frameHeight / 2) + 1);
+
+                // Draw main text
+                ctx.fillStyle = '#ffffff';
+                ctx.fillText(labelText, canvas.width / 2, img.height + (frameHeight / 2));
+
+                // Convert to base64 and callback
+                const framedImage = canvas.toDataURL('image/jpeg', 0.92);
+                callback(framedImage);
+            };
+            img.src = imageData;
+        }
+
+        // Confirm photo
+        function confirmPhoto(photoId) {
+            if (!photoData[photoId]) return;
+
+            // Save description for additional photos (16-20)
+            if (photoId >= 16 && photoId <= 20) {
+                const descriptionInput = document.getElementById(`description-${photoId}`);
+                if (descriptionInput && descriptionInput.value.trim()) {
+                    photoData[photoId].description = descriptionInput.value.trim();
+                }
+            }
+
+            // Save plumbing checkbox state for photos 6, 7, 8
+            if (photoId >= 6 && photoId <= 8) {
+                const plumbingCheckbox = document.getElementById(`plumbing-${photoId}`);
+                if (plumbingCheckbox) {
+                    photoData[photoId].hasPlumbing = plumbingCheckbox.checked;
+                }
+            }
+
+            // Calculate and save measurement if it exists
+            const measurement = calculateMeasurement(photoId);
+            if (measurement !== null && measurement > 0) {
+                photoData[photoId].measurement = measurement;
+                photoData[photoId].measurementDecimal = measurement.toFixed(3);
+            }
+
+            // Generate filename with measurement
+            photoData[photoId].filename = generateFilename(photoId, measurement);
+
+            // Add frame to photo and save
+            addPhotoFrame(photoData[photoId].data, photoId, measurement, function (framedImage) {
+                // Update with framed image
+                photoData[photoId].data = framedImage;
+                photoData[photoId].confirmed = true;
+
+                // Update preview with framed image
+                const img = document.getElementById(`img-${photoId}`);
+                if (img) img.src = framedImage;
+
+                const photoItem = document.querySelector(`[data-photo-id="${photoId}"]`);
+                const status = photoItem.querySelector('.photo-status');
+
+                photoItem.classList.add('completed');
+                status.textContent = '✅';
+
+                // Save to localStorage
+                savePhotos();
+                updateProgress();
+
+                // Show toast if available
+                if (typeof showToast === 'function') {
+                    showToast(`📸 Photo ${photoId} saved with label!`, 'success');
+                }
+
+                // Auto-scroll to next incomplete photo
+                scrollToNextIncomplete(photoId);
+            });
+        }
+
+        // Retake photo
+        function retakePhoto(photoId) {
+            const preview = document.getElementById(`preview-${photoId}`);
+            preview.classList.remove('show');
+
+            delete photoData[photoId];
+
+            const photoItem = document.querySelector(`[data-photo-id="${photoId}"]`);
+            const status = photoItem.querySelector('.photo-status');
+
+            photoItem.classList.remove('completed');
+            status.textContent = '⭕';
+
+            // Clear only the measurement preview label (not the input values)
+            const measurementPreview = document.getElementById(`measurement-preview-${photoId}`);
+            if (measurementPreview) measurementPreview.textContent = 'Decimal: --';
+
+            savePhotos();
+            updateProgress();
+
+            // Reopen camera
+            openCamera(photoId);
+        }
+
+        // Toggle window photos visibility
+        function toggleWindowPhotos(show) {
+            const container = document.getElementById('window-photos-container');
+            container.style.display = show ? 'block' : 'none';
+
+            if (show) {
+                // Show measurement section for description inputs (16-20)
+                for (let i = 16; i <= 20; i++) {
+                    const measurementSection = document.getElementById(`measurement-section-${i}`);
+                    if (measurementSection) {
+                        measurementSection.style.display = 'block';
+                    }
+                }
+                // Scroll to window photos
+                container.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            } else {
+                // Scroll to next section (additional photos question)
+                const nextSection = document.querySelector('[data-photo-id="whodat"]');
+                if (nextSection) {
+                    nextSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }
+            }
+        }
+
+        // Show additional photos
+        function showAdditionalPhotos() {
+            const container = document.getElementById('additional-photos-container');
+            container.style.display = 'block';
+
+            // Show measurement section for each additional photo
+            for (let i = 16; i <= 20; i++) {
+                const measurementSection = document.getElementById(`measurement-section-${i}`);
+                if (measurementSection) {
+                    measurementSection.style.display = 'block';
+                }
+            }
+        }
+
+        // Hide additional photos
+        function hideAdditionalPhotos() {
+            // Save photos first
+            savePhotos();
+
+            // Mark module as accessed
+            markModuleProgress('photos');
+
+            // Return to consultant portal
+            window.location.href = 'index.html';
+        }
+
+        // Toggle measurement inputs for additional photos
+        function toggleMeasurement(photoId) {
+            const checkbox = document.getElementById(`needs-measurement-${photoId}`);
+            const measurementInputs = document.getElementById(`measurement-inputs-${photoId}`);
+
+            if (checkbox.checked) {
+                measurementInputs.style.display = 'block';
+                // Add this photo to measurement listeners
+                const wholeInput = document.getElementById(`measurement-whole-${photoId}`);
+                const fractionInput = document.getElementById(`measurement-fraction-${photoId}`);
+
+                if (wholeInput) {
+                    wholeInput.addEventListener('input', () => calculateMeasurement(photoId));
+                }
+                if (fractionInput) {
+                    fractionInput.addEventListener('input', () => calculateMeasurement(photoId));
+                }
+            } else {
+                measurementInputs.style.display = 'none';
+            }
+        }
+
+        // Update progress bar
+        function updateProgress() {
+            const completed = Object.keys(photoData).filter(id => photoData[id].confirmed).length;
+            const percent = Math.round((completed / totalPhotos) * 100);
+
+            document.getElementById('completedCount').textContent = completed;
+            document.getElementById('totalCount').textContent = totalPhotos;
+            document.getElementById('progressPercent').textContent = `${percent}%`;
+            document.getElementById('progressFill').style.width = `${percent}%`;
+        }
+
+        // Scroll to next incomplete photo
+        function scrollToNextIncomplete(currentId) {
+            for (let i = currentId + 1; i <= totalPhotos; i++) {
+                if (!photoData[i] || !photoData[i].confirmed) {
+                    const nextItem = document.querySelector(`[data-photo-id="${i}"]`);
+                    if (nextItem) {
+                        setTimeout(() => {
+                            nextItem.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                        }, 500);
+                    }
+                    break;
+                }
+            }
+        }
+
+        // Save photos to localStorage (customer-specific)
+        function savePhotos() {
+            localStorage.setItem(PHOTO_CACHE_KEY, JSON.stringify(photoData));
+            localStorage.setItem(LEGACY_CACHE_KEY, JSON.stringify(photoData));
+
+            // Also save to EZAPP structure
+            if (typeof EZAPPData !== 'undefined') {
+                EZAPPData.savePhotos(photoData);
+            }
+        }
+
+        // Load saved photos
+        function loadSavedPhotos() {
+            let saved = localStorage.getItem(PHOTO_CACHE_KEY);
+
+            // Fall back to legacy key if no page-specific cache
+            if (!saved) {
+                saved = localStorage.getItem(LEGACY_CACHE_KEY);
+            }
+
+            if (saved) {
+                photoData = JSON.parse(saved);
+
+                // Restore UI for photos
+                Object.keys(photoData).forEach(photoId => {
+                    if (photoData[photoId].confirmed) {
+                        const img = document.getElementById(`img-${photoId}`);
+                        const preview = document.getElementById(`preview-${photoId}`);
+                        const photoItem = document.querySelector(`[data-photo-id="${photoId}"]`);
+                        const status = photoItem.querySelector('.photo-status');
+
+                        img.src = photoData[photoId].data;
+                        preview.classList.add('show');
+                        photoItem.classList.add('completed');
+                        status.textContent = '✅';
+
+                        // Restore measurement if exists
+                        if (photoData[photoId].measurement) {
+                            const measurementInput = document.getElementById(`measurement-${photoId}`);
+                            if (measurementInput) {
+                                measurementInput.value = photoData[photoId].measurement;
+                            }
+                        }
+
+                        // Restore plumbing checkbox for photos 6, 7, 8
+                        if (photoId >= 6 && photoId <= 8 && photoData[photoId].hasPlumbing !== undefined) {
+                            const plumbingCheckbox = document.getElementById(`plumbing-${photoId}`);
+                            if (plumbingCheckbox) {
+                                plumbingCheckbox.checked = photoData[photoId].hasPlumbing;
+                            }
+                        }
+                    }
+                });
+            }
+
+            // Load saved video
+            const savedVideo = localStorage.getItem('ezbath_whodat_video');
+            if (savedVideo) {
+                videoData = JSON.parse(savedVideo);
+                if (videoData.confirmed) {
+                    const video = document.getElementById('video-whodat');
+                    const preview = document.getElementById('preview-whodat');
+                    const photoItem = document.querySelector('[data-photo-id="whodat"]');
+                    const status = document.getElementById('status-whodat');
+
+                    video.src = videoData.data;
+                    preview.classList.add('show');
+                    photoItem.classList.add('completed');
+                    status.textContent = '✅';
+                }
+            }
+
+            updateSessionDisplay();
+        }
+
+        // Download all photos as ZIP
+        function downloadAllPhotos() {
+            const completed = Object.keys(photoData).filter(id => photoData[id].confirmed);
+            const customerName = getSessionName() || 'Customer';
+            const sessionDate = getSessionDate();
+
+            if (completed.length === 0 && !videoData) {
+                alert('No photos or video to download. Please capture some content first!');
+                return;
+            }
+
+            // Download photos with customer last name
+            completed.forEach(photoId => {
+                let fileName = `${customerName}_${photoDescriptions[photoId]}`;
+
+                // Append measurement if exists
+                if (photoData[photoId].measurement) {
+                    const measurementLabel = photoData[photoId].measurement.toString().replace(/[^a-zA-Z0-9.]/g, '_');
+                    fileName += `_${measurementLabel}`;
+                }
+
+                if (sessionDate) {
+                    fileName = `${customerName}_${sessionDate}_${photoDescriptions[photoId]}`;
+                }
+
+                fileName += '.jpg';
+
+                const link = document.createElement('a');
+                link.href = photoData[photoId].data;
+                link.download = fileName;
+                link.click();
+            });
+
+            // Download video with customer name
+            if (videoData && videoData.confirmed) {
+                const videoFileName = sessionDate ? `${customerName}_${sessionDate}_WhoDAT_Video.mp4` : `${customerName}_WhoDAT_Video.mp4`;
+                const link = document.createElement('a');
+                link.href = videoData.data;
+                link.download = videoFileName;
+                link.click();
+            }
+
+            const totalItems = completed.length + (videoData && videoData.confirmed ? 1 : 0);
+            alert(`✅ Downloaded ${totalItems} items successfully!`);
+        }
+
+        // Share photos
+        function sharePhotos() {
+            const completed = Object.keys(photoData).filter(id => photoData[id].confirmed);
+
+            if (completed.length === 0) {
+                alert('No photos to share. Please take some photos first!');
+                return;
+            }
+
+            // Download each photo with proper filename
+            completed.forEach(photoId => {
+                const photo = photoData[photoId];
+                const base64 = photo.data;
+                const fileName = photo.filename ? `${photo.filename}.jpg` : `${photoDescriptions[photoId]}.jpg`;
+
+                // Create download link
+                const link = document.createElement('a');
+                link.href = base64;
+                link.download = fileName;
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+            });
+
+            alert(`✓ ${completed.length} photos downloaded!\n\nFiles saved with format: [LastName].[#].[measurement].jpg`);
+        }
+
+        // Clear all photos
+        function clearAllPhotos() {
+            if (!confirm('⚠️ Are you sure you want to delete all photos, video, and measurements?')) {
+                return;
+            }
+
+            photoData = {};
+            videoData = null;
+            localStorage.removeItem(PHOTO_CACHE_KEY);
+            localStorage.removeItem(LEGACY_CACHE_KEY);
+            localStorage.removeItem('ezbath_whodat_video');
+
+            // Clear all measurement inputs (whole numbers and fractions)
+            const measurementPhotoIds = [6, 7, 8, 9, 12, 13, 14, 15, 16, 17, 18, 19, 20];
+            measurementPhotoIds.forEach(i => {
+                const wholeInput = document.getElementById(`measurement-whole-${i}`);
+                const fractionInput = document.getElementById(`measurement-fraction-${i}`);
+                const preview = document.getElementById(`measurement-preview-${i}`);
+
+                if (wholeInput) wholeInput.value = '';
+                if (fractionInput) fractionInput.value = '';
+                if (preview) preview.textContent = 'Decimal: --';
+            });
+
+            // Clear plumbing checkboxes for photos 6, 7, 8
+            for (let i = 6; i <= 8; i++) {
+                const plumbingCheckbox = document.getElementById(`plumbing-${i}`);
+                if (plumbingCheckbox) {
+                    plumbingCheckbox.checked = false;
+                }
+            }
+
+            // Clear description inputs for additional photos (16-20)
+            for (let i = 16; i <= 20; i++) {
+                const descriptionInput = document.getElementById(`description-${i}`);
+                if (descriptionInput) {
+                    descriptionInput.value = '';
+                }
+            }
+
+            const nameInput = document.getElementById('customerName');
+            const dateInput = document.getElementById('sessionDate');
+            if (nameInput) nameInput.value = '';
+            if (dateInput) dateInput.value = '';
+
+            // Reset video UI
+            const videoPreview = document.getElementById('preview-whodat');
+            const videoStatus = document.getElementById('status-whodat');
+            const videoItem = document.querySelector('[data-photo-id="whodat"]');
+            if (videoPreview) videoPreview.classList.remove('show');
+            if (videoItem) videoItem.classList.remove('completed');
+            if (videoStatus) videoStatus.textContent = '⭕';
+
+            // Reset UI for all photos
+            for (let i = 1; i <= totalPhotos; i++) {
+                const preview = document.getElementById(`preview-${i}`);
+                const photoItem = document.querySelector(`[data-photo-id="${i}"]`);
+                const status = photoItem ? photoItem.querySelector('.photo-status') : null;
+                const img = document.getElementById(`img-${i}`);
+
+                if (preview) preview.classList.remove('show');
+                if (photoItem) photoItem.classList.remove('completed', 'active');
+                if (status) status.textContent = '⭕';
+                if (img) img.src = '';
+            }
+
+            updateProgress();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+            updateSessionDisplay();
+
+            alert('✅ All photos, measurements, and data cleared successfully!');
+        }
+
+        // BACK BUTTON FUNCTION
+        function goBack() {
+            // Auto-save before leaving
+            savePhotos();
+            // Mark module as accessed
+            markModuleProgress('photos');
+            // Return to customer tools page
+            window.location.href = 'tools.html';
+        }
+
+        function clearPhotoCache() {
+            localStorage.removeItem(PHOTO_CACHE_KEY);
+            localStorage.removeItem(LEGACY_CACHE_KEY);
+            localStorage.removeItem('ezbath_whodat_video');
+            alert('🧹 Photo cache cleared for this page.');
+        }
+
+        // MARK MODULE AS COMPLETE
+        function markModuleProgress(moduleName) {
+            const progress = JSON.parse(localStorage.getItem('customerProgress') || '{}');
+            if (progress.modules) {
+                progress.modules[moduleName] = true;
+                localStorage.setItem('customerProgress', JSON.stringify(progress));
+            }
+        }
+
+        // AUTO-SAVE EVERY 10 SECONDS
+        setInterval(() => {
+            savePhotos();
+            console.log('Auto-saved photos at', new Date().toLocaleTimeString());
+        }, 10000);
+
+        // DISPLAY CUSTOMER NAME
+        updateSessionDisplay();
+
+        // SAVE BEFORE PAGE UNLOAD
+        window.addEventListener('beforeunload', () => {
+            savePhotos();
+        });
+    </script>
+    <script src="assets/js/ezapp-data.js"></script>
+</body>
+
+</html>

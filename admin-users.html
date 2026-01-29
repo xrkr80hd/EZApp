@@ -1,0 +1,497 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Management - EZ Baths Portal</title>
+    <link rel="stylesheet" href="assets/css/responsive-fixes.css">
+    <script src="assets/js/toast-notifications.js" defer></script>
+    <script src="assets/js/loading-spinner.js" defer></script>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+            min-height: 100vh;
+            padding: 20px;
+            color: white;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .header {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(52, 152, 219, 0.3);
+            border-radius: 16px;
+            padding: 24px;
+            margin-bottom: 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header h1 {
+            font-size: 28px;
+        }
+
+        .header-buttons {
+            display: flex;
+            gap: 12px;
+        }
+
+        .btn {
+            padding: 12px 20px;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #3498db 0%, #2ecc71 100%);
+            color: white;
+        }
+
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(52, 152, 219, 0.4);
+        }
+
+        .users-table {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(52, 152, 219, 0.3);
+            border-radius: 16px;
+            padding: 24px;
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th,
+        td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        th {
+            font-weight: 700;
+            color: #3498db;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .badge-admin {
+            background: linear-gradient(135deg, #3498db 0%, #2ecc71 100%);
+            color: white;
+        }
+
+        .badge-active {
+            background: rgba(46, 204, 113, 0.2);
+            color: #2ecc71;
+            border: 1px solid #2ecc71;
+        }
+
+        .badge-inactive {
+            background: rgba(231, 76, 60, 0.2);
+            color: #ff6b6b;
+            border: 1px solid #ff6b6b;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 8px;
+        }
+
+        .btn-small {
+            padding: 6px 12px;
+            font-size: 12px;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .modal.show {
+            display: flex;
+        }
+
+        .modal-content {
+            background: rgba(26, 26, 46, 0.98);
+            border: 1px solid rgba(52, 152, 219, 0.3);
+            border-radius: 16px;
+            padding: 32px;
+            max-width: 500px;
+            width: 90%;
+        }
+
+        .modal-header {
+            margin-bottom: 24px;
+        }
+
+        .modal-header h2 {
+            font-size: 24px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+        }
+
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 12px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 8px;
+            color: white;
+            font-size: 14px;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: #3498db;
+            box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.2);
+        }
+
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .checkbox-group input[type="checkbox"] {
+            width: auto;
+        }
+
+        .modal-buttons {
+            display: flex;
+            gap: 12px;
+            margin-top: 24px;
+        }
+
+        .btn-delete {
+            background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
+            color: white;
+        }
+
+        @media (max-width: 768px) {
+            .users-table {
+                overflow-x: scroll;
+            }
+
+            .header {
+                flex-direction: column;
+                gap: 16px;
+                text-align: center;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="header">
+            <div>
+                <h1>👥 User Management</h1>
+                <p style="color: #c7d2dd; margin-top: 4px;">Manage consultant accounts</p>
+            </div>
+            <div class="header-buttons">
+                <button class="btn btn-primary" onclick="showAddUserModal()">+ Add User</button>
+                <a href="portal.html" class="back-button">← Back</a>
+            </div>
+        </div>
+
+        <div class="users-table">
+            <table id="usersTable">
+                <thead>
+                    <tr>
+                        <th>Username</th>
+                        <th>Name</th>
+                        <th>Email</th>
+                        <th>Role</th>
+                        <th>Status</th>
+                        <th>Last Login</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="usersTableBody">
+                    <tr>
+                        <td colspan="7" style="text-align: center; padding: 40px;">Loading...</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Add/Edit User Modal -->
+    <div id="userModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="modalTitle">Add New User</h2>
+            </div>
+            <form id="userForm" onsubmit="saveUser(event)">
+                <input type="hidden" id="userId">
+
+                <div class="form-group">
+                    <label for="username">Username *</label>
+                    <input type="text" id="username" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="password">Password * <span style="font-size: 12px; color: #c7d2dd;">(Leave blank to keep
+                            current)</span></label>
+                    <input type="password" id="password">
+                </div>
+
+                <div class="form-group">
+                    <label for="firstName">First Name *</label>
+                    <input type="text" id="firstName" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="lastName">Last Name *</label>
+                    <input type="text" id="lastName" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="email">Email</label>
+                    <input type="email" id="email">
+                </div>
+
+                <div class="form-group">
+                    <label for="phone">Phone</label>
+                    <input type="tel" id="phone">
+                </div>
+
+                <div class="form-group">
+                    <div class="checkbox-group">
+                        <input type="checkbox" id="isAdmin">
+                        <label for="isAdmin">Admin User</label>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <div class="checkbox-group">
+                        <input type="checkbox" id="isActive" checked>
+                        <label for="isActive">Active</label>
+                    </div>
+                </div>
+
+                <div class="modal-buttons">
+                    <button type="submit" class="btn btn-primary">Save User</button>
+                    <button type="button" class="btn btn-secondary" onclick="closeModal()">Cancel</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // Load users on page load
+        window.addEventListener('DOMContentLoaded', () => {
+            checkAuth();
+            loadUsers();
+        });
+
+        async function checkAuth() {
+            // AUTHENTICATION DISABLED FOR TESTING
+            console.log('Authentication disabled - proceeding without login check');
+            return;
+
+            /*
+            // ORIGINAL AUTHENTICATION CODE - COMMENTED OUT
+            try {
+                const response = await fetch('api/check-session.php');
+                const data = await response.json();
+
+                if (!data.authenticated || !data.user.is_admin) {
+                    window.location.href = 'login.html';
+                }
+            } catch (error) {
+                window.location.href = 'login.html';
+            }
+            */
+        }
+
+        async function loadUsers() {
+            try {
+                const response = await fetch('api/users.php');
+                const data = await response.json();
+
+                if (data.success) {
+                    renderUsers(data.users);
+                }
+            } catch (error) {
+                console.error('Error loading users:', error);
+            }
+        }
+
+        function renderUsers(users) {
+            const tbody = document.getElementById('usersTableBody');
+
+            if (users.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="7" style="text-align: center; padding: 40px;">No users found</td></tr>';
+                return;
+            }
+
+            tbody.innerHTML = users.map(user => `
+                <tr>
+                    <td><strong>${user.username}</strong></td>
+                    <td>${user.first_name} ${user.last_name}</td>
+                    <td>${user.email || '-'}</td>
+                    <td>${user.is_admin ? '<span class="badge badge-admin">Admin</span>' : 'Consultant'}</td>
+                    <td><span class="badge ${user.active ? 'badge-active' : 'badge-inactive'}">${user.active ? 'Active' : 'Inactive'}</span></td>
+                    <td>${user.last_login ? new Date(user.last_login).toLocaleDateString() : 'Never'}</td>
+                    <td>
+                        <div class="action-buttons">
+                            <button class="btn btn-primary btn-small" onclick='editUser(${JSON.stringify(user)})'>Edit</button>
+                            <button class="btn btn-delete btn-small" onclick="deleteUser(${user.id}, '${user.username}')">Delete</button>
+                        </div>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        function showAddUserModal() {
+            document.getElementById('modalTitle').textContent = 'Add New User';
+            document.getElementById('userForm').reset();
+            document.getElementById('userId').value = '';
+            document.getElementById('password').required = true;
+            document.getElementById('userModal').classList.add('show');
+        }
+
+        function editUser(user) {
+            document.getElementById('modalTitle').textContent = 'Edit User';
+            document.getElementById('userId').value = user.id;
+            document.getElementById('username').value = user.username;
+            document.getElementById('password').value = '';
+            document.getElementById('password').required = false;
+            document.getElementById('firstName').value = user.first_name;
+            document.getElementById('lastName').value = user.last_name;
+            document.getElementById('email').value = user.email || '';
+            document.getElementById('phone').value = user.phone || '';
+            document.getElementById('isAdmin').checked = user.is_admin;
+            document.getElementById('isActive').checked = user.active;
+            document.getElementById('userModal').classList.add('show');
+        }
+
+        function closeModal() {
+            document.getElementById('userModal').classList.remove('show');
+        }
+
+        async function saveUser(event) {
+            event.preventDefault();
+
+            const userId = document.getElementById('userId').value;
+            const userData = {
+                username: document.getElementById('username').value,
+                password: document.getElementById('password').value,
+                first_name: document.getElementById('firstName').value,
+                last_name: document.getElementById('lastName').value,
+                email: document.getElementById('email').value,
+                phone: document.getElementById('phone').value,
+                is_admin: document.getElementById('isAdmin').checked ? 1 : 0,
+                active: document.getElementById('isActive').checked ? 1 : 0
+            };
+
+            if (userId) {
+                userData.id = userId;
+            }
+
+            try {
+                const response = await fetch('api/users.php', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(userData)
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    closeModal();
+                    loadUsers();
+                    alert(userId ? 'User updated successfully!' : 'User created successfully!');
+                } else {
+                    alert('Error: ' + (data.message || 'Failed to save user'));
+                }
+            } catch (error) {
+                console.error('Error saving user:', error);
+                alert('Error saving user');
+            }
+        }
+
+        async function deleteUser(id, username) {
+            if (!confirm(`Are you sure you want to delete user "${username}"?`)) {
+                return;
+            }
+
+            try {
+                const response = await fetch('api/users.php', {
+                    method: 'DELETE',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ id })
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    loadUsers();
+                    alert('User deleted successfully!');
+                } else {
+                    alert('Error: ' + (data.message || 'Failed to delete user'));
+                }
+            } catch (error) {
+                console.error('Error deleting user:', error);
+                alert('Error deleting user');
+            }
+        }
+    </script>
+</body>
+
+</html>

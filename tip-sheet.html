@@ -1,0 +1,818 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <title>TIP Sheet - No Sale</title>
+    <link rel="stylesheet" href="assets/css/responsive-fixes.css">
+    <script src="assets/js/toast-notifications.js" defer></script>
+    <script src="assets/js/loading-spinner.js" defer></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+            min-height: 100vh;
+            padding: 15px;
+            position: relative;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 10%;
+            left: 5%;
+            width: 300px;
+            height: 300px;
+            background: radial-gradient(circle, rgba(231, 76, 60, 0.15) 0%, transparent 70%);
+            border-radius: 50%;
+            animation: pulse 8s ease-in-out infinite;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        body::after {
+            content: '';
+            position: fixed;
+            bottom: 10%;
+            right: 5%;
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, rgba(52, 152, 219, 0.12) 0%, transparent 70%);
+            border-radius: 50%;
+            animation: pulse 10s ease-in-out infinite reverse;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        @keyframes pulse {
+
+            0%,
+            100% {
+                transform: scale(1);
+                opacity: 0.6;
+            }
+
+            50% {
+                transform: scale(1.1);
+                opacity: 0.8;
+            }
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.98);
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+            overflow: hidden;
+            position: relative;
+            z-index: 1;
+            backdrop-filter: blur(10px);
+        }
+
+        .header {
+            background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
+            color: white;
+            padding: 30px 25px;
+            text-align: center;
+            box-shadow: 0 4px 12px rgba(231, 76, 60, 0.3);
+        }
+
+        .header h1 {
+            font-size: 26px;
+            margin-bottom: 5px;
+        }
+
+        .header .subtitle {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+
+        .content-wrapper {
+            padding: 25px;
+        }
+
+        .section {
+            background: #f8f9fa;
+            border-left: 4px solid #3498db;
+            padding: 20px;
+            margin-bottom: 20px;
+            border-radius: 0 12px 12px 0;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+        }
+
+        .section.warning {
+            border-left-color: #e74c3c;
+            background: #fff5f5;
+        }
+
+        .section.success {
+            border-left-color: #2ecc71;
+            background: #f0fff4;
+        }
+
+        .section-title {
+            background: linear-gradient(135deg, #3498db 0%, #2ecc71 100%);
+            color: white;
+            padding: 12px 20px;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            margin: -20px -20px 20px -20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            box-shadow: 0 2px 8px rgba(52, 152, 219, 0.3);
+        }
+
+        .section.warning .section-title {
+            background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
+            box-shadow: 0 2px 8px rgba(231, 76, 60, 0.3);
+        }
+
+        .section.success .section-title {
+            background: linear-gradient(135deg, #2ecc71 0%, #27ae60 100%);
+            box-shadow: 0 2px 8px rgba(46, 204, 113, 0.3);
+        }
+
+        .section-icon {
+            font-size: 20px;
+        }
+
+        .field-group {
+            margin-bottom: 15px;
+        }
+
+        .field-label {
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 8px;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .field-value {
+            background: white;
+            padding: 12px 15px;
+            border-radius: 8px;
+            border: 2px solid #e0e0e0;
+            font-size: 15px;
+            color: #555;
+        }
+
+        textarea {
+            width: 100%;
+            min-height: 100px;
+            padding: 12px;
+            border-radius: 8px;
+            border: 2px solid #ddd;
+            font-family: inherit;
+            font-size: 15px;
+            resize: vertical;
+            transition: all 0.3s;
+        }
+
+        textarea:focus {
+            outline: none;
+            border-color: #3498db;
+            box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.15);
+        }
+
+        .photo-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+            gap: 12px;
+            margin-top: 10px;
+        }
+
+        .photo-item {
+            position: relative;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.15);
+            transition: transform 0.3s;
+        }
+
+        .photo-item:hover {
+            transform: scale(1.02);
+        }
+
+        .photo-item img {
+            width: 100%;
+            height: 140px;
+            object-fit: cover;
+        }
+
+        .photo-label {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(transparent, rgba(0, 0, 0, 0.8));
+            color: white;
+            padding: 8px 5px 5px;
+            font-size: 11px;
+            text-align: center;
+        }
+
+        .action-buttons {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-top: 2px solid #e0e0e0;
+        }
+
+        .btn {
+            padding: 16px;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .btn:active {
+            transform: scale(0.98);
+        }
+
+        .btn-save {
+            background: linear-gradient(135deg, #2ecc71 0%, #27ae60 100%);
+            color: white;
+            box-shadow: 0 4px 12px rgba(46, 204, 113, 0.3);
+        }
+
+        .btn-export {
+            background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
+            color: white;
+            box-shadow: 0 4px 12px rgba(52, 152, 219, 0.3);
+        }
+
+        .btn-back {
+            background: linear-gradient(135deg, #95a5a6 0%, #7f8c8d 100%);
+            color: white;
+            grid-column: span 2;
+            box-shadow: 0 4px 12px rgba(149, 165, 166, 0.3);
+        }
+
+        .checkbox-group {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            margin-top: 10px;
+        }
+
+        .checkbox-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: white;
+            padding: 12px 15px;
+            border-radius: 25px;
+            border: 2px solid #e0e0e0;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .checkbox-item:hover {
+            border-color: #3498db;
+            background: rgba(52, 152, 219, 0.05);
+        }
+
+        .checkbox-item input {
+            width: 20px;
+            height: 20px;
+            accent-color: #3498db;
+        }
+
+        .checkbox-item input:checked+label {
+            color: #3498db;
+            font-weight: 600;
+        }
+
+        .checkbox-item label {
+            cursor: pointer;
+            font-size: 14px;
+            color: #333;
+        }
+
+        @media (max-width: 768px) {
+            body {
+                padding: 10px;
+            }
+
+            .header h1 {
+                font-size: 22px;
+            }
+
+            .checkbox-group {
+                grid-template-columns: 1fr;
+            }
+
+            .action-buttons {
+                grid-template-columns: 1fr;
+            }
+
+            .btn-back {
+                grid-column: span 1;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>❌ TIP SHEET - No Sale</h1>
+            <div class="subtitle">Turnover Information for Follow-up</div>
+        </div>
+
+        <div class="content-wrapper">
+            <!-- Customer Information -->
+            <div class="section">
+                <div class="section-title">
+                    <span class="section-icon">👤</span>
+                    Customer Information
+                </div>
+                <div class="field-group">
+                    <div class="field-label">Customer Name:</div>
+                    <div class="field-value" id="customerName">—</div>
+                </div>
+                <div class="field-group">
+                    <div class="field-label">Address:</div>
+                    <div class="field-value" id="customerAddress">—</div>
+                </div>
+                <div class="field-group">
+                    <div class="field-label">Appointment Date:</div>
+                    <div class="field-value" id="appointmentDate">—</div>
+                </div>
+                <div class="field-group">
+                    <div class="field-label">Consultant:</div>
+                    <div class="field-value" id="consultantName">—</div>
+                </div>
+            </div>
+
+            <!-- Primary Reason for No Sale -->
+            <div class="section warning">
+                <div class="section-title">
+                    <span class="section-icon">⚠️</span>
+                    Primary Reason for No Sale
+                </div>
+                <div class="checkbox-group">
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="reason_price">
+                        <label for="reason_price">Price / Budget</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="reason_timing">
+                        <label for="reason_timing">Timing / Not Ready</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="reason_shopping">
+                        <label for="reason_shopping">Shopping Around</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="reason_decision">
+                        <label for="reason_decision">Decision Maker Not Present</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="reason_design">
+                        <label for="reason_design">Design / Product Concerns</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="reason_trust">
+                        <label for="reason_trust">Trust / Credibility Issues</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="reason_competitor">
+                        <label for="reason_competitor">Competitor Preference</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="reason_other">
+                        <label for="reason_other">Other (specify below)</label>
+                    </div>
+                </div>
+                <div class="field-group" style="margin-top: 15px;">
+                    <div class="field-label">📝 Detailed Explanation:</div>
+                    <textarea id="reasonDetail" placeholder="Explain in detail why the sale didn't close..."></textarea>
+                </div>
+            </div>
+
+            <!-- Customer Pain Points (from Survey) -->
+            <div class="section">
+                <div class="section-title">
+                    <span class="section-icon">💡</span>
+                    Customer Pain Points & Needs
+                </div>
+                <div class="field-group">
+                    <div class="field-label">🎯 What brought them to Bath Planet?</div>
+                    <div class="field-value" id="painPoint1">—</div>
+                </div>
+                <div class="field-group">
+                    <div class="field-label">⚡ Main Problem / Concern:</div>
+                    <div class="field-value" id="painPoint2">—</div>
+                </div>
+                <div class="field-group">
+                    <div class="field-label">🛁 Ideal Bathroom Vision:</div>
+                    <div class="field-value" id="painPoint3">—</div>
+                </div>
+                <div class="field-group">
+                    <div class="field-label">📅 Timeline:</div>
+                    <div class="field-value" id="timeline">—</div>
+                </div>
+                <div class="field-group">
+                    <div class="field-label">💰 Budget Range:</div>
+                    <div class="field-value" id="budget">—</div>
+                </div>
+            </div>
+
+            <!-- Site Photos -->
+            <div class="section">
+                <div class="section-title">
+                    <span class="section-icon">📷</span>
+                    Site Photos (In Order)
+                </div>
+
+                <!-- Photo Source Options -->
+                <div id="photoSourceOptions" style="display: flex; gap: 12px; margin-bottom: 20px; flex-wrap: wrap;">
+                    <button onclick="importFromChecklist()" class="btn"
+                        style="flex: 1; min-width: 200px; background: linear-gradient(135deg, #3498db 0%, #2ecc71 100%); color: white; padding: 15px; border: none; border-radius: 10px; font-weight: 600; cursor: pointer; font-size: 14px;">
+                        📥 Import from Photo Checklist
+                    </button>
+                    <button onclick="takeNewPhoto()" class="btn"
+                        style="flex: 1; min-width: 200px; background: rgba(52, 152, 219, 0.1); color: #3498db; padding: 15px; border: 2px solid #3498db; border-radius: 10px; font-weight: 600; cursor: pointer; font-size: 14px;">
+                        📷 Take New Photo
+                    </button>
+                </div>
+
+                <div id="photoGrid" class="photo-grid">
+                    <!-- Photos will be populated here -->
+                </div>
+            </div>
+
+            <!-- Follow-up Actions -->
+            <div class="section success">
+                <div class="section-title">
+                    <span class="section-icon">✅</span>
+                    Recommended Follow-up Actions
+                </div>
+                <div class="checkbox-group">
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="followup_call">
+                        <label for="followup_call">Schedule Follow-up Call</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="followup_email">
+                        <label for="followup_email">Send Follow-up Email</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="followup_pricing">
+                        <label for="followup_pricing">Send Revised Pricing</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="followup_samples">
+                        <label for="followup_samples">Send Product Samples</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="followup_manager">
+                        <label for="followup_manager">Manager T.O.</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="followup_testimonials">
+                        <label for="followup_testimonials">Share Testimonials</label>
+                    </div>
+                </div>
+                <div class="field-group" style="margin-top: 15px;">
+                    <div class="field-label">📋 Follow-up Notes & Strategy:</div>
+                    <textarea id="followupNotes" placeholder="What's your plan to win this customer back?"></textarea>
+                </div>
+            </div>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="action-buttons">
+            <button class="btn btn-save" onclick="saveTIPSheet()">
+                💾 Save TIP Sheet
+            </button>
+            <button class="btn btn-export" onclick="exportTIPSheet()">
+                📄 Export PDF
+            </button>
+            <button class="btn btn-back" onclick="goBack()">
+                ← Back to Tools
+            </button>
+        </div>
+    </div>
+
+    <script src="assets/js/ezapp-data.js"></script>
+    <script src="assets/js/universal-cache.js"></script>
+    <script>
+        // Setup auto-cache for this page
+        UniversalCache.setupAutoSave('tip-sheet');
+
+        // Load all customer data on page load
+        window.onload = function () {
+            loadCustomerData();
+            loadSurveyData();
+            loadPhotos();
+
+            // Load cached form data
+            UniversalCache.loadPageData('tip-sheet');
+        };
+
+        function loadCustomerData() {
+            const customerName = localStorage.getItem('currentCustomer') || 'Not Available';
+            const startTime = localStorage.getItem('customerStartTime');
+
+            document.getElementById('customerName').textContent = customerName;
+            document.getElementById('consultantName').textContent = 'Current User'; // You can add login later
+
+            if (startTime) {
+                const date = new Date(startTime);
+                document.getElementById('appointmentDate').textContent = date.toLocaleDateString() + ' ' + date.toLocaleTimeString();
+            }
+        }
+
+        function loadSurveyData() {
+            // Try to get from EZAPP structure first
+            const ezappData = EZAPPData.getCurrentData();
+
+            if (ezappData && ezappData.survey) {
+                const survey = ezappData.survey;
+                document.getElementById('customerAddress').textContent = survey.customerAddress || '—';
+                document.getElementById('painPoint1').textContent = survey.q1 || '—';
+                document.getElementById('painPoint2').textContent = survey.q2 || '—';
+                document.getElementById('painPoint3').textContent = survey.q4 || '—';
+                document.getElementById('timeline').textContent = survey.q8 || '—';
+                document.getElementById('budget').textContent = survey.q9 || '—';
+            } else {
+                // Fallback to old localStorage keys
+                const address = localStorage.getItem('customerAddress') || '—';
+                document.getElementById('customerAddress').textContent = address;
+            }
+        }
+
+        function loadPhotos() {
+            const ezappData = EZAPPData.getCurrentData();
+            const photoGrid = document.getElementById('photoGrid');
+
+            let photos = [];
+
+            if (ezappData && ezappData.photos) {
+                photos = ezappData.photos;
+            } else {
+                // Fallback to old localStorage
+                const savedPhotos = localStorage.getItem('ezbath_photos');
+                if (savedPhotos) {
+                    const photoData = JSON.parse(savedPhotos);
+                    photos = Object.values(photoData).filter(p => p.confirmed);
+                }
+            }
+
+            if (photos.length === 0) {
+                photoGrid.innerHTML = '<p style="color: #999; text-align: center; padding: 20px;">No photos available</p>';
+                return;
+            }
+
+            // Sort photos by ID
+            photos.sort((a, b) => {
+                const idA = parseInt(a.id || 0);
+                const idB = parseInt(b.id || 0);
+                return idA - idB;
+            });
+
+            photos.forEach(photo => {
+                const photoItem = document.createElement('div');
+                photoItem.className = 'photo-item';
+
+                const img = document.createElement('img');
+                img.src = photo.data;
+
+                const label = document.createElement('div');
+                label.className = 'photo-label';
+                label.textContent = photo.description || `Photo ${photo.id}`;
+
+                photoItem.appendChild(img);
+                photoItem.appendChild(label);
+                photoGrid.appendChild(photoItem);
+            });
+        }
+
+        function saveTIPSheet() {
+            // Check if overwriting existing save
+            const customerName = localStorage.getItem('currentCustomer').replace(/[^a-zA-Z0-9]/g, '_');
+            const existingKeys = Object.keys(localStorage).filter(key => key.startsWith(`tip_sheet_${customerName}_`));
+
+            if (existingKeys.length > 0) {
+                const confirmed = confirm('⚠️ A TIP Sheet is already saved for this customer.\n\nDo you want to overwrite the previous save?');
+                if (!confirmed) {
+                    return;
+                }
+                // Clear old saves
+                existingKeys.forEach(key => localStorage.removeItem(key));
+            }
+
+            const tipData = {
+                customerName: document.getElementById('customerName').textContent,
+                customerAddress: document.getElementById('customerAddress').textContent,
+                appointmentDate: document.getElementById('appointmentDate').textContent,
+                consultant: document.getElementById('consultantName').textContent,
+                reasons: {
+                    price: document.getElementById('reason_price').checked,
+                    timing: document.getElementById('reason_timing').checked,
+                    shopping: document.getElementById('reason_shopping').checked,
+                    decision: document.getElementById('reason_decision').checked,
+                    design: document.getElementById('reason_design').checked,
+                    trust: document.getElementById('reason_trust').checked,
+                    competitor: document.getElementById('reason_competitor').checked,
+                    other: document.getElementById('reason_other').checked,
+                    detail: document.getElementById('reasonDetail').value
+                },
+                followup: {
+                    call: document.getElementById('followup_call').checked,
+                    email: document.getElementById('followup_email').checked,
+                    pricing: document.getElementById('followup_pricing').checked,
+                    samples: document.getElementById('followup_samples').checked,
+                    manager: document.getElementById('followup_manager').checked,
+                    testimonials: document.getElementById('followup_testimonials').checked,
+                    notes: document.getElementById('followupNotes').value
+                },
+                timestamp: new Date().toISOString()
+            };
+
+            // Save to localStorage
+            const key = `tip_sheet_${customerName}_${Date.now()}`;
+            localStorage.setItem(key, JSON.stringify(tipData));
+
+            // Clear the cache since we've saved
+            UniversalCache.clearPageCache('tip-sheet');
+
+            // Show confirmation
+            UniversalCache.showSaveConfirmation('✓ TIP Sheet saved successfully!');
+        }
+
+        function exportTIPSheet() {
+            window.print();
+        }
+
+        function goBack() {
+            window.location.href = 'tools.html';
+        }
+
+        // Import photos from photo-checklist localStorage
+        function importFromChecklist() {
+            const savedPhotos = localStorage.getItem('ezbath_photos');
+            const photoGrid = document.getElementById('photoGrid');
+
+            if (!savedPhotos) {
+                alert('📷 No photos found in Photo Checklist.\n\nPlease complete the Photo Checklist first, or take new photos directly.');
+                return;
+            }
+
+            try {
+                const photoData = JSON.parse(savedPhotos);
+                const photos = Object.values(photoData).filter(p => p.confirmed && p.data);
+
+                if (photos.length === 0) {
+                    alert('📷 No confirmed photos found.\n\nPlease complete the Photo Checklist and confirm your photos first.');
+                    return;
+                }
+
+                // Clear current grid
+                photoGrid.innerHTML = '';
+
+                // Sort photos by ID
+                photos.sort((a, b) => {
+                    const idA = parseInt(a.id || 0);
+                    const idB = parseInt(b.id || 0);
+                    return idA - idB;
+                });
+
+                // Add each photo
+                photos.forEach(photo => {
+                    addPhotoToGrid(photo.data, photo.description || `Photo ${photo.id}`);
+                });
+
+                // Show success message
+                if (typeof showToast === 'function') {
+                    showToast(`✅ Imported ${photos.length} photos from checklist!`, 'success');
+                } else {
+                    alert(`✅ Imported ${photos.length} photos from checklist!`);
+                }
+
+            } catch (e) {
+                console.error('Error importing photos:', e);
+                alert('❌ Error importing photos. Please try again.');
+            }
+        }
+
+        // Take a new photo directly
+        function takeNewPhoto() {
+            // Create file input for camera
+            let input = document.getElementById('tipPhotoInput');
+            if (!input) {
+                input = document.createElement('input');
+                input.type = 'file';
+                input.id = 'tipPhotoInput';
+                input.accept = 'image/*';
+                input.capture = 'environment';
+                input.style.display = 'none';
+                document.body.appendChild(input);
+            }
+
+            input.onchange = function (e) {
+                const file = e.target.files[0];
+                if (!file) return;
+
+                const reader = new FileReader();
+                reader.onload = function (event) {
+                    const photoCount = document.querySelectorAll('#photoGrid .photo-item').length + 1;
+                    addPhotoToGrid(event.target.result, `TIP Photo ${photoCount}`);
+
+                    if (typeof showToast === 'function') {
+                        showToast('📷 Photo added!', 'success');
+                    }
+                };
+                reader.readAsDataURL(file);
+            };
+
+            input.value = '';
+            input.click();
+        }
+
+        // Helper function to add photo to grid
+        function addPhotoToGrid(imageData, label) {
+            const photoGrid = document.getElementById('photoGrid');
+
+            // Remove "no photos" message if present
+            const noPhotosMsg = photoGrid.querySelector('p');
+            if (noPhotosMsg) {
+                noPhotosMsg.remove();
+            }
+
+            const photoItem = document.createElement('div');
+            photoItem.className = 'photo-item';
+            photoItem.style.position = 'relative';
+
+            const img = document.createElement('img');
+            img.src = imageData;
+
+            const labelDiv = document.createElement('div');
+            labelDiv.className = 'photo-label';
+            labelDiv.textContent = label;
+
+            // Add delete button
+            const deleteBtn = document.createElement('button');
+            deleteBtn.innerHTML = '✕';
+            deleteBtn.style.cssText = 'position: absolute; top: 5px; right: 5px; background: #e74c3c; color: white; border: none; border-radius: 50%; width: 24px; height: 24px; cursor: pointer; font-size: 12px; font-weight: bold;';
+            deleteBtn.onclick = function (e) {
+                e.stopPropagation();
+                photoItem.remove();
+            };
+
+            photoItem.appendChild(img);
+            photoItem.appendChild(labelDiv);
+            photoItem.appendChild(deleteBtn);
+            photoGrid.appendChild(photoItem);
+        }
+    </script>
+
+    <style media="print">
+        body {
+            background: white;
+            padding: 0;
+        }
+
+        .container {
+            box-shadow: none;
+            max-width: 100%;
+        }
+
+        .action-buttons {
+            display: none;
+        }
+
+        textarea {
+            border: 1px solid #333;
+            background: white;
+            min-height: 60px;
+        }
+    </style>
+</body>
+
+</html>

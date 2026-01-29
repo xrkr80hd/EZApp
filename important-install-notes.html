@@ -1,0 +1,461 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Important Install Notes - EZ Baths</title>
+    <link rel="stylesheet" href="assets/css/styles.css">
+    <script src="assets/js/html2canvas.min.js"></script>
+    <style>
+        .install-notes-form {
+            max-width: 900px;
+            margin: 20px auto;
+            padding: 20px;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .form-header {
+            text-align: center;
+            border-bottom: 2px solid #333;
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+        }
+
+        .form-header h1 {
+            margin: 0;
+            font-size: 24px;
+            color: #333;
+        }
+
+        .form-header p {
+            margin: 5px 0;
+            color: #666;
+        }
+
+        .form-row {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+        }
+
+        .form-group {
+            flex: 1;
+            min-width: 200px;
+        }
+
+        .form-group label {
+            display: block;
+            font-weight: bold;
+            margin-bottom: 5px;
+            color: #333;
+        }
+
+        .form-group input[type="text"],
+        .form-group input[type="date"] {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+
+        .section-title {
+            font-size: 16px;
+            font-weight: bold;
+            margin: 25px 0 10px 0;
+            padding: 8px;
+            background: #f0f0f0;
+            border-left: 4px solid #007bff;
+        }
+
+        .notes-section {
+            margin: 20px 0;
+        }
+
+        .notes-section label {
+            display: block;
+            font-weight: bold;
+            margin-bottom: 8px;
+            color: #333;
+            font-size: 15px;
+        }
+
+        .notes-section textarea {
+            width: 100%;
+            min-height: 150px;
+            padding: 12px;
+            border: 2px solid #ccc;
+            border-radius: 4px;
+            font-family: inherit;
+            font-size: 14px;
+            resize: vertical;
+        }
+
+        .notes-section textarea:focus {
+            outline: none;
+            border-color: #007bff;
+        }
+
+        .subsection {
+            margin: 20px 0;
+            padding: 15px;
+            background: #f9f9f9;
+            border-radius: 4px;
+            border: 1px solid #e0e0e0;
+        }
+
+        .subsection h3 {
+            margin: 0 0 10px 0;
+            font-size: 14px;
+            color: #555;
+        }
+
+        .checkbox-group {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+            margin: 10px 0;
+        }
+
+        .checkbox-item {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .checkbox-item input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+        }
+
+        .checkbox-item label {
+            font-weight: normal;
+            margin: 0;
+        }
+
+        .additional-info-section {
+            margin: 20px 0;
+            padding: 15px;
+            background: #fffbf0;
+            border-left: 4px solid #ffc107;
+            border-radius: 4px;
+        }
+
+        .additional-info-section label {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: bold;
+            color: #333;
+        }
+
+        .additional-info-section input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+        }
+
+        .signature-section {
+            display: flex;
+            gap: 20px;
+            margin: 30px 0 20px 0;
+            flex-wrap: wrap;
+        }
+
+        .signature-field {
+            flex: 1;
+            min-width: 200px;
+        }
+
+        .signature-field label {
+            display: block;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .signature-field input {
+            width: 100%;
+            padding: 8px;
+            border: none;
+            border-bottom: 2px solid #333;
+            font-size: 14px;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            margin-top: 30px;
+        }
+
+        .btn {
+            padding: 12px 30px;
+            border: none;
+            border-radius: 4px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        .btn-primary {
+            background: #007bff;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #0056b3;
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background: #545b62;
+        }
+
+        .helper-text {
+            font-size: 13px;
+            color: #666;
+            margin-top: 5px;
+            font-style: italic;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="install-notes-form">
+        <div class="form-header">
+            <h1>IMPORTANT INSTALL NOTES</h1>
+            <p>Customer Expectations & Installation Instructions</p>
+            <p style="margin: 5px 0; color: #666;">EZ Baths - Bath Planet</p>
+        </div>
+
+        <!-- Customer Information -->
+        <div class="form-row">
+            <div class="form-group">
+                <label for="customerName">Customer Name:</label>
+                <input type="text" id="customerName" required>
+            </div>
+            <div class="form-group">
+                <label for="consultant">Consultant:</label>
+                <input type="text" id="consultant">
+            </div>
+        </div>
+
+        <div class="form-row">
+            <div class="form-group">
+                <label for="jobNumber">Job Number:</label>
+                <input type="text" id="jobNumber">
+            </div>
+            <div class="form-group">
+                <label for="notesDate">Date:</label>
+                <input type="date" id="notesDate">
+            </div>
+        </div>
+
+        <!-- Notes to Office -->
+        <div class="section-title">Notes or Instructions to the Office</div>
+        <div class="notes-section">
+            <label for="officeNotes">Type freely - scheduling, special requests, customer concerns, etc.</label>
+            <textarea id="officeNotes"
+                placeholder="Enter any notes, instructions, or special requests for the office team..."></textarea>
+            <p class="helper-text">Include information about scheduling preferences, customer availability, special
+                circumstances, or anything the office needs to know.</p>
+        </div>
+
+        <!-- Notes to Installers/Plumbers -->
+        <div class="section-title">Notes or Instructions to Installers/Plumbers</div>
+        <div class="notes-section">
+
+            <!-- Slow Drain Subsection -->
+            <div class="subsection">
+                <h3>Slow Drain Information:</h3>
+                <div class="checkbox-group">
+                    <label class="checkbox-item">
+                        <input type="checkbox" id="slowDrainYes">
+                        <span>Yes - Slow drain present</span>
+                    </label>
+                    <label class="checkbox-item">
+                        <input type="checkbox" id="slowDrainNo">
+                        <span>No - Drain is fine</span>
+                    </label>
+                </div>
+                <textarea id="slowDrainNotes" placeholder="If yes, provide details about the slow drain issue..."
+                    style="margin-top: 10px; min-height: 80px;"></textarea>
+            </div>
+
+            <!-- Customer Wants to Keep Subsection -->
+            <div class="subsection">
+                <h3>Customer Wants to Keep:</h3>
+                <textarea id="customerKeepNotes"
+                    placeholder="List items the customer wants to keep (fixtures, tiles, accessories, old tub, etc.)..."></textarea>
+            </div>
+
+            <!-- General Installer Notes -->
+            <label for="installerNotes">General Installation Notes:</label>
+            <textarea id="installerNotes"
+                placeholder="Enter any special instructions, concerns, or important details for the installation team..."></textarea>
+            <p class="helper-text">Include details about access, existing conditions, special care items, customer
+                preferences, or any installation challenges.</p>
+        </div>
+
+        <!-- Additional Information on Back -->
+        <div class="additional-info-section">
+            <label>
+                <input type="checkbox" id="additionalInfoBack">
+                <span>Additional information on the back (or attached)</span>
+            </label>
+        </div>
+
+        <!-- Signature Section -->
+        <div class="signature-section">
+            <div class="signature-field">
+                <label for="installerInitials">Installer Initials:</label>
+                <input type="text" id="installerInitials" maxlength="5">
+            </div>
+            <div class="signature-field">
+                <label for="signatureDate">Date:</label>
+                <input type="date" id="signatureDate">
+            </div>
+        </div>
+
+        <!-- Buttons -->
+        <div class="button-group">
+            <button class="btn btn-secondary" onclick="populateForm()">Auto-Fill from EZAPP Data</button>
+            <button class="btn btn-primary" onclick="saveForm()">Save Install Notes</button>
+            <button class="btn btn-info" onclick="saveAsImage()">📷 Save to Phone</button>
+            <button class="btn btn-secondary" onclick="printForm()">🖨️ Print</button>
+            <button class="btn btn-secondary" onclick="window.location.href='post-sale-documents.html'">← Back</button>
+        </div>
+    </div>
+
+    <script src="assets/js/ezapp-data.js"></script>
+    <script>
+        // Auto-populate form on load
+        window.addEventListener('DOMContentLoaded', () => {
+            populateForm();
+        });
+
+        function populateForm() {
+            const ezappData = EZAPP.getCurrentData();
+            if (!ezappData) {
+                console.log('No EZAPP data found');
+                return;
+            }
+
+            // Customer Information
+            if (ezappData.customer) {
+                document.getElementById('customerName').value =
+                    `${ezappData.customer.firstName || ''} ${ezappData.customer.lastName || ''}`.trim();
+            }
+
+            // Set today's date
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('notesDate').value = today;
+            document.getElementById('signatureDate').value = today;
+
+            // Pre-populate from survey if relevant data exists
+            if (ezappData.survey) {
+                // Check if there are any concerns mentioned in survey
+                let officeNotesText = '';
+                let installerNotesText = '';
+
+                // Q15 - Additional comments could go to office/installer notes
+                if (ezappData.survey.Q15) {
+                    officeNotesText += `Customer Comments: ${ezappData.survey.Q15}\n\n`;
+                    installerNotesText += `Customer Comments: ${ezappData.survey.Q15}\n\n`;
+                }
+
+                // Q11 - Current bathroom problems
+                if (ezappData.survey.Q11) {
+                    installerNotesText += `Current Issues: ${ezappData.survey.Q11}\n\n`;
+                }
+
+                // Q6 - Concerns
+                if (ezappData.survey.Q6 && ezappData.survey.Q6.length > 0) {
+                    installerNotesText += `Customer Concerns: ${ezappData.survey.Q6.join(', ')}\n\n`;
+                }
+
+                document.getElementById('officeNotes').value = officeNotesText;
+                document.getElementById('installerNotes').value = installerNotesText;
+            }
+
+            console.log('Form populated from EZAPP data');
+        }
+
+        function saveForm() {
+            // Collect all form data
+            const formData = {
+                customerName: document.getElementById('customerName').value,
+                consultant: document.getElementById('consultant').value,
+                jobNumber: document.getElementById('jobNumber').value,
+                notesDate: document.getElementById('notesDate').value,
+                officeNotes: document.getElementById('officeNotes').value,
+                installerNotes: {
+                    slowDrain: {
+                        yes: document.getElementById('slowDrainYes').checked,
+                        no: document.getElementById('slowDrainNo').checked,
+                        notes: document.getElementById('slowDrainNotes').value
+                    },
+                    customerKeep: document.getElementById('customerKeepNotes').value,
+                    generalNotes: document.getElementById('installerNotes').value
+                },
+                additionalInfoBack: document.getElementById('additionalInfoBack').checked,
+                installerInitials: document.getElementById('installerInitials').value,
+                signatureDate: document.getElementById('signatureDate').value,
+                timestamp: new Date().toISOString()
+            };
+
+            // Save to EZAPP structure
+            const ezappData = EZAPP.getCurrentData() || {};
+            if (!ezappData.documents) {
+                ezappData.documents = {};
+            }
+            ezappData.documents.importantInstallNotes = formData;
+
+            localStorage.setItem('EZAPP_current', JSON.stringify(ezappData));
+
+            alert('Important Install Notes saved successfully!');
+            console.log('Saved install notes:', formData);
+        }
+
+        function saveAsImage() {
+            const formElement = document.querySelector('.install-notes-form');
+            const buttons = document.querySelector('.button-group');
+
+            // Hide buttons during capture
+            buttons.style.display = 'none';
+
+            html2canvas(formElement, {
+                backgroundColor: '#ffffff',
+                scale: 2,
+                useCORS: true,
+                logging: false
+            }).then(canvas => {
+                buttons.style.display = 'flex';
+
+                const link = document.createElement('a');
+                const customerName = document.getElementById('customerName').value || 'Install-Notes';
+                const date = new Date().toISOString().split('T')[0];
+                link.download = `${customerName.replace(/\s+/g, '-')}_Install-Notes_${date}.png`;
+                link.href = canvas.toDataURL('image/png');
+                link.click();
+            }).catch(err => {
+                buttons.style.display = 'flex';
+                console.error('Save failed:', err);
+                alert('Save failed. Please try again.');
+            });
+        }
+
+        function printForm() {
+            window.print();
+        }
+    </script>
+</body>
+
+</html>

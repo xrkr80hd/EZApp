@@ -1,0 +1,827 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Job Order Checklist - EZ Baths</title>
+    <link rel="stylesheet" href="assets/css/responsive-fixes.css">
+    <script src="assets/js/toast-notifications.js" defer></script>
+    <script src="assets/js/loading-spinner.js" defer></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: #f5f5f5;
+            padding: 20px;
+            font-family: Arial, sans-serif;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: white;
+            padding: 20px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .form-page {
+            background: white;
+            border: 2px solid #000;
+            padding: 20px;
+            margin-bottom: 30px;
+            page-break-after: always;
+        }
+
+        .form-header {
+            text-align: center;
+            border-bottom: 3px solid #000;
+            padding-bottom: 10px;
+            margin-bottom: 15px;
+        }
+
+        .form-header h1 {
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .form-header .subtitle {
+            font-size: 12px;
+            color: #333;
+        }
+
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+            margin-bottom: 15px;
+            border: 1px solid #000;
+            padding: 10px;
+            background: #f9f9f9;
+        }
+
+        .info-field {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .info-field label {
+            font-size: 10px;
+            font-weight: bold;
+            margin-bottom: 2px;
+            text-transform: uppercase;
+        }
+
+        .info-field input {
+            border: none;
+            border-bottom: 1px solid #000;
+            padding: 4px;
+            font-size: 12px;
+            background: transparent;
+        }
+
+        .status-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 15px;
+            font-size: 11px;
+        }
+
+        .status-table th,
+        .status-table td {
+            border: 1px solid #000;
+            padding: 6px;
+            text-align: center;
+        }
+
+        .status-table th {
+            background: #ddd;
+            font-weight: bold;
+        }
+
+        .status-table input {
+            width: 100%;
+            border: none;
+            text-align: center;
+            font-size: 10px;
+            background: transparent;
+        }
+
+        .section-title {
+            background: #000;
+            color: white;
+            padding: 6px 10px;
+            font-size: 14px;
+            font-weight: bold;
+            margin: 15px 0 10px 0;
+        }
+
+        .checkbox-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 8px;
+            margin-bottom: 15px;
+        }
+
+        .checkbox-item {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 12px;
+            color: #333;
+        }
+
+        .checkbox-item input[type="checkbox"] {
+            width: 16px;
+            height: 16px;
+        }
+
+        .field-row {
+            display: grid;
+            grid-template-columns: 150px 1fr;
+            gap: 10px;
+            margin-bottom: 8px;
+            align-items: center;
+        }
+
+        .field-row label {
+            font-size: 11px;
+            font-weight: bold;
+        }
+
+        .field-row input,
+        .field-row select {
+            border: none;
+            border-bottom: 1px solid #000;
+            padding: 4px;
+            font-size: 11px;
+            background: transparent;
+        }
+
+        .accessories-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 15px 0;
+            font-size: 11px;
+        }
+
+        .accessories-table th,
+        .accessories-table td {
+            border: 1px solid #000;
+            padding: 6px;
+        }
+
+        .accessories-table th {
+            background: #ddd;
+            font-weight: bold;
+            text-align: left;
+        }
+
+        .accessories-table input {
+            width: 100%;
+            border: none;
+            font-size: 10px;
+            background: transparent;
+        }
+
+        .plumbing-section {
+            border: 2px solid #000;
+            padding: 15px;
+            margin: 15px 0;
+        }
+
+        .radio-group {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            margin: 8px 0;
+        }
+
+        .radio-item {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 11px;
+            color: #333;
+        }
+
+        .radio-item input[type="radio"] {
+            width: 14px;
+            height: 14px;
+        }
+
+        textarea {
+            width: 100%;
+            border: 1px solid #000;
+            padding: 8px;
+            font-size: 11px;
+            font-family: Arial, sans-serif;
+            resize: vertical;
+            min-height: 60px;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 2px solid #ddd;
+        }
+
+        .btn {
+            padding: 10px 25px;
+            border: none;
+            border-radius: 4px;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #3498db 0%, #2ecc71 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(52, 152, 219, 0.4);
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background: #545b62;
+        }
+
+        /* Mobile Responsive */
+        @media (max-width: 768px) {
+            body {
+                padding: 10px;
+            }
+
+            .container {
+                padding: 10px;
+            }
+
+            .form-page {
+                padding: 10px;
+            }
+
+            .form-header h1 {
+                font-size: 18px;
+            }
+
+            .info-grid {
+                grid-template-columns: 1fr 1fr;
+                gap: 8px;
+            }
+
+            .status-table {
+                font-size: 9px;
+            }
+
+            .status-table th,
+            .status-table td {
+                padding: 4px 2px;
+            }
+
+            .section-title {
+                font-size: 12px;
+            }
+
+            .checkbox-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .button-group {
+                flex-direction: column;
+            }
+
+            .btn {
+                width: 100%;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .info-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .info-field label {
+                font-size: 9px;
+            }
+
+            .info-field input {
+                font-size: 11px;
+            }
+
+            .status-table {
+                font-size: 8px;
+            }
+        }
+
+        @media print {
+            body {
+                background: white;
+                padding: 0;
+            }
+
+            .button-group {
+                display: none;
+            }
+
+            .form-page {
+                page-break-after: always;
+                border: none;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <a href="tools.html" class="back-button" style="margin: 20px;">← Back to Tools</a>
+    <div class="container">
+        <!-- PAGE 1 -->
+        <div class="form-page">
+            <div class="form-header">
+                <h1>JOB ORDER CHECKLIST</h1>
+                <div class="subtitle">Bath Planet / EZ Baths - Page 1 of 2</div>
+            </div>
+
+            <!-- Customer Info -->
+            <div class="info-grid">
+                <div class="info-field">
+                    <label>Customer Name:</label>
+                    <input type="text" id="customerName">
+                </div>
+                <div class="info-field">
+                    <label>Job Number:</label>
+                    <input type="text" id="jobNumber">
+                </div>
+                <div class="info-field">
+                    <label>Date:</label>
+                    <input type="date" id="jocDate">
+                </div>
+                <div class="info-field">
+                    <label>Sales Rep:</label>
+                    <input type="text" id="salesRep">
+                </div>
+            </div>
+
+            <!-- Status Table -->
+            <table class="status-table">
+                <thead>
+                    <tr>
+                        <th>STATUS</th>
+                        <th>ORDERED</th>
+                        <th>RECEIVED</th>
+                        <th>STAGED</th>
+                        <th>INSTALLED</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Initials/Date</strong></td>
+                        <td><input type="text" id="orderedInit"></td>
+                        <td><input type="text" id="receivedInit"></td>
+                        <td><input type="text" id="stagedInit"></td>
+                        <td><input type="text" id="installedInit"></td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <!-- Product Type -->
+            <div class="section-title">PRODUCT TYPE</div>
+            <div class="checkbox-grid">
+                <div class="checkbox-item">
+                    <input type="checkbox" id="prodTub">
+                    <label for="prodTub">TUB</label>
+                </div>
+                <div class="checkbox-item">
+                    <input type="checkbox" id="prodShower">
+                    <label for="prodShower">SHOWER BASE</label>
+                </div>
+                <div class="checkbox-item">
+                    <input type="checkbox" id="prodWalkIn">
+                    <label for="prodWalkIn">WALK-IN TUB</label>
+                </div>
+                <div class="checkbox-item">
+                    <input type="checkbox" id="prodWallsOnly">
+                    <label for="prodWallsOnly">WALLS ONLY</label>
+                </div>
+            </div>
+
+            <!-- Measurements -->
+            <div class="section-title">MEASUREMENTS</div>
+            <div class="field-row">
+                <label>L × W × H (inches):</label>
+                <input type="text" id="dimensions" placeholder="60 × 32 × 58">
+            </div>
+            <div class="field-row">
+                <label>SIZE:</label>
+                <input type="text" id="size" placeholder="Standard / Custom">
+            </div>
+            <div class="field-row">
+                <label>COLOR:</label>
+                <input type="text" id="productColor">
+            </div>
+            <div class="field-row">
+                <label>DRAIN (L/R):</label>
+                <input type="text" id="drain">
+            </div>
+            <div class="field-row">
+                <label>FINISH:</label>
+                <input type="text" id="finish">
+            </div>
+
+            <!-- Walling System -->
+            <div class="section-title">WALLING SYSTEM</div>
+            <div class="checkbox-grid">
+                <div class="checkbox-item">
+                    <input type="checkbox" id="wall3Panel">
+                    <label for="wall3Panel">3-PANEL</label>
+                </div>
+                <div class="checkbox-item">
+                    <input type="checkbox" id="wall5Panel">
+                    <label for="wall5Panel">5-PANEL</label>
+                </div>
+                <div class="checkbox-item">
+                    <input type="checkbox" id="wallOnyx">
+                    <label for="wallOnyx">ONYX</label>
+                </div>
+                <div class="checkbox-item">
+                    <input type="checkbox" id="wallTile">
+                    <label for="wallTile">TILE LOOK</label>
+                </div>
+            </div>
+            <div class="field-row">
+                <label>WALL COLOR:</label>
+                <input type="text" id="wallColor">
+            </div>
+            <div class="field-row">
+                <label>WALL FINISH:</label>
+                <input type="text" id="wallFinish">
+            </div>
+
+            <!-- Seating -->
+            <div class="section-title">SEATING</div>
+            <div class="checkbox-grid">
+                <div class="checkbox-item">
+                    <input type="checkbox" id="seatBuiltIn">
+                    <label for="seatBuiltIn">BUILT-IN</label>
+                </div>
+                <div class="checkbox-item">
+                    <input type="checkbox" id="seatCorner">
+                    <label for="seatCorner">CORNER SEAT</label>
+                </div>
+                <div class="checkbox-item">
+                    <input type="checkbox" id="seatFold">
+                    <label for="seatFold">FOLD-DOWN</label>
+                </div>
+                <div class="checkbox-item">
+                    <input type="checkbox" id="seatNone">
+                    <label for="seatNone">NONE</label>
+                </div>
+            </div>
+
+            <!-- Other Products -->
+            <div class="section-title">OTHER PRODUCTS / SPECIAL INSTRUCTIONS</div>
+            <textarea id="otherProducts" rows="4"></textarea>
+        </div>
+
+        <!-- PAGE 2 -->
+        <div class="form-page">
+            <div class="form-header">
+                <h1>JOB ORDER CHECKLIST</h1>
+                <div class="subtitle">Bath Planet / EZ Baths - Page 2 of 2</div>
+            </div>
+
+            <!-- Accessories -->
+            <div class="section-title">ACCESSORIES</div>
+            <table class="accessories-table">
+                <thead>
+                    <tr>
+                        <th style="width: 200px;">ITEM</th>
+                        <th style="width: 60px;">QTY</th>
+                        <th>COLOR / FINISH</th>
+                        <th>SIZE / NOTES</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Lestello Trim</td>
+                        <td><input type="number" id="trimQty"></td>
+                        <td><input type="text" id="trimColor"></td>
+                        <td><input type="text" id="trimNotes"></td>
+                    </tr>
+                    <tr>
+                        <td>Wall Cap</td>
+                        <td><input type="number" id="wallCapQty"></td>
+                        <td><input type="text" id="wallCapColor"></td>
+                        <td><input type="text" id="wallCapNotes"></td>
+                    </tr>
+                    <tr>
+                        <td>Corner Pieces</td>
+                        <td><input type="number" id="cornerQty"></td>
+                        <td><input type="text" id="cornerColor"></td>
+                        <td><input type="text" id="cornerNotes"></td>
+                    </tr>
+                    <tr>
+                        <td>Corner Shelf</td>
+                        <td><input type="number" id="shelfQty"></td>
+                        <td><input type="text" id="shelfColor"></td>
+                        <td><input type="text" id="shelfNotes"></td>
+                    </tr>
+                    <tr>
+                        <td>Soap Dish</td>
+                        <td><input type="number" id="soapQty"></td>
+                        <td><input type="text" id="soapColor"></td>
+                        <td><input type="text" id="soapNotes"></td>
+                    </tr>
+                    <tr>
+                        <td>Grab Bar #1</td>
+                        <td><input type="number" id="grab1Qty"></td>
+                        <td><input type="text" id="grab1Color"></td>
+                        <td><input type="text" id="grab1Size"></td>
+                    </tr>
+                    <tr>
+                        <td>Grab Bar #2</td>
+                        <td><input type="number" id="grab2Qty"></td>
+                        <td><input type="text" id="grab2Color"></td>
+                        <td><input type="text" id="grab2Size"></td>
+                    </tr>
+                    <tr>
+                        <td>Towel Bar</td>
+                        <td><input type="number" id="towelQty"></td>
+                        <td><input type="text" id="towelColor"></td>
+                        <td><input type="text" id="towelSize"></td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <!-- Enclosures -->
+            <div class="section-title">ENCLOSURES</div>
+            <div class="field-row">
+                <label>CURTAIN ROD:</label>
+                <input type="text" id="curtainRod" placeholder="Straight / Curved">
+            </div>
+            <div class="field-row">
+                <label>SHOWER DOOR:</label>
+                <input type="text" id="showerDoor" placeholder="Type / Size / Finish">
+            </div>
+
+            <!-- Plumbing -->
+            <div class="plumbing-section">
+                <div class="section-title" style="margin-top: 0;">PLUMBING</div>
+
+                <div class="field-row">
+                    <label>COLOR / FINISH:</label>
+                    <div class="radio-group">
+                        <div class="radio-item">
+                            <input type="radio" name="plumbingFinish" value="Chrome" id="finishChrome">
+                            <label for="finishChrome">Chrome</label>
+                        </div>
+                        <div class="radio-item">
+                            <input type="radio" name="plumbingFinish" value="Brushed" id="finishBrushed">
+                            <label for="finishBrushed">Brushed Nickel</label>
+                        </div>
+                        <div class="radio-item">
+                            <input type="radio" name="plumbingFinish" value="ORB" id="finishORB">
+                            <label for="finishORB">ORB</label>
+                        </div>
+                        <div class="radio-item">
+                            <input type="radio" name="plumbingFinish" value="Black" id="finishBlack">
+                            <label for="finishBlack">Black</label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="field-row">
+                    <label>VALVE BODY:</label>
+                    <input type="text" id="valveBody">
+                </div>
+
+                <div class="field-row">
+                    <label>VALVE TRIM KIT:</label>
+                    <input type="text" id="valveTrim">
+                </div>
+
+                <div class="field-row">
+                    <label>TUB SPOUT:</label>
+                    <input type="text" id="tubSpout">
+                </div>
+
+                <div class="field-row">
+                    <label>HANDHELD:</label>
+                    <input type="text" id="handheld">
+                </div>
+
+                <div class="field-row">
+                    <label>SHOWER HEAD:</label>
+                    <input type="text" id="showerHead">
+                </div>
+
+                <div class="field-row">
+                    <label>DIVERTER:</label>
+                    <input type="text" id="diverter">
+                </div>
+
+                <div class="field-row">
+                    <label>DRAIN:</label>
+                    <input type="text" id="drainType">
+                </div>
+
+                <div class="field-row">
+                    <label>OTHER PLUMBING:</label>
+                    <input type="text" id="otherPlumbing">
+                </div>
+            </div>
+
+            <!-- Notes -->
+            <div class="section-title">CONSULTANT NOTES</div>
+            <textarea id="consultantNotes" rows="5"></textarea>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="button-group">
+            <button class="btn btn-secondary" onclick="populateForm()">Auto-Fill from EZAPP</button>
+            <button class="btn btn-primary" onclick="saveForm()">Save JOC</button>
+            <button class="btn btn-secondary" onclick="window.print()">Print</button>
+            <button class="btn btn-secondary" onclick="window.location.href='post-sale-documents.html'">Back</button>
+        </div>
+    </div>
+
+    <script src="assets/js/ezapp-data.js"></script>
+    <script>
+        // Auto-populate on load
+        window.addEventListener('DOMContentLoaded', () => {
+            populateForm();
+        });
+
+        function populateForm() {
+            const ezappData = EZAPP.getCurrentData();
+            if (!ezappData) return;
+
+            // Customer info
+            if (ezappData.customer) {
+                document.getElementById('customerName').value =
+                    `${ezappData.customer.firstName || ''} ${ezappData.customer.lastName || ''}`.trim();
+            }
+
+            // Date
+            document.getElementById('jocDate').value = new Date().toISOString().split('T')[0];
+
+            // Survey data
+            if (ezappData.survey) {
+                const bathroomType = ezappData.survey.bathroomType;
+
+                // Check product type
+                if (bathroomType === 'tub-shower') {
+                    document.getElementById('prodTub').checked = true;
+                } else if (bathroomType === 'shower-stall') {
+                    document.getElementById('prodShower').checked = true;
+                } else if (bathroomType === 'walk-in-tub') {
+                    document.getElementById('prodWalkIn').checked = true;
+                }
+            }
+
+            // Measurements from photos
+            if (ezappData.photos && ezappData.photos.measurements) {
+                const m = ezappData.photos.measurements;
+                if (m.tubLength && m.tubWidth && m.backWallHeight) {
+                    document.getElementById('dimensions').value =
+                        `${m.tubLength} × ${m.tubWidth} × ${m.backWallHeight}`;
+                }
+            }
+
+            console.log('JOC Form populated from EZAPP');
+        }
+
+        function saveForm() {
+            const formData = {
+                // Page 1
+                customerName: document.getElementById('customerName').value,
+                jobNumber: document.getElementById('jobNumber').value,
+                jocDate: document.getElementById('jocDate').value,
+                salesRep: document.getElementById('salesRep').value,
+                status: {
+                    ordered: document.getElementById('orderedInit').value,
+                    received: document.getElementById('receivedInit').value,
+                    staged: document.getElementById('stagedInit').value,
+                    installed: document.getElementById('installedInit').value
+                },
+                productType: {
+                    tub: document.getElementById('prodTub').checked,
+                    shower: document.getElementById('prodShower').checked,
+                    walkIn: document.getElementById('prodWalkIn').checked,
+                    wallsOnly: document.getElementById('prodWallsOnly').checked
+                },
+                measurements: {
+                    dimensions: document.getElementById('dimensions').value,
+                    size: document.getElementById('size').value,
+                    color: document.getElementById('productColor').value,
+                    drain: document.getElementById('drain').value,
+                    finish: document.getElementById('finish').value
+                },
+                walling: {
+                    panel3: document.getElementById('wall3Panel').checked,
+                    panel5: document.getElementById('wall5Panel').checked,
+                    onyx: document.getElementById('wallOnyx').checked,
+                    tile: document.getElementById('wallTile').checked,
+                    color: document.getElementById('wallColor').value,
+                    finish: document.getElementById('wallFinish').value
+                },
+                seating: {
+                    builtIn: document.getElementById('seatBuiltIn').checked,
+                    corner: document.getElementById('seatCorner').checked,
+                    fold: document.getElementById('seatFold').checked,
+                    none: document.getElementById('seatNone').checked
+                },
+                otherProducts: document.getElementById('otherProducts').value,
+
+                // Page 2
+                accessories: {
+                    trim: {
+                        qty: document.getElementById('trimQty').value,
+                        color: document.getElementById('trimColor').value,
+                        notes: document.getElementById('trimNotes').value
+                    },
+                    wallCap: {
+                        qty: document.getElementById('wallCapQty').value,
+                        color: document.getElementById('wallCapColor').value,
+                        notes: document.getElementById('wallCapNotes').value
+                    },
+                    corner: {
+                        qty: document.getElementById('cornerQty').value,
+                        color: document.getElementById('cornerColor').value,
+                        notes: document.getElementById('cornerNotes').value
+                    },
+                    shelf: {
+                        qty: document.getElementById('shelfQty').value,
+                        color: document.getElementById('shelfColor').value,
+                        notes: document.getElementById('shelfNotes').value
+                    },
+                    soap: {
+                        qty: document.getElementById('soapQty').value,
+                        color: document.getElementById('soapColor').value,
+                        notes: document.getElementById('soapNotes').value
+                    },
+                    grabBar1: {
+                        qty: document.getElementById('grab1Qty').value,
+                        color: document.getElementById('grab1Color').value,
+                        size: document.getElementById('grab1Size').value
+                    },
+                    grabBar2: {
+                        qty: document.getElementById('grab2Qty').value,
+                        color: document.getElementById('grab2Color').value,
+                        size: document.getElementById('grab2Size').value
+                    },
+                    towel: {
+                        qty: document.getElementById('towelQty').value,
+                        color: document.getElementById('towelColor').value,
+                        size: document.getElementById('towelSize').value
+                    }
+                },
+                enclosures: {
+                    curtainRod: document.getElementById('curtainRod').value,
+                    showerDoor: document.getElementById('showerDoor').value
+                },
+                plumbing: {
+                    finish: document.querySelector('input[name="plumbingFinish"]:checked')?.value || '',
+                    valveBody: document.getElementById('valveBody').value,
+                    valveTrim: document.getElementById('valveTrim').value,
+                    tubSpout: document.getElementById('tubSpout').value,
+                    handheld: document.getElementById('handheld').value,
+                    showerHead: document.getElementById('showerHead').value,
+                    diverter: document.getElementById('diverter').value,
+                    drain: document.getElementById('drainType').value,
+                    other: document.getElementById('otherPlumbing').value
+                },
+                consultantNotes: document.getElementById('consultantNotes').value
+            };
+
+            // Save to EZAPP
+            const ezappData = EZAPP.getCurrentData();
+            if (ezappData) {
+                ezappData.documents = ezappData.documents || {};
+                ezappData.documents.jocComplete = formData;
+                EZAPP.saveData(ezappData);
+
+                alert('✅ Job Order Checklist saved successfully!');
+            } else {
+                alert('⚠️ No customer selected. Please select a customer first.');
+            }
+        }
+    </script>
+</body>
+
+</html>

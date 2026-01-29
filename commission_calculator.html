@@ -1,0 +1,903 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <title>EZ Baths — Commission Calculator</title>
+  <link rel="stylesheet" href="assets/css/responsive-fixes.css">
+  <script src="assets/js/toast-notifications.js" defer></script>
+  <script src="assets/js/loading-spinner.js" defer></script>
+  <style>
+    :root {
+      --ink: #ffffff;
+      --mut: #c7d2dd;
+      --bg: #1a1a2e;
+      --bg2: #16213e;
+      --panel: #0f3460;
+      --edge: #2a4a6f;
+      --accent: #3498db;
+      --accent2: #2ecc71;
+      --accent-gradient: linear-gradient(135deg, #3498db 0%, #2ecc71 100%);
+      --good: #2ecc71;
+      --warn: #ffd166;
+      --danger: #ff5a62;
+    }
+
+    * {
+      box-sizing: border-box
+    }
+
+    body {
+      margin: 0;
+      color: var(--ink);
+      font: 500 16px/1.35 -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;
+      background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+      min-height: 100vh;
+      padding: 22px;
+      position: relative;
+    }
+
+    body::before {
+      content: '';
+      position: fixed;
+      top: 10%;
+      left: 5%;
+      width: 300px;
+      height: 300px;
+      background: radial-gradient(circle, rgba(52, 152, 219, 0.15) 0%, transparent 70%);
+      border-radius: 50%;
+      animation: pulse 8s ease-in-out infinite;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    body::after {
+      content: '';
+      position: fixed;
+      bottom: 10%;
+      right: 5%;
+      width: 400px;
+      height: 400px;
+      background: radial-gradient(circle, rgba(46, 204, 113, 0.12) 0%, transparent 70%);
+      border-radius: 50%;
+      animation: pulse 10s ease-in-out infinite reverse;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    @keyframes pulse {
+
+      0%,
+      100% {
+        transform: scale(1);
+        opacity: 0.6;
+      }
+
+      50% {
+        transform: scale(1.1);
+        opacity: 0.8;
+      }
+    }
+
+    .hero {
+      max-width: 1100px;
+      margin: 0 auto 18px;
+      position: relative;
+      background: rgba(255, 255, 255, 0.05);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border: 1px solid rgba(52, 152, 219, 0.3);
+      border-radius: 16px;
+      padding: 18px 18px 18px 92px;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+      z-index: 1;
+    }
+
+    .hero .badge {
+      position: absolute;
+      left: 14px;
+      top: 14px;
+      width: 64px;
+      height: 64px;
+      border-radius: 14px;
+      background: url('assets/app_icons/commision_calc.svg') center/contain no-repeat;
+      box-shadow: 0 4px 12px rgba(52, 152, 219, 0.4);
+    }
+
+    .hero h1 {
+      margin: 0;
+      font-size: 26px;
+      color: #ffffff;
+      font-weight: 700;
+    }
+
+    .hero p {
+      margin: 6px 0 0;
+      color: var(--mut);
+      font-size: 13px
+    }
+
+    .cap {
+      margin-top: 6px;
+      font-size: 12px;
+      color: #3498db;
+      font-weight: 600;
+    }
+
+    .cap b {
+      color: #2ecc71
+    }
+
+    .grid {
+      max-width: 1100px;
+      margin: 0 auto;
+      display: grid;
+      gap: 16px;
+      position: relative;
+      z-index: 1;
+    }
+
+    @media(min-width:980px) {
+      .grid {
+        grid-template-columns: 1.1fr .9fr
+      }
+    }
+
+    .card {
+      background: rgba(255, 255, 255, 0.05);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border: 1px solid rgba(52, 152, 219, 0.2);
+      border-radius: 16px;
+      padding: 16px;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+    }
+
+    .card h2 {
+      margin: 0 0 10px;
+      font-size: 14px;
+      color: #3498db;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .row {
+      display: grid;
+      gap: 12px
+    }
+
+    .row.two {
+      grid-template-columns: 1fr 1fr
+    }
+
+    .row.three {
+      grid-template-columns: 1fr 1fr 1fr
+    }
+
+    label {
+      font-size: 12px;
+      color: #c7d2dd;
+      margin-bottom: 6px;
+      display: block;
+      font-weight: 600;
+    }
+
+    input,
+    select {
+      width: 100%;
+      padding: 10px 12px;
+      border-radius: 12px;
+      background: rgba(15, 52, 96, 0.5);
+      color: var(--ink);
+      border: 1px solid rgba(52, 152, 219, 0.3);
+      font-weight: 700;
+      transition: all 0.3s ease;
+    }
+
+    input:focus,
+    select:focus {
+      outline: none;
+      border-color: #3498db;
+      box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.2);
+    }
+
+    .btns {
+      display: flex;
+      gap: 10px;
+      justify-content: flex-end;
+      margin-top: 14px
+    }
+
+    .btn {
+      cursor: pointer;
+      padding: 10px 14px;
+      border-radius: 10px;
+      background: rgba(255, 255, 255, 0.08);
+      color: var(--ink);
+      border: 1px solid rgba(52, 152, 219, 0.3);
+      font-weight: 700;
+      transition: all 0.3s ease;
+    }
+
+    .btn:hover {
+      background: rgba(255, 255, 255, 0.12);
+      transform: translateY(-2px);
+    }
+
+    .btn.primary {
+      background: linear-gradient(135deg, #3498db, #2ecc71);
+      color: #ffffff;
+      border: none;
+      box-shadow: 0 4px 12px rgba(52, 152, 219, 0.3);
+    }
+
+    .btn.primary:hover {
+      box-shadow: 0 6px 20px rgba(52, 152, 219, 0.4);
+    }
+
+    .tiles {
+      display: grid;
+      gap: 12px
+    }
+
+    @media(min-width:640px) {
+      .tiles {
+        grid-template-columns: repeat(3, 1fr)
+      }
+    }
+
+    .tile {
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(52, 152, 219, 0.2);
+      border-radius: 14px;
+      padding: 12px;
+      transition: all 0.3s ease;
+    }
+
+    .tile:hover {
+      background: rgba(255, 255, 255, 0.06);
+      transform: translateY(-2px);
+    }
+
+    .tile h3 {
+      margin: 0 0 6px;
+      font-size: 12px;
+      color: #c7d2dd;
+      font-weight: 600;
+    }
+
+    .val {
+      font-weight: 900;
+      font-size: 22px;
+      color: #ffffff;
+    }
+
+    .mut {
+      color: #9fb7cf;
+      font-size: 12px
+    }
+
+    .ok {
+      color: var(--good)
+    }
+
+    .warn {
+      color: var(--warn)
+    }
+
+    .bad {
+      color: var(--danger)
+    }
+
+    .apwrap {
+      margin-top: 12px
+    }
+
+    .bar {
+      height: 18px;
+      border-radius: 10px;
+      background: rgba(15, 52, 96, 0.4);
+      border: 1px solid rgba(52, 152, 219, 0.2);
+      overflow: hidden;
+      display: flex
+    }
+
+    .seg {
+      height: 100%;
+      transition: width 0.5s ease;
+    }
+
+    .seg.base {
+      background: #3498db
+    }
+
+    .seg.cash {
+      background: #2ecc71
+    }
+
+    .seg.rehash {
+      background: #9b59b6
+    }
+
+    .legend {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-top: 6px
+    }
+
+    .dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 999px;
+      display: inline-block;
+      margin-right: 6px
+    }
+
+    .dot.base {
+      background: #3498db
+    }
+
+    .dot.cash {
+      background: #2ecc71
+    }
+
+    .dot.rehash {
+      background: #9b59b6
+    }
+
+    .total {
+      background: rgba(52, 152, 219, 0.1);
+      border: 2px solid #3498db;
+      border-radius: 14px;
+      padding: 14px;
+      margin-top: 12px;
+      box-shadow: 0 4px 12px rgba(52, 152, 219, 0.2);
+    }
+
+    .total h3 {
+      margin: 0 0 6px;
+      font-size: 12px;
+      color: #3498db;
+      font-weight: 700;
+    }
+
+    .total .big {
+      font-size: 34px;
+      font-weight: 900;
+      color: #ffffff;
+      text-shadow: 0 2px 8px rgba(52, 152, 219, 0.3);
+    }
+
+    hr {
+      border: 0;
+      border-top: 1px solid rgba(52, 152, 219, 0.2);
+      margin: 14px 0;
+    }
+
+    .back-button {
+      position: fixed;
+      top: 20px;
+      left: 20px;
+      z-index: 100;
+      background: linear-gradient(135deg, #3498db 0%, #2ecc71 100%);
+      border: none;
+      color: white;
+      padding: 8px 16px;
+      border-radius: 8px;
+      text-decoration: none;
+      font-weight: 600;
+      font-size: 13px;
+      transition: all 0.3s ease;
+      box-shadow: 0 2px 8px rgba(52, 152, 219, 0.3);
+    }
+
+    .back-button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(52, 152, 219, 0.5);
+    }
+
+    /* Mobile Optimizations */
+    @media(max-width:768px) {
+      body {
+        padding: 12px;
+        font-size: 15px;
+      }
+
+      body::before,
+      body::after {
+        width: 200px;
+        height: 200px;
+      }
+
+      .back-button {
+        top: 10px;
+        left: 10px;
+        padding: 6px 12px;
+        font-size: 12px;
+      }
+
+      .hero {
+        padding: 14px 14px 14px 70px;
+        margin-bottom: 14px;
+      }
+
+      .hero .badge {
+        left: 10px;
+        top: 10px;
+        width: 48px;
+        height: 48px;
+      }
+
+      .hero h1 {
+        font-size: 20px;
+        line-height: 1.2;
+      }
+
+      .hero p {
+        font-size: 12px;
+      }
+
+      .cap {
+        font-size: 11px;
+        margin-top: 8px;
+      }
+
+      .grid {
+        gap: 12px;
+      }
+
+      .card {
+        padding: 12px;
+        border-radius: 12px;
+      }
+
+      .card h2 {
+        font-size: 13px;
+        margin-bottom: 8px;
+      }
+
+      .row {
+        gap: 10px;
+      }
+
+      /* Stack two-column rows on mobile */
+      .row.two {
+        grid-template-columns: 1fr;
+      }
+
+      /* Stack three-column rows on mobile */
+      .row.three {
+        grid-template-columns: 1fr;
+      }
+
+      label {
+        font-size: 11px;
+        margin-bottom: 4px;
+      }
+
+      input,
+      select {
+        padding: 10px;
+        font-size: 16px;
+        /* Prevents zoom on iOS */
+        border-radius: 10px;
+      }
+
+      .btns {
+        gap: 8px;
+        margin-top: 12px;
+        flex-wrap: wrap;
+      }
+
+      .btn {
+        padding: 10px 16px;
+        font-size: 14px;
+        flex: 1;
+        min-width: 100px;
+      }
+
+      /* Make tiles stack on mobile for better readability */
+      .tiles {
+        grid-template-columns: 1fr;
+        gap: 10px;
+      }
+
+      .tile {
+        padding: 10px;
+        border-radius: 12px;
+      }
+
+      .tile h3 {
+        font-size: 11px;
+        margin-bottom: 4px;
+      }
+
+      .val {
+        font-size: 20px;
+      }
+
+      .mut {
+        font-size: 11px;
+      }
+
+      .total {
+        padding: 12px;
+        margin-top: 10px;
+      }
+
+      .total h3 {
+        font-size: 11px;
+      }
+
+      .total .big {
+        font-size: 28px;
+      }
+
+      .total .mut {
+        font-size: 10px;
+        line-height: 1.4;
+      }
+
+      .apwrap {
+        margin-top: 10px;
+      }
+
+      .bar {
+        height: 16px;
+      }
+
+      .legend {
+        gap: 8px;
+        font-size: 11px;
+      }
+
+      .dot {
+        width: 8px;
+        height: 8px;
+        margin-right: 4px;
+      }
+
+      hr {
+        margin: 12px 0;
+      }
+    }
+
+    /* Extra small phones */
+    @media(max-width:375px) {
+      body {
+        padding: 10px;
+        font-size: 14px;
+      }
+
+      .hero {
+        padding: 12px 12px 12px 60px;
+      }
+
+      .hero .badge {
+        width: 40px;
+        height: 40px;
+        left: 8px;
+        top: 8px;
+      }
+
+      .hero h1 {
+        font-size: 18px;
+      }
+
+      .hero p {
+        font-size: 11px;
+      }
+
+      .cap {
+        font-size: 10px;
+      }
+
+      .card {
+        padding: 10px;
+      }
+
+      .val {
+        font-size: 18px;
+      }
+
+      .total .big {
+        font-size: 24px;
+      }
+
+      .btn {
+        padding: 9px 12px;
+        font-size: 13px;
+      }
+    }
+
+    /* Landscape mobile optimization */
+    @media(max-width:768px) and (orientation: landscape) {
+      body {
+        padding: 10px;
+      }
+
+      .hero {
+        margin-bottom: 10px;
+        padding: 10px 10px 10px 60px;
+      }
+
+      .hero .badge {
+        width: 40px;
+        height: 40px;
+      }
+
+      .hero h1 {
+        font-size: 18px;
+      }
+
+      .grid {
+        gap: 10px;
+      }
+
+      .card {
+        padding: 10px;
+      }
+
+      /* In landscape, use 2 columns for tiles if space allows */
+      .tiles {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    /* Tablet optimization */
+    @media(min-width:769px) and (max-width:979px) {
+      .tiles {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      .hero {
+        padding: 16px 16px 16px 80px;
+      }
+
+      .hero .badge {
+        width: 56px;
+        height: 56px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <a href="tools.html" class="back-button">← Back</a>
+
+  <div class="hero">
+    <div class="badge"></div>
+    <h1>EZ Baths Commission Calculator</h1>
+    <p>Clear numbers • Easy flow • Built for reps</p>
+    <div class="cap"><b>Max AP one can have = $2000</b> (anything above goes to company)</div>
+  </div>
+
+  <div class="grid">
+    <!-- INPUTS -->
+    <section class="card">
+      <h2>Deal Inputs</h2>
+
+      <!-- Contract & Par -->
+      <div class="row two">
+        <div><label>Contract Price ($)</label><input id="contract" type="number" value="0"></div>
+        <div><label>Par Price ($)</label><input id="par" type="number" value="0"></div>
+      </div>
+
+      <hr>
+
+      <!-- Cost Factors -->
+      <div class="row three">
+        <div><label>Dealer Pack ($)</label><input id="dealerPack" type="number" value="0"></div>
+        <div><label>Deposit ($)</label><input id="deposit" type="number" value="0"></div>
+        <div><label>Cash Discount Not Given</label>
+          <select id="cashAdd">
+            <option value="0">None</option>
+            <option value="500">$500</option>
+            <option value="1000">$1,000</option>
+          </select>
+        </div>
+      </div>
+
+      <hr>
+
+      <!-- Negotiation -->
+      <div class="row two">
+        <div><label>Rehash Discount ($)</label><input id="rehash" type="number" value="0" placeholder="e.g. 909"></div>
+        <div><label>Lead / Notes</label><input id="note" placeholder="TV / Web / Referral / etc."></div>
+      </div>
+
+      <div class="btns">
+        <button class="btn" id="resetBtn">Reset</button>
+        <button class="btn primary" id="calcBtn">Calculate</button>
+      </div>
+    </section>
+
+    <!-- RESULTS -->
+    <section class="card">
+      <h2>Results</h2>
+
+      <div class="tiles">
+        <div class="tile">
+          <h3>Item Sum</h3>
+          <div id="itemSum" class="val">$0</div>
+          <div class="mut">Par − Dealer Pack</div>
+        </div>
+        <div class="tile">
+          <h3>Base Commission</h3>
+          <div id="base" class="val">$0</div>
+          <div class="mut">10% of Item Sum</div>
+        </div>
+        <div class="tile">
+          <h3>Due at Install</h3>
+          <div id="due" class="val">$0</div>
+          <div class="mut">Contract − Deposit</div>
+        </div>
+        <div class="tile">
+          <h3>Raw AP</h3>
+          <div id="apRaw" class="val">$0</div>
+        </div>
+        <div class="tile">
+          <h3>Cash Added to AP</h3>
+          <div id="apCash" class="val ok">$0</div>
+        </div>
+        <div class="tile">
+          <h3>Rehash — Entered</h3>
+          <div id="apRehashEntered" class="val warn">$0</div>
+        </div>
+        <div class="tile">
+          <h3>Rehash — Applied</h3>
+          <div id="apRehashApplied" class="val bad">$0</div>
+          <div class="mut">If AP=0, applied=0</div>
+        </div>
+        <div class="tile">
+          <h3>Below-Par Remainder</h3>
+          <div id="belowPar" class="val warn">$0</div>
+        </div>
+        <div class="tile">
+          <h3>Final AP</h3>
+          <div id="apFinal" class="val">$0</div>
+        </div>
+      </div>
+
+      <div class="apwrap">
+        <div class="mut">AP Composition</div>
+        <div class="bar">
+          <div id="segBase" class="seg base" style="width:0%"></div>
+          <div id="segCash" class="seg cash" style="width:0%"></div>
+          <div id="segReh" class="seg rehash" style="width:0%"></div>
+        </div>
+        <div class="legend">
+          <span><i class="dot base"></i>Base AP</span>
+          <span><i class="dot cash"></i>Cash Added</span>
+          <span><i class="dot rehash"></i>Rehash Applied</span>
+        </div>
+      </div>
+
+      <div class="tiles" style="margin-top:12px">
+        <div class="tile">
+          <h3>Your 50% of AP (capped)</h3>
+          <div id="apYou" class="val">$0</div>
+          <div class="mut">Cap: first $2,000 AP</div>
+        </div>
+        <div class="tile">
+          <h3>Company AP Share</h3>
+          <div id="apCo" class="val">$0</div>
+        </div>
+        <div class="tile total">
+          <h3>TOTAL COMMISSION</h3>
+          <div id="total" class="big">$0</div>
+          <div class="mut">10% × (Par − Dealer Pack) + (min(Final AP,$2000) ÷ 2)</div>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <script>
+    const $ = id => document.getElementById(id);
+    const money = n => n.toLocaleString(undefined, { style: 'currency', currency: 'USD', maximumFractionDigits: 0 });
+
+    function calc() {
+      const contract = +($('contract').value || 0);
+      const par = +($('par').value || 0);
+      const dealer = +($('dealerPack').value || 0);
+      const deposit = +($('deposit').value || 0);
+      const cashAdd = +($('cashAdd').value || 0);
+      const rehashEntered = +($('rehash').value || 0);
+
+      // Item Sum = Par - Dealer Pack
+      const itemSum = Math.max(0, par - dealer);
+
+      // Base Commission = 10% of Item Sum
+      const base = itemSum * 0.10;
+
+      // AP Above Par (raw)
+      const apRaw = Math.max(0, contract - par);
+
+      // Total AP Pool (includes cash adds)
+      const apPool = apRaw + cashAdd;
+
+      // Apply rehash/discount to AP pool
+      const rehashApplied = apPool > 0 ? Math.min(rehashEntered, apPool) : 0;
+      const belowPar = Math.max(0, rehashEntered - rehashApplied);
+
+      // Final AP after rehash
+      let apFinal = Math.max(0, apPool - rehashApplied);
+
+      // Split logic: First $2000 is split 50/50, rest goes to company
+      let apYou = 0;
+      let apCo = 0;
+
+      if (apFinal <= 2000) {
+        // If AP is $2000 or less, split 50/50
+        apYou = apFinal / 2;
+        apCo = apFinal / 2;
+      } else {
+        // If AP is over $2000:
+        // You get 50% of first $2000 = $1000
+        // Company gets the other $1000 + ALL remaining AP
+        apYou = 1000;  // Your max share of AP
+        apCo = apFinal - 1000;  // Company gets: $1000 (their split) + everything above $2000
+      }
+
+      // Total commission = Base + Your AP share
+      const total = base + apYou;
+
+      // Amount due at install
+      const due = Math.max(0, contract - deposit);
+
+      // Update display
+      $('itemSum').textContent = money(itemSum);
+      $('base').textContent = money(base);
+      $('due').textContent = money(due);
+      $('apRaw').textContent = money(apRaw);
+      $('apCash').textContent = money(cashAdd);
+      $('apRehashEntered').textContent = money(rehashEntered);
+      $('apRehashApplied').textContent = money(rehashApplied);
+      $('belowPar').textContent = money(belowPar);
+      $('apFinal').textContent = money(apFinal);
+      $('apYou').textContent = money(apYou);
+      $('apCo').textContent = money(apCo);
+      $('total').textContent = money(total);
+
+      const denom = (apPool || 1);
+      $('segBase').style.width = (apPool ? (apRaw / denom * 100) : 0) + '%';
+      $('segCash').style.width = (apPool ? (cashAdd / denom * 100) : 0) + '%';
+      $('segReh').style.width = (apPool ? (rehashApplied / denom * 100) : 0) + '%';
+    }
+
+    // Event listeners for real-time calculation
+    ['contract', 'par', 'dealerPack', 'deposit', 'cashAdd', 'rehash', 'note'].forEach(id => {
+      $(id).addEventListener('input', calc);
+    });
+
+    $('calcBtn').addEventListener('click', calc);
+
+    $('resetBtn').addEventListener('click', () => {
+      if (confirm('⚠️ Reset all fields to zero?')) {
+        $('contract').value = 0;
+        $('par').value = 0;
+        $('dealerPack').value = 0;
+        $('deposit').value = 0;
+        $('cashAdd').value = 0;
+        $('rehash').value = 0;
+        $('note').value = '';
+        // Clear any saved data from localStorage
+        localStorage.removeItem('commission_calculator_data');
+        calc();
+      }
+    });
+
+    // Clear any saved data on page load to start fresh every time
+    localStorage.removeItem('commission_calculator_data');
+
+    // Run initial calculation
+    calc();
+  </script>
+</body>
+
+</html>

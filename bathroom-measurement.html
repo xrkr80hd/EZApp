@@ -1,0 +1,797 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bathroom Measurement Form - EZ Baths</title>
+    <link rel="stylesheet" href="assets/css/responsive-fixes.css">
+    <script src="assets/js/toast-notifications.js" defer></script>
+    <script src="assets/js/loading-spinner.js" defer></script>
+    <script src="assets/js/html2canvas.min.js"></script>
+    <link rel="stylesheet" href="assets/css/styles.css">
+    <style>
+        .measurement-form {
+            max-width: 900px;
+            margin: 20px auto;
+            padding: 20px;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .form-header {
+            text-align: center;
+            border-bottom: 2px solid #333;
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+        }
+
+        .form-header h1 {
+            margin: 0;
+            font-size: 24px;
+            color: #333;
+        }
+
+        .form-row {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+        }
+
+        .form-group {
+            flex: 1;
+            min-width: 200px;
+        }
+
+        .form-group.full-width {
+            flex: 100%;
+        }
+
+        .form-group label {
+            display: block;
+            font-weight: bold;
+            margin-bottom: 5px;
+            color: #333;
+        }
+
+        .form-group input[type="text"],
+        .form-group input[type="date"],
+        .form-group select {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+
+        .checkbox-group {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+            margin: 10px 0;
+        }
+
+        .checkbox-item {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            color: #333;
+        }
+
+        .checkbox-item input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+        }
+
+        .section-title {
+            font-size: 16px;
+            font-weight: bold;
+            margin: 20px 0 10px 0;
+            padding: 8px;
+            background: #f0f0f0;
+            border-left: 4px solid #007bff;
+        }
+
+        .measurements-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .measurement-field {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .measurement-field label {
+            font-weight: bold;
+            min-width: 200px;
+        }
+
+        .measurement-field input {
+            flex: 1;
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+
+        .diagram-container {
+            margin: 30px 0;
+            padding: 20px;
+            border: 2px solid #333;
+            border-radius: 8px;
+            background: #f9f9f9;
+        }
+
+        .diagram-title {
+            text-align: center;
+            font-weight: bold;
+            font-size: 18px;
+            margin-bottom: 15px;
+        }
+
+        .bathtub-diagram {
+            width: 100%;
+            max-width: 500px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .bathtub-diagram svg {
+            width: 100%;
+            height: auto;
+        }
+
+        .drawing-box {
+            margin: 20px 0;
+            padding: 15px;
+            border: 2px dashed #666;
+            min-height: 200px;
+            background: white;
+        }
+
+        .drawing-box h3 {
+            margin: 0 0 10px 0;
+            font-size: 14px;
+            text-align: center;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            margin-top: 30px;
+        }
+
+        .btn {
+            padding: 12px 30px;
+            border: none;
+            border-radius: 4px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        .btn-primary {
+            background: #007bff;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #0056b3;
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background: #545b62;
+        }
+
+        .notes-section {
+            margin: 20px 0;
+        }
+
+        .notes-section textarea {
+            width: 100%;
+            min-height: 100px;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-family: inherit;
+        }
+    </style>
+</head>
+
+<body>
+    <a href="tools.html" class="back-button" style="margin: 20px;">← Back to Tools</a>
+    <div class="measurement-form">
+        <div class="form-header">
+            <h1>BATHROOM MEASUREMENT FORM</h1>
+            <p style="margin: 5px 0; color: #666;">EZ Baths - Bath Planet</p>
+        </div>
+
+        <!-- Customer Information -->
+        <div class="form-row">
+            <div class="form-group">
+                <label for="customerName">Customer Name:</label>
+                <input type="text" id="customerName" required>
+            </div>
+            <div class="form-group">
+                <label for="measurementDate">Date:</label>
+                <input type="date" id="measurementDate" required>
+            </div>
+        </div>
+
+        <div class="form-row">
+            <div class="form-group">
+                <label for="measuredBy">Measured By:</label>
+                <input type="text" id="measuredBy" required>
+            </div>
+            <div class="form-group">
+                <label for="jobNumber">Job Number:</label>
+                <input type="text" id="jobNumber">
+            </div>
+        </div>
+
+        <!-- Product Information -->
+        <div class="section-title">Product Information</div>
+        <div class="form-row">
+            <div class="form-group">
+                <label for="product">Product:</label>
+                <select id="product">
+                    <option value="">Select Product...</option>
+                    <option value="Tub">Tub</option>
+                    <option value="Shower">Shower</option>
+                    <option value="Walk-In Tub">Walk-In Tub</option>
+                    <option value="Tub to Shower">Tub to Shower Conversion</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="productColor">Color:</label>
+                <input type="text" id="productColor">
+            </div>
+        </div>
+
+        <div class="form-row">
+            <div class="form-group">
+                <label for="productSize">Size (L × W × H):</label>
+                <input type="text" id="productSize" placeholder="e.g., 60 × 32 × 58">
+            </div>
+            <div class="form-group">
+                <label for="doorOrientation">Door Orientation:</label>
+                <select id="doorOrientation">
+                    <option value="">Select...</option>
+                    <option value="RH">Right Hand (RH)</option>
+                    <option value="LH">Left Hand (LH)</option>
+                    <option value="N/A">N/A</option>
+                </select>
+            </div>
+        </div>
+
+        <!-- Options -->
+        <div class="section-title">Installation Options</div>
+        <div class="form-row">
+            <div class="form-group">
+                <label>Reverse Plumbing:</label>
+                <div class="checkbox-group">
+                    <label class="checkbox-item">
+                        <input type="radio" name="reversePlumbing" value="Yes"> Yes
+                    </label>
+                    <label class="checkbox-item">
+                        <input type="radio" name="reversePlumbing" value="No" checked> No
+                    </label>
+                </div>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label>Wall Surround:</label>
+            <div class="checkbox-group">
+                <label class="checkbox-item">
+                    <input type="checkbox" id="wall3Sided"> 3-Sided
+                </label>
+                <label class="checkbox-item">
+                    <input type="checkbox" id="wall2Sided"> 2-Sided
+                </label>
+                <label class="checkbox-item">
+                    <input type="checkbox" id="wallOther"> Other
+                </label>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label>Door Modifications:</label>
+            <div class="checkbox-group">
+                <label class="checkbox-item">
+                    <input type="checkbox" id="doorRemove"> Remove Door
+                </label>
+                <label class="checkbox-item">
+                    <input type="checkbox" id="doorReverse"> Reverse Door Swing
+                </label>
+                <label class="checkbox-item">
+                    <input type="checkbox" id="doorWiden"> Widen Door Frame
+                </label>
+            </div>
+        </div>
+
+        <!-- Electrical -->
+        <div class="section-title">Electrical Information</div>
+        <div class="form-row">
+            <div class="form-group">
+                <label for="electricalPanel">Electrical Panel Type:</label>
+                <select id="electricalPanel">
+                    <option value="">Select...</option>
+                    <option value="Standard">Standard Circuit Breaker</option>
+                    <option value="Fuse Box">Fuse Box</option>
+                    <option value="Subpanel">Subpanel</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Breaker Space Available:</label>
+                <div class="checkbox-group">
+                    <label class="checkbox-item">
+                        <input type="radio" name="breakerSpace" value="Yes"> Yes
+                    </label>
+                    <label class="checkbox-item">
+                        <input type="radio" name="breakerSpace" value="No"> No
+                    </label>
+                </div>
+            </div>
+        </div>
+
+        <!-- Measurements Diagram -->
+        <div class="diagram-container">
+            <div class="diagram-title">MEASUREMENT DIAGRAM</div>
+            <div class="bathtub-diagram">
+                <img src="assets/images/bathroom-diagram.png" alt="Bathroom Measurement Diagram"
+                    style="width: 100%; max-width: 500px; display: block; margin: 0 auto;">
+            </div>
+            <p style="text-align: center; color: #666; margin-top: 10px;">
+                Measurements A-H correspond to wall heights, depths, and leg measurements as indicated in the form
+                below.
+            </p>
+        </div>
+
+        <!-- Detailed Measurements -->
+        <div class="section-title">Detailed Measurements (in inches)</div>
+        <div class="measurements-grid">
+            <div class="measurement-field">
+                <label>A. L Sidewall Height:</label>
+                <input type="text" id="measureA" placeholder="inches">
+            </div>
+            <div class="measurement-field">
+                <label>B. L Sidewall Depth:</label>
+                <input type="text" id="measureB" placeholder="inches">
+            </div>
+            <div class="measurement-field">
+                <label>C. Soap Dish Wall Height:</label>
+                <input type="text" id="measureC" placeholder="inches">
+            </div>
+            <div class="measurement-field">
+                <label>D. Soap Dish Wall Width:</label>
+                <input type="text" id="measureD" placeholder="inches">
+            </div>
+            <div class="measurement-field">
+                <label>E. R Sidewall Depth:</label>
+                <input type="text" id="measureE" placeholder="inches">
+            </div>
+            <div class="measurement-field">
+                <label>F. R Sidewall Height:</label>
+                <input type="text" id="measureF" placeholder="inches">
+            </div>
+            <div class="measurement-field">
+                <label>G. L Leg Depth:</label>
+                <input type="text" id="measureG" placeholder="inches">
+            </div>
+            <div class="measurement-field">
+                <label>H. R Leg Depth:</label>
+                <input type="text" id="measureH" placeholder="inches">
+            </div>
+        </div> <!-- Window Kit -->
+        <div class="form-row">
+            <div class="form-group">
+                <label for="windowKit">Window Kit Size:</label>
+                <input type="text" id="windowKit" placeholder="e.g., 24 x 36">
+            </div>
+        </div>
+
+        <!-- Drawing Boxes with Photo Upload -->
+        <div class="drawing-box">
+            <h3>NEW PRODUCT - SIDE VIEW</h3>
+            <p style="text-align: center; color: #999; margin-bottom: 15px;">Draw, sketch, or upload a photo of the side
+                view</p>
+
+            <!-- Photo Upload Section -->
+            <div style="text-align: center; margin: 15px 0;">
+                <input type="file" id="sideViewPhoto" accept="image/*" capture="environment" style="display: none;"
+                    onchange="handlePhotoUpload(event, 'sideView')">
+                <button onclick="document.getElementById('sideViewPhoto').click()"
+                    style="padding: 10px 20px; background: #007bff; color: white; border: none; border-radius: 8px; cursor: pointer; font-size: 14px; margin-right: 10px;">
+                    📷 Upload Photo
+                </button>
+                <button onclick="clearPhoto('sideView')"
+                    style="padding: 10px 20px; background: #dc3545; color: white; border: none; border-radius: 8px; cursor: pointer; font-size: 14px;">
+                    🗑️ Clear
+                </button>
+            </div>
+
+            <!-- Photo Preview -->
+            <div id="sideViewPreview" style="margin-top: 15px; text-align: center; display: none;">
+                <img id="sideViewImage"
+                    style="max-width: 100%; max-height: 300px; border: 2px solid #007bff; border-radius: 8px;">
+                <p style="font-size: 12px; color: #666; margin-top: 5px;">Photo uploaded successfully</p>
+            </div>
+        </div>
+
+        <div class="drawing-box">
+            <h3>NEW BATHROOM FLOOR PLAN</h3>
+            <p style="text-align: center; color: #999; margin-bottom: 15px;">Draw, sketch, or upload a photo of the
+                floor plan</p>
+
+            <!-- Photo Upload Section -->
+            <div style="text-align: center; margin: 15px 0;">
+                <input type="file" id="floorPlanPhoto" accept="image/*" capture="environment" style="display: none;"
+                    onchange="handlePhotoUpload(event, 'floorPlan')">
+                <button onclick="document.getElementById('floorPlanPhoto').click()"
+                    style="padding: 10px 20px; background: #007bff; color: white; border: none; border-radius: 8px; cursor: pointer; font-size: 14px; margin-right: 10px;">
+                    📷 Upload Photo
+                </button>
+                <button onclick="clearPhoto('floorPlan')"
+                    style="padding: 10px 20px; background: #dc3545; color: white; border: none; border-radius: 8px; cursor: pointer; font-size: 14px;">
+                    🗑️ Clear
+                </button>
+            </div>
+
+            <!-- Photo Preview -->
+            <div id="floorPlanPreview" style="margin-top: 15px; text-align: center; display: none;">
+                <img id="floorPlanImage"
+                    style="max-width: 100%; max-height: 300px; border: 2px solid #007bff; border-radius: 8px;">
+                <p style="font-size: 12px; color: #666; margin-top: 5px;">Photo uploaded successfully</p>
+            </div>
+        </div>
+
+        <!-- Additional Notes -->
+        <div class="notes-section">
+            <label for="additionalNotes"><strong>Additional Notes / Special Instructions:</strong></label>
+            <textarea id="additionalNotes"
+                placeholder="Enter any special measurements, concerns, or installation notes..."></textarea>
+        </div>
+
+        <!-- Buttons -->
+        <div class="button-group">
+            <button class="btn btn-secondary" onclick="populateForm()">Auto-Fill from EZAPP Data</button>
+            <button class="btn btn-primary" onclick="saveForm()">Save Measurement Form</button>
+            <button class="btn btn-info" onclick="saveAsImage()">📷 Save to Phone</button>
+            <button class="btn btn-secondary" onclick="printForm()">🖨️ Print</button>
+            <button class="btn btn-secondary" onclick="window.location.href='post-sale-documents.html'">← Back</button>
+        </div>
+    </div>
+
+    <script src="assets/js/ezapp-data.js"></script>
+    <script>
+        // Auto-populate form on load
+        window.addEventListener('DOMContentLoaded', () => {
+            populateForm();
+            loadSavedPhotos();
+        });
+
+        function populateForm() {
+            const ezappData = EZAPPData.getCurrentData();
+            if (!ezappData) {
+                console.log('No EZAPP data found');
+                return;
+            }
+
+            // Customer Information
+            if (ezappData.customer) {
+                document.getElementById('customerName').value =
+                    `${ezappData.customer.firstName || ''} ${ezappData.customer.lastName || ''}`.trim();
+            }
+
+            // Set today's date
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('measurementDate').value = today;
+
+            // Product info from survey
+            if (ezappData.survey) {
+                // Bathroom type from survey
+                const bathroomType = ezappData.survey.bathroomType;
+                if (bathroomType) {
+                    const productSelect = document.getElementById('product');
+                    // Map survey bathroomType to product options
+                    const typeMap = {
+                        'tub-shower': 'Tub',
+                        'shower-stall': 'Shower',
+                        'walk-in-tub': 'Walk-In Tub',
+                        'tub-to-shower': 'Tub to Shower Conversion'
+                    };
+                    if (typeMap[bathroomType]) {
+                        productSelect.value = typeMap[bathroomType];
+                    }
+                }
+            }
+
+            // Measurements from photo checklist
+            if (ezappData.photos && ezappData.photos.length > 0) {
+                // Map photo measurements to form fields based on company form
+                // Photo 6 = Left Wall Depth → B
+                // Photo 7 = Right Wall Depth → E  
+                // Photo 8 = Soap Dish Wall Depth → D
+
+                ezappData.photos.forEach(photo => {
+                    if (photo.measurement) {
+                        // Photo 6: Left wall depth → B. L Sidewall Depth
+                        if (photo.id === 6 || photo.description?.includes('left wall depth')) {
+                            document.getElementById('measureB').value = photo.measurement;
+                        }
+                        // Photo 7: Right wall depth → E. R Sidewall Depth
+                        if (photo.id === 7 || photo.description?.includes('right wall depth')) {
+                            document.getElementById('measureE').value = photo.measurement;
+                        }
+                        // Photo 8: Soap dish wall depth → D. Soap Dish Wall Width
+                        if (photo.id === 8 || photo.description?.includes('soap dish')) {
+                            document.getElementById('measureD').value = photo.measurement;
+                        }
+                    }
+                });
+            }
+
+            console.log('Form populated from EZAPP data');
+        }
+
+        // Photo upload handling - with resize for faster processing
+        function handlePhotoUpload(event, type) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            // Show loading
+            if (typeof loading !== 'undefined') {
+                loading.show('Processing photo...');
+            }
+
+            // Create image to resize
+            const img = new Image();
+            const reader = new FileReader();
+
+            reader.onload = function (e) {
+                img.onload = function () {
+                    // Resize image to max 1200px width/height for faster processing
+                    const maxSize = 1200;
+                    let width = img.width;
+                    let height = img.height;
+
+                    if (width > height && width > maxSize) {
+                        height = (height * maxSize) / width;
+                        width = maxSize;
+                    } else if (height > maxSize) {
+                        width = (width * maxSize) / height;
+                        height = maxSize;
+                    }
+
+                    // Create canvas and resize
+                    const canvas = document.createElement('canvas');
+                    canvas.width = width;
+                    canvas.height = height;
+                    const ctx = canvas.getContext('2d');
+                    ctx.drawImage(img, 0, 0, width, height);
+
+                    // Get compressed image data
+                    const imageData = canvas.toDataURL('image/jpeg', 0.8);
+
+                    // Display preview
+                    const previewDiv = document.getElementById(`${type}Preview`);
+                    const previewImg = document.getElementById(`${type}Image`);
+                    previewImg.src = imageData;
+                    previewDiv.style.display = 'block';
+
+                    // Save to localStorage
+                    const ezappData = EZAPPData.getCurrentData() || {};
+                    if (!ezappData.documents) {
+                        ezappData.documents = {};
+                    }
+                    if (!ezappData.documents.bathroomMeasurement) {
+                        ezappData.documents.bathroomMeasurement = {};
+                    }
+                    if (!ezappData.documents.bathroomMeasurement.photos) {
+                        ezappData.documents.bathroomMeasurement.photos = {};
+                    }
+
+                    ezappData.documents.bathroomMeasurement.photos[type] = {
+                        data: imageData,
+                        filename: file.name,
+                        timestamp: new Date().toISOString()
+                    };
+
+                    localStorage.setItem('EZAPP_current', JSON.stringify(ezappData));
+
+                    // Hide loading and show success
+                    if (typeof loading !== 'undefined') {
+                        loading.hide();
+                    }
+                    if (typeof toast !== 'undefined') {
+                        toast.success(`${type === 'sideView' ? 'Side view' : 'Floor plan'} photo uploaded!`);
+                    }
+
+                    console.log(`${type} photo uploaded and resized:`, file.name);
+                };
+
+                img.onerror = function () {
+                    if (typeof loading !== 'undefined') {
+                        loading.hide();
+                    }
+                    if (typeof toast !== 'undefined') {
+                        toast.error('Failed to process photo');
+                    }
+                };
+
+                img.src = e.target.result;
+            };
+
+            reader.onerror = function () {
+                if (typeof loading !== 'undefined') {
+                    loading.hide();
+                }
+                if (typeof toast !== 'undefined') {
+                    toast.error('Failed to upload photo');
+                }
+            };
+
+            reader.readAsDataURL(file);
+        }
+
+        function clearPhoto(type) {
+            if (!confirm(`Clear the ${type === 'sideView' ? 'side view' : 'floor plan'} photo?`)) {
+                return;
+            }
+
+            // Clear preview
+            const previewDiv = document.getElementById(`${type}Preview`);
+            const previewImg = document.getElementById(`${type}Image`);
+            previewImg.src = '';
+            previewDiv.style.display = 'none';
+
+            // Clear from localStorage
+            const ezappData = EZAPPData.getCurrentData() || {};
+            if (ezappData.documents?.bathroomMeasurement?.photos?.[type]) {
+                delete ezappData.documents.bathroomMeasurement.photos[type];
+                localStorage.setItem('EZAPP_current', JSON.stringify(ezappData));
+            }
+
+            // Clear file input
+            document.getElementById(`${type}Photo`).value = '';
+
+            if (typeof toast !== 'undefined') {
+                toast.info('Photo cleared');
+            }
+
+            console.log(`${type} photo cleared`);
+        }
+
+        function loadSavedPhotos() {
+            const ezappData = EZAPPData.getCurrentData();
+            if (!ezappData?.documents?.bathroomMeasurement?.photos) return;
+
+            const photos = ezappData.documents.bathroomMeasurement.photos;
+
+            // Load side view photo
+            if (photos.sideView) {
+                const previewDiv = document.getElementById('sideViewPreview');
+                const previewImg = document.getElementById('sideViewImage');
+                previewImg.src = photos.sideView.data;
+                previewDiv.style.display = 'block';
+            }
+
+            // Load floor plan photo
+            if (photos.floorPlan) {
+                const previewDiv = document.getElementById('floorPlanPreview');
+                const previewImg = document.getElementById('floorPlanImage');
+                previewImg.src = photos.floorPlan.data;
+                previewDiv.style.display = 'block';
+            }
+        }
+
+        function saveForm() {
+            // Collect all form data
+            const formData = {
+                customerName: document.getElementById('customerName').value,
+                measurementDate: document.getElementById('measurementDate').value,
+                measuredBy: document.getElementById('measuredBy').value,
+                jobNumber: document.getElementById('jobNumber').value,
+                product: document.getElementById('product').value,
+                productColor: document.getElementById('productColor').value,
+                productSize: document.getElementById('productSize').value,
+                doorOrientation: document.getElementById('doorOrientation').value,
+                reversePlumbing: document.querySelector('input[name="reversePlumbing"]:checked')?.value,
+                wallSurround: {
+                    threeSided: document.getElementById('wall3Sided').checked,
+                    twoSided: document.getElementById('wall2Sided').checked,
+                    other: document.getElementById('wallOther').checked
+                },
+                doorModifications: {
+                    remove: document.getElementById('doorRemove').checked,
+                    reverse: document.getElementById('doorReverse').checked,
+                    widen: document.getElementById('doorWiden').checked
+                },
+                electricalPanel: document.getElementById('electricalPanel').value,
+                breakerSpace: document.querySelector('input[name="breakerSpace"]:checked')?.value,
+                measurements: {
+                    A: document.getElementById('measureA').value,
+                    B: document.getElementById('measureB').value,
+                    C: document.getElementById('measureC').value,
+                    D: document.getElementById('measureD').value,
+                    E: document.getElementById('measureE').value,
+                    F: document.getElementById('measureF').value,
+                    G: document.getElementById('measureG').value,
+                    H: document.getElementById('measureH').value
+                },
+                windowKit: document.getElementById('windowKit').value,
+                additionalNotes: document.getElementById('additionalNotes').value,
+                timestamp: new Date().toISOString(),
+                photos: {} // Photos are saved separately in handlePhotoUpload
+            };
+
+            // Save to EZAPP structure
+            const ezappData = EZAPPData.getCurrentData() || {};
+
+            // Preserve existing photos
+            if (ezappData.documents?.bathroomMeasurement?.photos) {
+                formData.photos = ezappData.documents.bathroomMeasurement.photos;
+            }
+            if (!ezappData.documents) {
+                ezappData.documents = {};
+            }
+            ezappData.documents.bathroomMeasurement = formData;
+
+            localStorage.setItem('EZAPP_current', JSON.stringify(ezappData));
+
+            if (typeof toast !== 'undefined') {
+                toast.success('Bathroom Measurement Form saved successfully!');
+            } else {
+                alert('Bathroom Measurement Form saved successfully!');
+            }
+            console.log('Saved measurement form:', formData);
+        }
+
+        function saveAsImage() {
+            const formElement = document.querySelector('.measurement-form');
+            const buttons = document.querySelector('.button-group');
+
+            // Hide buttons during capture
+            buttons.style.display = 'none';
+
+            html2canvas(formElement, {
+                backgroundColor: '#ffffff',
+                scale: 2,
+                useCORS: true,
+                logging: false
+            }).then(canvas => {
+                buttons.style.display = 'flex';
+
+                const link = document.createElement('a');
+                const customerName = document.getElementById('customerName').value || 'Bathroom-Measurement';
+                const date = new Date().toISOString().split('T')[0];
+                link.download = `${customerName.replace(/\s+/g, '-')}_Bathroom-Measurement_${date}.png`;
+                link.href = canvas.toDataURL('image/png');
+                link.click();
+            }).catch(err => {
+                buttons.style.display = 'flex';
+                console.error('Save failed:', err);
+                alert('Save failed. Please try again.');
+            });
+        }
+
+        // Print functionality
+        function printForm() {
+            window.print();
+        }
+    </script>
+</body>
+
+</html>

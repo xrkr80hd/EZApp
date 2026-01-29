@@ -1,0 +1,59 @@
+{
+    "name": "EZ Baths Portal",
+    "short_name": "EZ Baths",
+    "description": "Mobile portal for EZ Baths consultants - customer surveys, photos, measurements, and forms",
+    "start_url": "/ezapp/portal.html",
+    "display": "standalone",
+    "scope": "/ezapp/",
+    "background_color": "#1a1a2e",
+    "theme_color": "#3498db",
+    "orientation": "portrait",
+    "icons": [
+        {
+            "src": "assets/app_icons/icon-180.png",
+            "sizes": "180x180",
+            "type": "image/png",
+            "purpose": "any"
+        },
+        {
+            "src": "assets/app_icons/icon-192.png",
+            "sizes": "192x192",
+            "type": "image/png",
+            "purpose": "any maskable"
+        },
+        {
+            "src": "assets/app_icons/icon-512.png",
+            "sizes": "512x512",
+            "type": "image/png",
+            "purpose": "any maskable"
+        }
+    ],
+    "shortcuts": [
+        {
+            "name": "New Customer",
+            "short_name": "New",
+            "description": "Create new customer profile",
+            "url": "/ezapp/create-customer.html",
+            "icons": [
+                {
+                    "src": "assets/app_icons/commision_calc.svg",
+                    "sizes": "any",
+                    "type": "image/svg+xml"
+                }
+            ]
+        },
+        {
+            "name": "Customer Tools",
+            "short_name": "Tools",
+            "description": "Access customer tools",
+            "url": "/ezapp/tools.html",
+            "icons": [
+                {
+                    "src": "assets/app_icons/customer_survey.svg",
+                    "sizes": "any",
+                    "type": "image/svg+xml"
+                }
+            ]
+        }
+    ]
+}

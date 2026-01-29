@@ -1,0 +1,1301 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <title>EZBath Customer Discovery Checklist</title>
+    <link rel="stylesheet" href="assets/css/responsive-fixes.css">
+    <script src="assets/js/toast-notifications.js" defer></script>
+    <script src="assets/js/loading-spinner.js" defer></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+            padding: 15px;
+            min-height: 100vh;
+            position: relative;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 10%;
+            left: 5%;
+            width: 300px;
+            height: 300px;
+            background: radial-gradient(circle, rgba(52, 152, 219, 0.15) 0%, transparent 70%);
+            border-radius: 50%;
+            animation: pulse 8s ease-in-out infinite;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        body::after {
+            content: '';
+            position: fixed;
+            bottom: 10%;
+            right: 5%;
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, rgba(46, 204, 113, 0.12) 0%, transparent 70%);
+            border-radius: 50%;
+            animation: pulse 10s ease-in-out infinite reverse;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        @keyframes pulse {
+
+            0%,
+            100% {
+                transform: scale(1);
+                opacity: 0.6;
+            }
+
+            50% {
+                transform: scale(1.1);
+                opacity: 0.8;
+            }
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.98);
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+            overflow: hidden;
+            position: relative;
+            z-index: 1;
+            backdrop-filter: blur(10px);
+        }
+
+        .header {
+            background: linear-gradient(135deg, #3498db 0%, #2ecc71 100%);
+            color: white;
+            padding: 20px 15px;
+            text-align: center;
+            box-shadow: 0 4px 12px rgba(52, 152, 219, 0.3);
+        }
+
+        .header h1 {
+            font-size: 18px;
+            margin-bottom: 3px;
+        }
+
+        .header .subtitle {
+            font-size: 12px;
+            opacity: 0.9;
+        }
+
+        .customer-info-section {
+            background: rgba(52, 152, 219, 0.05);
+            padding: 12px;
+            border-bottom: 2px solid #3498db;
+        }
+
+        .paste-box {
+            background: white;
+            border: 1px dashed #3498db;
+            border-radius: 6px;
+            padding: 10px;
+            margin-bottom: 10px;
+        }
+
+        .paste-box label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 5px;
+            color: #333;
+            font-size: 12px;
+        }
+
+        .paste-box textarea {
+            width: 100%;
+            min-height: 50px;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 13px;
+            font-family: inherit;
+            resize: vertical;
+        }
+
+        .paste-box .hint {
+            font-size: 11px;
+            color: #666;
+            margin-top: 3px;
+            font-style: italic;
+        }
+
+        .parsed-info {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 10px;
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 15px;
+        }
+
+        .parsed-info .info-item {
+            display: flex;
+            align-items: center;
+            padding: 10px;
+            background: #f0f0f0;
+            border-radius: 5px;
+        }
+
+        .parsed-info .info-item strong {
+            min-width: 100px;
+            color: #3498db;
+            font-size: 12px;
+        }
+
+        .parsed-info .info-item span {
+            color: #333;
+            font-size: 13px;
+        }
+
+        .survey-section {
+            padding: 15px;
+        }
+
+        .question-card {
+            background: #f8f9fa;
+            border-left: 3px solid #3498db;
+            padding: 12px 15px;
+            margin-bottom: 12px;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+        }
+
+        .question-card.important {
+            border-left-color: #2ecc71;
+            background: #f0fff4;
+        }
+
+        .question-card .question-number {
+            display: inline-block;
+            background: #3498db;
+            color: white;
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            text-align: center;
+            line-height: 22px;
+            font-size: 12px;
+            font-weight: bold;
+            margin-right: 8px;
+        }
+
+        .question-card.important .question-number {
+            background: #2ecc71;
+        }
+
+        .question-card .question-text {
+            font-size: 14px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 8px;
+            line-height: 1.4;
+        }
+
+        .question-card .arrow {
+            color: #3498db;
+            margin-right: 5px;
+            font-weight: bold;
+        }
+
+        .question-card textarea {
+            width: 100%;
+            min-height: 50px;
+            padding: 8px 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 13px;
+            font-family: inherit;
+            resize: vertical;
+            margin-top: 6px;
+        }
+
+        .question-card textarea:focus {
+            outline: none;
+            border-color: #3498db;
+            box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.15);
+        }
+
+        .question-card input[type="text"] {
+            width: 100%;
+            padding: 8px 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 14px;
+            font-family: inherit;
+        }
+
+        .question-card input[type="text"]:focus {
+            outline: none;
+            border-color: #3498db;
+            box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.15);
+        }
+
+        .radio-group {
+            display: flex;
+            gap: 8px;
+            margin-top: 8px;
+            flex-wrap: wrap;
+        }
+
+        .radio-group label {
+            display: flex;
+            align-items: center;
+            padding: 6px 10px;
+            background: white;
+            border: 1px solid #ccc;
+            border-radius: 16px;
+            cursor: pointer;
+            transition: all 0.3s;
+            color: #333;
+            font-size: 13px;
+        }
+
+        .radio-group label span {
+            color: #333;
+            font-weight: 500;
+        }
+
+        .radio-group label:hover {
+            border-color: #3498db;
+            background: rgba(52, 152, 219, 0.08);
+        }
+
+        .radio-group input[type="radio"] {
+            margin-right: 5px;
+            width: 14px;
+            height: 14px;
+            accent-color: #3498db;
+        }
+
+        .radio-group input[type="radio"]:checked+span {
+            color: #2980b9;
+            font-weight: 600;
+        }
+
+        .radio-group label:has(input:checked) {
+            background: rgba(52, 152, 219, 0.15);
+            border-color: #3498db;
+        }
+
+        /* Checkbox styling */
+        .checkbox-group input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            accent-color: #3498db;
+            cursor: pointer;
+        }
+
+        .special-note {
+            background: #e8f4fc;
+            border: 1px solid #3498db;
+            border-radius: 6px;
+            padding: 10px;
+            margin: 12px 0;
+        }
+
+        /* Multi-Bathroom Styles */
+        .bathroom-section {
+            background: rgba(52, 152, 219, 0.05);
+            border: 1px solid #3498db;
+            border-radius: 8px;
+            margin: 10px 0;
+            overflow: hidden;
+        }
+
+        .bathroom-header {
+            background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
+            color: white;
+            padding: 10px 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 16px;
+        }
+
+        .bathroom-header:hover {
+            background: linear-gradient(135deg, #2980b9 0%, #1f618d 100%);
+        }
+
+        .bathroom-toggle {
+            transition: transform 0.3s;
+            font-size: 14px;
+        }
+
+        .bathroom-content {
+            padding: 15px;
+        }
+
+        .bathroom-content.collapsed {
+            display: none;
+        }
+
+        .bathroom-summary {
+            padding: 10px 15px;
+            background: rgba(46, 204, 113, 0.1);
+            border-top: 1px solid rgba(52, 152, 219, 0.2);
+            font-size: 13px;
+            color: #555;
+        }
+
+        .add-bath-btn {
+            padding: 10px 18px;
+            background: linear-gradient(135deg, #9b59b6 0%, #8e44ad 100%);
+            color: white;
+            border: none;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .add-bath-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(155, 89, 182, 0.4);
+        }
+
+        .add-bath-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .remove-bath-btn {
+            padding: 4px 10px;
+            background: #e74c3c;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            font-size: 11px;
+            cursor: pointer;
+            margin-left: 8px;
+        }
+
+        .special-note strong {
+            color: #2ecc71;
+            display: block;
+            margin-bottom: 5px;
+            font-size: 13px;
+        }
+
+        .special-note p {
+            color: #666;
+            font-size: 12px;
+            line-height: 1.5;
+            font-style: italic;
+        }
+
+        .action-buttons {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            padding: 12px;
+            background: #f8f9fa;
+            border-top: 1px solid #e0e0e0;
+        }
+
+        .action-button {
+            padding: 10px 8px;
+            border: none;
+            border-radius: 6px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn-save {
+            background: #2ecc71;
+            color: white;
+        }
+
+        .btn-export {
+            background: #3498db;
+            color: white;
+        }
+
+        .btn-clear {
+            background: #e74c3c;
+            color: white;
+            grid-column: span 2;
+        }
+
+        .action-button:active {
+            transform: scale(0.98);
+        }
+
+        .timestamp {
+            text-align: center;
+            padding: 15px;
+            color: #666;
+            font-size: 12px;
+        }
+
+        @media print {
+            body {
+                background: white;
+                padding: 0;
+            }
+
+            .action-buttons,
+            .paste-box,
+            textarea,
+            input {
+                display: none !important;
+            }
+
+            .question-card textarea {
+                display: block !important;
+                border: none;
+                background: transparent;
+                padding: 0;
+                margin-top: 5px;
+            }
+
+            .container {
+                box-shadow: none;
+                border-radius: 0;
+            }
+        }
+
+        @media (max-width: 768px) {
+            body {
+                padding: 10px;
+            }
+
+            .header h1 {
+                font-size: 20px;
+            }
+
+            .question-card .question-text {
+                font-size: 15px;
+            }
+
+            .action-buttons {
+                grid-template-columns: 1fr;
+            }
+
+            .btn-clear {
+                grid-column: span 1;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <!-- HEADER -->
+        <div class="header">
+            <button onclick="goBack()"
+                style="position: absolute; left: 20px; top: 20px; padding: 8px 16px; background: linear-gradient(135deg, #3498db 0%, #2ecc71 100%); border: none; color: white; border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 13px; z-index: 100; box-shadow: 0 2px 8px rgba(52, 152, 219, 0.3);">←
+                Back</button>
+            <h1><img src="assets/app_icons/commision_calc.svg" alt="EZ Bath"
+                    style="width: 32px; height: 32px; vertical-align: middle; margin-right: 10px;"> EZBath Customer
+                Discovery Checklist</h1>
+            <p class="subtitle" id="customerNameHeader">New Customer Appointment</p>
+        </div>
+
+        <!-- CUSTOMER INFO SECTION -->
+        <div class="customer-info-section">
+            <div class="paste-box">
+                <label>👤 Customer Name</label>
+                <input type="text" id="displayName" readonly
+                    style="width: 100%; padding: 12px; border: 2px solid #3498db; border-radius: 5px; font-size: 16px; font-weight: 600; background: rgba(52, 152, 219, 0.1); cursor: not-allowed;">
+                <div class="hint">Auto-filled from customer profile</div>
+            </div>
+
+            <div class="paste-box" style="margin-top: 15px;">
+                <label>🛁 Product Type</label>
+                <select id="productType"
+                    style="width: 100%; padding: 12px; border: 2px solid #3498db; border-radius: 5px; font-size: 16px; background: white; cursor: pointer;">
+                    <option value="">-- Select Product --</option>
+                    <option value="WIS">Walk-In Shower (WIS)</option>
+                    <option value="WIT">Walk-In Tub (WIT)</option>
+                    <option value="TUB">Tub Replacement</option>
+                    <option value="COMBO">Tub/Shower Combo</option>
+                    <option value="OTHER">Other</option>
+                </select>
+            </div>
+
+            <div class="paste-box" style="margin-top: 15px;">
+                <label>📍 Customer Address</label>
+                <textarea id="displayAddress" rows="2" placeholder="Paste or type customer address here..."
+                    style="width: 100%; padding: 12px; border: 2px solid #3498db; border-radius: 5px; font-size: 15px; font-family: inherit; resize: vertical;"></textarea>
+                <div class="hint">Paste the address here - it will be saved with the survey</div>
+            </div>
+        </div>
+
+        <!-- SURVEY QUESTIONS -->
+        <div class="survey-section">
+
+            <!-- SECTION 1: Basic Context & Rapport -->
+            <div class="section-header"
+                style="background: linear-gradient(135deg, #3498db 0%, #2980b9 100%); color: white; padding: 10px 15px; border-radius: 8px; margin-bottom: 10px; font-weight: 600; font-size: 13px;">
+                📋 Section 1: Basic Context & Rapport
+            </div>
+
+            <!-- Question 1 -->
+            <div class="question-card">
+                <div class="question-text">
+                    <span class="question-number">1</span>
+                    How did you hear about us?
+                </div>
+                <input type="text" id="q1" placeholder="Referral, TV, Facebook, Mailer, etc...">
+            </div>
+
+            <!-- Question 2 -->
+            <div class="question-card">
+                <div class="question-text">
+                    <span class="question-number">2</span>
+                    How many baths are in the home?
+                </div>
+                <div class="radio-group">
+                    <label><input type="radio" name="q2_numBaths" value="1"><span>1</span></label>
+                    <label><input type="radio" name="q2_numBaths" value="2"><span>2</span></label>
+                    <label><input type="radio" name="q2_numBaths" value="3"><span>3</span></label>
+                    <label><input type="radio" name="q2_numBaths" value="4+"><span>4+</span></label>
+                </div>
+            </div>
+
+            <!-- Question 3 -->
+            <div class="question-card">
+                <div class="question-text">
+                    <span class="question-number">3</span>
+                    Which bath(s) will we be remodeling?
+                </div>
+                <div class="checkbox-group" style="display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px;">
+                    <label
+                        style="display: flex; align-items: center; gap: 5px; padding: 6px 10px; background: white; border: 1px solid #ccc; border-radius: 16px; cursor: pointer; font-size: 13px; color: #333;">
+                        <input type="checkbox" name="q3_whichBaths" value="Master"
+                            style="width: 14px; height: 14px; accent-color: #3498db;"> Master
+                    </label>
+                    <label
+                        style="display: flex; align-items: center; gap: 5px; padding: 6px 10px; background: white; border: 1px solid #ccc; border-radius: 16px; cursor: pointer; font-size: 13px; color: #333;">
+                        <input type="checkbox" name="q3_whichBaths" value="Hall"
+                            style="width: 14px; height: 14px; accent-color: #3498db;"> Hall
+                    </label>
+                    <label
+                        style="display: flex; align-items: center; gap: 5px; padding: 6px 10px; background: white; border: 1px solid #ccc; border-radius: 16px; cursor: pointer; font-size: 13px; color: #333;">
+                        <input type="checkbox" name="q3_whichBaths" value="Guest"
+                            style="width: 14px; height: 14px; accent-color: #3498db;"> Guest
+                    </label>
+                    <label
+                        style="display: flex; align-items: center; gap: 5px; padding: 6px 10px; background: white; border: 1px solid #ccc; border-radius: 16px; cursor: pointer; font-size: 13px; color: #333;">
+                        <input type="checkbox" name="q3_whichBaths" value="Kids"
+                            style="width: 14px; height: 14px; accent-color: #3498db;"> Kids
+                    </label>
+                    <label
+                        style="display: flex; align-items: center; gap: 5px; padding: 6px 10px; background: white; border: 1px solid #ccc; border-radius: 16px; cursor: pointer; font-size: 13px; color: #333;">
+                        <input type="checkbox" name="q3_whichBaths" value="Basement"
+                            style="width: 14px; height: 14px; accent-color: #3498db;"> Basement
+                    </label>
+                </div>
+                <input type="text" id="q3_other" placeholder="Other bathroom(s)..." style="margin-top: 10px;">
+            </div>
+
+            <!-- Question 4 -->
+            <div class="question-card">
+                <div class="question-text">
+                    <span class="question-number">4</span>
+                    Who will be the primary user(s) of your new bath(s)?
+                </div>
+                <textarea id="q4" placeholder="Husband, wife, kids, elderly parent, etc..."></textarea>
+            </div>
+
+            <!-- SECTION 2: Vision & Emotional Motivation -->
+            <div class="section-header"
+                style="background: linear-gradient(135deg, #9b59b6 0%, #8e44ad 100%); color: white; padding: 10px 15px; border-radius: 8px; margin: 15px 0 10px 0; font-weight: 600; font-size: 13px;">
+                ✨ Section 2: Vision & Emotional Motivation
+            </div>
+
+            <!-- Question 5 -->
+            <div class="question-card important">
+                <div class="question-text">
+                    <span class="question-number">5</span>
+                    <span class="arrow">→</span> How do you envision your bathroom(s) when our job is finished?
+                </div>
+                <textarea id="q5"
+                    placeholder="Describe their dream bathroom... colors, features, feeling..."></textarea>
+            </div>
+
+            <!-- Question 6 -->
+            <div class="question-card">
+                <div class="question-text">
+                    <span class="question-number">6</span>
+                    Have you seen a bathroom that's caught your attention?
+                </div>
+                <div class="radio-group">
+                    <label><input type="radio" name="q6_seenBath" value="Yes"
+                            onchange="document.getElementById('q7_container').style.display='block'"><span>Yes</span></label>
+                    <label><input type="radio" name="q6_seenBath" value="No"
+                            onchange="document.getElementById('q7_container').style.display='none'"><span>No</span></label>
+                </div>
+            </div>
+
+            <!-- Question 7 (conditional) -->
+            <div class="question-card" id="q7_container"
+                style="display: none; border-left: 4px solid #9b59b6; margin-left: 20px;">
+                <div class="question-text">
+                    <span class="question-number">7</span>
+                    What did you like most about it?
+                </div>
+                <textarea id="q7" placeholder="Colors, tile, fixtures, layout, etc..."></textarea>
+            </div>
+
+            <!-- SECTION 3: Current Pain & Dissatisfaction -->
+            <div class="section-header"
+                style="background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%); color: white; padding: 10px 15px; border-radius: 8px; margin: 15px 0 10px 0; font-weight: 600; font-size: 13px;">
+                😤 Section 3: Current Pain & Dissatisfaction
+            </div>
+
+            <!-- Question 8 -->
+            <div class="question-card">
+                <div class="question-text">
+                    <span class="question-number">8</span>
+                    What do you like most about your current bath?
+                </div>
+                <textarea id="q8" placeholder="What's working for them?"></textarea>
+            </div>
+
+            <!-- Question 9 -->
+            <div class="question-card important">
+                <div class="question-text">
+                    <span class="question-number">9</span>
+                    <span class="arrow">→</span> What do you like least about your current bath?
+                </div>
+                <textarea id="q9" placeholder="Pain points, frustrations, what's not working..."></textarea>
+            </div>
+
+            <!-- Question 10 -->
+            <div class="question-card important">
+                <div class="question-text">
+                    <span class="question-number">10</span>
+                    <span class="arrow">→</span> What would you like us to change in your current bath?
+                </div>
+                <textarea id="q10" placeholder="Specific changes they want made..."></textarea>
+            </div>
+
+            <!-- SECTION 4: Accessibility & Functional Needs -->
+            <div class="section-header"
+                style="background: linear-gradient(135deg, #1abc9c 0%, #16a085 100%); color: white; padding: 10px 15px; border-radius: 8px; margin: 15px 0 10px 0; font-weight: 600; font-size: 13px;">
+                ♿ Section 4: Accessibility & Functional Needs
+            </div>
+
+            <!-- Question 11 -->
+            <div class="question-card important">
+                <div class="question-text">
+                    <span class="question-number">11</span>
+                    <span class="arrow">→</span> Are you considering a walk-in tub or other accessibility options?
+                </div>
+                <div class="radio-group">
+                    <label><input type="radio" name="q11_accessibility" value="Yes"><span>Yes</span></label>
+                    <label><input type="radio" name="q11_accessibility" value="No"><span>No</span></label>
+                    <label><input type="radio" name="q11_accessibility" value="Maybe"><span>Maybe /
+                            Interested</span></label>
+                </div>
+                <textarea id="q11_notes" placeholder="Notes on mobility concerns, who needs it, why..."
+                    style="margin-top: 10px;"></textarea>
+            </div>
+
+            <!-- SECTION 5: Home & Timeline Reality -->
+            <div class="section-header"
+                style="background: linear-gradient(135deg, #f39c12 0%, #e67e22 100%); color: white; padding: 10px 15px; border-radius: 8px; margin: 15px 0 10px 0; font-weight: 600; font-size: 13px;">
+                🏠 Section 5: Home & Timeline Reality
+            </div>
+
+            <!-- Question 12 -->
+            <div class="question-card">
+                <div class="question-text">
+                    <span class="question-number">12</span>
+                    Age of home
+                </div>
+                <input type="text" id="q12" placeholder="e.g., 25 years, Built in 1998...">
+            </div>
+
+            <!-- Question 13 -->
+            <div class="question-card">
+                <div class="question-text">
+                    <span class="question-number">13</span>
+                    Years you've lived here
+                </div>
+                <input type="text" id="q13" placeholder="e.g., 10 years">
+            </div>
+
+            <!-- Question 14 -->
+            <div class="question-card">
+                <div class="question-text">
+                    <span class="question-number">14</span>
+                    Years you plan to live here
+                </div>
+                <input type="text" id="q14" placeholder="e.g., Forever, 5 more years, selling soon...">
+            </div>
+
+            <!-- Question 15 -->
+            <div class="question-card important">
+                <div class="question-text">
+                    <span class="question-number">15</span>
+                    <span class="arrow">→</span> How long have you been considering remodeling your bathroom?
+                </div>
+                <input type="text" id="q15" placeholder="e.g., 2 years, just started thinking about it...">
+            </div>
+
+            <!-- Question 16 -->
+            <div class="question-card important">
+                <div class="question-text">
+                    <span class="question-number">16</span>
+                    <span class="arrow">→</span> What's prevented you from acting on your plan before now?
+                </div>
+                <textarea id="q16" placeholder="Money, timing, couldn't find right company, life events..."></textarea>
+            </div>
+
+            <!-- SECTION 6: Competing Priorities -->
+            <div class="section-header"
+                style="background: linear-gradient(135deg, #34495e 0%, #2c3e50 100%); color: white; padding: 10px 15px; border-radius: 8px; margin: 15px 0 10px 0; font-weight: 600; font-size: 13px;">
+                🎯 Section 6: Competing Priorities
+            </div>
+
+            <!-- Question 17 -->
+            <div class="question-card">
+                <div class="question-text">
+                    <span class="question-number">17</span>
+                    What other home improvement projects have you been considering?
+                </div>
+                <textarea id="q17" placeholder="Kitchen, windows, roof, HVAC, flooring, etc..."></textarea>
+            </div>
+
+            <!-- SECTION 7: Funding & Payment -->
+            <div class="section-header"
+                style="background: linear-gradient(135deg, #27ae60 0%, #2ecc71 100%); color: white; padding: 10px 15px; border-radius: 8px; margin: 15px 0 10px 0; font-weight: 600; font-size: 13px;">
+                💰 Section 7: Funding & Payment
+            </div>
+
+            <!-- Question 18 -->
+            <div class="question-card important">
+                <div class="question-text">
+                    <span class="question-number">18</span>
+                    <span class="arrow">→</span> How would you prefer to fund this project?
+                </div>
+                <div class="radio-group">
+                    <label><input type="radio" name="q18_funding" value="Cash"
+                            onchange="document.getElementById('q19_container').style.display='block'; document.getElementById('q20_container').style.display='none';"><span>💵
+                            Cash</span></label>
+                    <label><input type="radio" name="q18_funding" value="Monthly"
+                            onchange="document.getElementById('q19_container').style.display='none'; document.getElementById('q20_container').style.display='block';"><span>📅
+                            Monthly Plan</span></label>
+                    <label><input type="radio" name="q18_funding" value="Credit Card"
+                            onchange="document.getElementById('q19_container').style.display='none'; document.getElementById('q20_container').style.display='none';"><span>💳
+                            Credit Card</span></label>
+                </div>
+            </div>
+
+            <!-- Question 19 (conditional - Cash) -->
+            <div class="question-card" id="q19_container"
+                style="display: none; border-left: 4px solid #27ae60; margin-left: 20px;">
+                <div class="question-text">
+                    <span class="question-number">19</span>
+                    If cash, explain timing:
+                </div>
+                <textarea id="q19"
+                    placeholder="Check, CD maturity, home equity, settlement, tax refund, etc..."></textarea>
+            </div>
+
+            <!-- Question 20 (conditional - Monthly) -->
+            <div class="question-card" id="q20_container"
+                style="display: none; border-left: 4px solid #27ae60; margin-left: 20px;">
+                <div class="question-text">
+                    <span class="question-number">20</span>
+                    If monthly plan, what's a comfortable payment range?
+                </div>
+                <div class="radio-group">
+                    <label><input type="radio" name="q20_range" value="$150-$200"><span>$150 – $200</span></label>
+                    <label><input type="radio" name="q20_range" value="$200-$250"><span>$200 – $250</span></label>
+                    <label><input type="radio" name="q20_range" value="$250-$300"><span>$250 – $300</span></label>
+                    <label><input type="radio" name="q20_range" value="$300+"><span>$300+</span></label>
+                </div>
+            </div>
+
+            <!-- Question 21 -->
+            <div class="question-card important">
+                <div class="question-text">
+                    <span class="question-number">21</span>
+                    <span class="arrow">→</span> For a project like this, are you able to put down a small deposit?
+                </div>
+                <div class="radio-group">
+                    <label><input type="radio" name="q21_deposit" value="Yes"><span>Yes</span></label>
+                    <label><input type="radio" name="q21_deposit" value="No"><span>No</span></label>
+                    <label><input type="radio" name="q21_deposit" value="Need to discuss"><span>Need to
+                            discuss</span></label>
+                </div>
+                <textarea id="q21_notes" placeholder="Notes about deposit, timing, amount..."
+                    style="margin-top: 10px;"></textarea>
+            </div>
+
+            <!-- SPECIAL NOTE / TAKEAWAY -->
+            <div class="special-note">
+                <strong>💬 "Takeaway" Statement - Say this before inspection:</strong>
+                <p>"About 20% of the time I can't help anyone, however, if I can't help you I'll always steer you to
+                    someone who can."</p>
+            </div>
+
+            <div class="question-card">
+                <div class="question-text">
+                    <span class="question-number">📝</span>
+                    Takeaway Notes / Response:
+                </div>
+                <textarea id="takeawayNotes" placeholder="Enter customer reaction or notes..."></textarea>
+            </div>
+        </div>
+
+        <!-- ACTION BUTTONS -->
+        <div class="action-buttons">
+            <button class="action-button btn-save" onclick="saveToPhone()">
+                💾 Save to Phone
+            </button>
+            <button class="action-button btn-export" onclick="exportToPDF()">
+                📄 Export PDF
+            </button>
+            <button class="action-button" onclick="clearFormCache()"
+                style="background: linear-gradient(135deg, #e74c3c, #c0392b);">
+                🗑️ Clear Form
+            </button>
+            <button class="action-button" onclick="exportForGPT()"
+                style="background: linear-gradient(135deg, #27ae60, #2ecc71);">
+                🤖 Export for GPT Analysis
+            </button>
+        </div>
+
+        <!-- TIMESTAMP -->
+        <div class="timestamp" id="timestamp" style="padding: 10px; font-size: 11px;">
+            Created: <span id="createdDate">—</span>
+        </div>
+
+        <!-- COACHING SUGGESTIONS -->
+        <div
+            style="max-width: 800px; margin: 15px auto; background: rgba(255, 255, 255, 0.98); border-radius: 10px; overflow: hidden; box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);">
+            <div onclick="toggleCoachingSection()"
+                style="background: linear-gradient(135deg, #9b59b6 0%, #8e44ad 100%); color: white; padding: 10px 15px; cursor: pointer; display: flex; justify-content: space-between; align-items: center;">
+                <span style="font-size: 13px; font-weight: 600;">💡 Coaching Tips - Open-Ended Questions</span>
+                <span id="coachingArrow" style="font-size: 14px; transition: transform 0.3s;">▼</span>
+            </div>
+            <div id="coachingContent" style="display: none; padding: 12px 15px;">
+                <p style="color: #666; font-size: 11px; margin-bottom: 10px; font-style: italic;">Use these as
+                    inspiration during discovery. Not required fields - just helpful prompts.</p>
+
+                <div style="display: flex; flex-direction: column; gap: 8px;">
+                    <div
+                        style="padding: 8px 10px; background: #f8f9fa; border-radius: 6px; border-left: 3px solid #9b59b6; color: #333; font-size: 12px;">
+                        🎯 "What would your bathroom look like in a perfect world?"
+                    </div>
+                    <div
+                        style="padding: 8px 10px; background: #f8f9fa; border-radius: 6px; border-left: 3px solid #9b59b6; color: #333; font-size: 12px;">
+                        💰 "If price wasn't a factor, what would you want?"
+                    </div>
+                    <div
+                        style="padding: 12px 16px; background: #f8f9fa; border-radius: 8px; border-left: 4px solid #9b59b6; color: #333;">
+                        🔧 "What's the #1 thing you want to change about your current bathroom?"
+                    </div>
+                    <div
+                        style="padding: 8px 10px; background: #f8f9fa; border-radius: 6px; border-left: 3px solid #9b59b6; color: #333; font-size: 12px;">
+                        👨‍👩‍👧‍👦 "Who else uses this bathroom? What are their needs?"
+                    </div>
+                    <div
+                        style="padding: 8px 10px; background: #f8f9fa; border-radius: 6px; border-left: 3px solid #9b59b6; color: #333; font-size: 12px;">
+                        ❤️ "What would it mean to you to have this done?"
+                    </div>
+                    <div
+                        style="padding: 8px 10px; background: #f8f9fa; border-radius: 6px; border-left: 3px solid #9b59b6; color: #333; font-size: 12px;">
+                        🤔 "What's holding you back from making a decision today?"
+                    </div>
+                    <div
+                        style="padding: 8px 10px; background: #f8f9fa; border-radius: 6px; border-left: 3px solid #9b59b6; color: #333; font-size: 12px;">
+                        📊 "On a scale of 1-10, how important is this project to you right now?"
+                    </div>
+                    <div
+                        style="padding: 8px 10px; background: #f8f9fa; border-radius: 6px; border-left: 3px solid #9b59b6; color: #333; font-size: 12px;">
+                        ⏰ "If we could get this done for you, when would you ideally want to start?"
+                    </div>
+                    <div
+                        style="padding: 8px 10px; background: #f8f9fa; border-radius: 6px; border-left: 3px solid #9b59b6; color: #333; font-size: 12px;">
+                        🏠 "How long do you plan on staying in this home?"
+                    </div>
+                    <div
+                        style="padding: 8px 10px; background: #f8f9fa; border-radius: 6px; border-left: 3px solid #9b59b6; color: #333; font-size: 12px;">
+                        💭 "What concerns do you have about a project like this?"
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Toggle coaching section
+        function toggleCoachingSection() {
+            const content = document.getElementById('coachingContent');
+            const arrow = document.getElementById('coachingArrow');
+            if (content.style.display === 'none') {
+                content.style.display = 'block';
+                arrow.style.transform = 'rotate(180deg)';
+            } else {
+                content.style.display = 'none';
+                arrow.style.transform = 'rotate(0deg)';
+            }
+        }
+
+        // Set timestamp on load
+        window.onload = function () {
+            const now = new Date();
+            const dateStr = now.toLocaleDateString() + ' ' + now.toLocaleTimeString();
+            document.getElementById('createdDate').textContent = dateStr;
+        };
+
+        // Auto-populate customer name on page load
+        window.addEventListener('DOMContentLoaded', function () {
+            const currentCustomer = localStorage.getItem('currentCustomer');
+            if (currentCustomer) {
+                document.getElementById('displayName').value = currentCustomer;
+                document.getElementById('customerNameHeader').textContent = `Customer: ${currentCustomer}`;
+            }
+        });
+
+        // Get which baths are selected (checkboxes)
+        function getSelectedBaths() {
+            const checkboxes = document.querySelectorAll('input[name="q3_whichBaths"]:checked');
+            const selected = Array.from(checkboxes).map(cb => cb.value);
+            const other = document.getElementById('q3_other')?.value;
+            if (other) selected.push(other);
+            return selected;
+        }
+
+        // Save form data
+        function saveToPhone() {
+            const formData = {
+                customerName: document.getElementById('displayName').value,
+                productType: document.getElementById('productType').value,
+                customerAddress: document.getElementById('displayAddress').value,
+                timestamp: document.getElementById('createdDate').textContent,
+
+                // Section 1: Basic Context & Rapport
+                q1: document.getElementById('q1').value,
+                q2_numBaths: document.querySelector('input[name="q2_numBaths"]:checked')?.value || '',
+                q3_whichBaths: getSelectedBaths(),
+                q4: document.getElementById('q4').value,
+
+                // Section 2: Vision & Emotional Motivation
+                q5: document.getElementById('q5').value,
+                q6_seenBath: document.querySelector('input[name="q6_seenBath"]:checked')?.value || '',
+                q7: document.getElementById('q7').value,
+
+                // Section 3: Current Pain & Dissatisfaction
+                q8: document.getElementById('q8').value,
+                q9: document.getElementById('q9').value,
+                q10: document.getElementById('q10').value,
+
+                // Section 4: Accessibility
+                q11_accessibility: document.querySelector('input[name="q11_accessibility"]:checked')?.value || '',
+                q11_notes: document.getElementById('q11_notes').value,
+
+                // Section 5: Home & Timeline
+                q12: document.getElementById('q12').value,
+                q13: document.getElementById('q13').value,
+                q14: document.getElementById('q14').value,
+                q15: document.getElementById('q15').value,
+                q16: document.getElementById('q16').value,
+
+                // Section 6: Competing Priorities
+                q17: document.getElementById('q17').value,
+
+                // Section 7: Funding & Payment
+                q18_funding: document.querySelector('input[name="q18_funding"]:checked')?.value || '',
+                q19: document.getElementById('q19').value,
+                q20_range: document.querySelector('input[name="q20_range"]:checked')?.value || '',
+                q21_deposit: document.querySelector('input[name="q21_deposit"]:checked')?.value || '',
+                q21_notes: document.getElementById('q21_notes').value,
+
+                // Takeaway
+                takeawayNotes: document.getElementById('takeawayNotes').value,
+
+                // Legacy field mappings for 4-Square compatibility
+                mobilityIssue: document.querySelector('input[name="q11_accessibility"]:checked')?.value || '',
+                q6notes: document.getElementById('q11_notes').value
+            };
+
+            // Save to EZAPP structure
+            if (typeof EZAPPData !== 'undefined') {
+                EZAPPData.saveSurvey(formData);
+                localStorage.removeItem(CACHE_KEY);
+                alert(`✓ Survey saved successfully!\n\nBathrooms: ${formData.q3_whichBaths.join(', ') || 'Not specified'}\n\nYou can now continue to the 4-Square or other tools.`);
+            } else {
+                alert('❌ Error: Data management system not loaded. Please refresh the page.');
+            }
+        }
+
+        // Export for GPT Analysis
+        function exportForGPT() {
+            const customerName = document.getElementById('displayName').value;
+            const productType = document.getElementById('productType').value;
+            const customerAddress = document.getElementById('displayAddress').value;
+
+            if (!document.getElementById('q1').value.trim()) {
+                alert('❌ No survey data to export!\n\nPlease fill out at least some questions first.');
+                return;
+            }
+
+            let text = `CUSTOMER SURVEY ANALYSIS REQUEST\n`;
+            text += `${'='.repeat(60)}\n\n`;
+            text += `Customer: ${customerName || 'Not provided'}\n`;
+            text += `Product Type: ${productType || 'Not specified'}\n`;
+            text += `Address: ${customerAddress || 'Not provided'}\n`;
+            text += `Date: ${new Date().toLocaleDateString()}\n\n`;
+            text += `${'='.repeat(60)}\n\n`;
+
+            // Section 1
+            text += `📋 SECTION 1: BASIC CONTEXT & RAPPORT\n`;
+            text += `-`.repeat(40) + `\n`;
+            text += `Q1. How did you hear about us?\n   ${document.getElementById('q1').value || 'N/A'}\n\n`;
+            text += `Q2. How many baths in home?\n   ${document.querySelector('input[name="q2_numBaths"]:checked')?.value || 'N/A'}\n\n`;
+            text += `Q3. Which bath(s) remodeling?\n   ${getSelectedBaths().join(', ') || 'N/A'}\n\n`;
+            text += `Q4. Primary user(s)?\n   ${document.getElementById('q4').value || 'N/A'}\n\n`;
+
+            // Section 2
+            text += `✨ SECTION 2: VISION & EMOTIONAL MOTIVATION\n`;
+            text += `-`.repeat(40) + `\n`;
+            text += `Q5. How do you envision your bathroom when finished?\n   ${document.getElementById('q5').value || 'N/A'}\n\n`;
+            text += `Q6. Seen a bathroom that caught your attention?\n   ${document.querySelector('input[name="q6_seenBath"]:checked')?.value || 'N/A'}\n\n`;
+            text += `Q7. What did you like most about it?\n   ${document.getElementById('q7').value || 'N/A'}\n\n`;
+
+            // Section 3
+            text += `😤 SECTION 3: CURRENT PAIN & DISSATISFACTION\n`;
+            text += `-`.repeat(40) + `\n`;
+            text += `Q8. What do you like most about current bath?\n   ${document.getElementById('q8').value || 'N/A'}\n\n`;
+            text += `Q9. What do you like least about current bath?\n   ${document.getElementById('q9').value || 'N/A'}\n\n`;
+            text += `Q10. What would you like us to change?\n   ${document.getElementById('q10').value || 'N/A'}\n\n`;
+
+            // Section 4
+            text += `♿ SECTION 4: ACCESSIBILITY & FUNCTIONAL NEEDS\n`;
+            text += `-`.repeat(40) + `\n`;
+            text += `Q11. Considering walk-in tub / accessibility options?\n   ${document.querySelector('input[name="q11_accessibility"]:checked')?.value || 'N/A'}\n`;
+            text += `   Notes: ${document.getElementById('q11_notes').value || 'N/A'}\n\n`;
+
+            // Section 5
+            text += `🏠 SECTION 5: HOME & TIMELINE REALITY\n`;
+            text += `-`.repeat(40) + `\n`;
+            text += `Q12. Age of home: ${document.getElementById('q12').value || 'N/A'}\n`;
+            text += `Q13. Years lived here: ${document.getElementById('q13').value || 'N/A'}\n`;
+            text += `Q14. Years plan to live here: ${document.getElementById('q14').value || 'N/A'}\n`;
+            text += `Q15. How long considering remodel?\n   ${document.getElementById('q15').value || 'N/A'}\n\n`;
+            text += `Q16. What's prevented you from acting before now?\n   ${document.getElementById('q16').value || 'N/A'}\n\n`;
+
+            // Section 6
+            text += `🎯 SECTION 6: COMPETING PRIORITIES\n`;
+            text += `-`.repeat(40) + `\n`;
+            text += `Q17. Other home improvement projects considering?\n   ${document.getElementById('q17').value || 'N/A'}\n\n`;
+
+            // Section 7
+            text += `💰 SECTION 7: FUNDING & PAYMENT\n`;
+            text += `-`.repeat(40) + `\n`;
+            text += `Q18. Preferred funding method: ${document.querySelector('input[name="q18_funding"]:checked')?.value || 'N/A'}\n`;
+            text += `Q19. Cash timing: ${document.getElementById('q19').value || 'N/A'}\n`;
+            text += `Q20. Monthly payment range: ${document.querySelector('input[name="q20_range"]:checked')?.value || 'N/A'}\n`;
+            text += `Q21. Able to put down deposit: ${document.querySelector('input[name="q21_deposit"]:checked')?.value || 'N/A'}\n`;
+            text += `   Notes: ${document.getElementById('q21_notes').value || 'N/A'}\n\n`;
+
+            // Takeaway
+            text += `📝 TAKEAWAY NOTES\n`;
+            text += `-`.repeat(40) + `\n`;
+            text += `${document.getElementById('takeawayNotes').value || 'N/A'}\n\n`;
+
+            text += `${'='.repeat(60)}\n`;
+            text += `Please analyze this customer survey and provide:\n`;
+            text += `1. Key pain points and motivations\n`;
+            text += `2. Recommended approach for this customer\n`;
+            text += `3. Potential objections to prepare for\n`;
+            text += `4. Suggested talking points based on their answers\n`;
+
+            navigator.clipboard.writeText(text).then(() => {
+                alert('✅ Survey copied to clipboard!\n\nPaste it into ChatGPT for analysis.');
+            }).catch(err => {
+                const textarea = document.createElement('textarea');
+                textarea.value = text;
+                document.body.appendChild(textarea);
+                textarea.select();
+                document.execCommand('copy');
+                document.body.removeChild(textarea);
+                alert('✅ Survey copied to clipboard!\n\nPaste it into ChatGPT for analysis.');
+            });
+        }
+
+        // Export PDF (print)
+        function exportToPDF() {
+            window.print();
+        }
+
+        // ============================================
+        // CACHING SYSTEM
+        // ============================================
+        const currentCustomer = localStorage.getItem('currentCustomer') || 'default';
+        const CACHE_KEY = `survey_cache_${currentCustomer.replace(/[^a-zA-Z0-9]/g, '_')}`;
+
+        function autoSaveCache() {
+            const formData = {
+                productType: document.getElementById('productType').value,
+                customerAddress: document.getElementById('displayAddress').value,
+                q1: document.getElementById('q1').value,
+                q2_numBaths: document.querySelector('input[name="q2_numBaths"]:checked')?.value || '',
+                q3_whichBaths: getSelectedBaths(),
+                q3_other: document.getElementById('q3_other')?.value || '',
+                q4: document.getElementById('q4').value,
+                q5: document.getElementById('q5').value,
+                q6_seenBath: document.querySelector('input[name="q6_seenBath"]:checked')?.value || '',
+                q7: document.getElementById('q7').value,
+                q8: document.getElementById('q8').value,
+                q9: document.getElementById('q9').value,
+                q10: document.getElementById('q10').value,
+                q11_accessibility: document.querySelector('input[name="q11_accessibility"]:checked')?.value || '',
+                q11_notes: document.getElementById('q11_notes').value,
+                q12: document.getElementById('q12').value,
+                q13: document.getElementById('q13').value,
+                q14: document.getElementById('q14').value,
+                q15: document.getElementById('q15').value,
+                q16: document.getElementById('q16').value,
+                q17: document.getElementById('q17').value,
+                q18_funding: document.querySelector('input[name="q18_funding"]:checked')?.value || '',
+                q19: document.getElementById('q19').value,
+                q20_range: document.querySelector('input[name="q20_range"]:checked')?.value || '',
+                q21_deposit: document.querySelector('input[name="q21_deposit"]:checked')?.value || '',
+                q21_notes: document.getElementById('q21_notes').value,
+                takeawayNotes: document.getElementById('takeawayNotes').value
+            };
+            localStorage.setItem(CACHE_KEY, JSON.stringify(formData));
+        }
+
+        function loadCachedData() {
+            const cached = localStorage.getItem(CACHE_KEY);
+            if (!cached) return;
+
+            try {
+                const data = JSON.parse(cached);
+
+                // Text fields
+                if (data.productType) document.getElementById('productType').value = data.productType;
+                if (data.customerAddress) document.getElementById('displayAddress').value = data.customerAddress;
+                if (data.q1) document.getElementById('q1').value = data.q1;
+                if (data.q3_other) document.getElementById('q3_other').value = data.q3_other;
+                if (data.q4) document.getElementById('q4').value = data.q4;
+                if (data.q5) document.getElementById('q5').value = data.q5;
+                if (data.q7) document.getElementById('q7').value = data.q7;
+                if (data.q8) document.getElementById('q8').value = data.q8;
+                if (data.q9) document.getElementById('q9').value = data.q9;
+                if (data.q10) document.getElementById('q10').value = data.q10;
+                if (data.q11_notes) document.getElementById('q11_notes').value = data.q11_notes;
+                if (data.q12) document.getElementById('q12').value = data.q12;
+                if (data.q13) document.getElementById('q13').value = data.q13;
+                if (data.q14) document.getElementById('q14').value = data.q14;
+                if (data.q15) document.getElementById('q15').value = data.q15;
+                if (data.q16) document.getElementById('q16').value = data.q16;
+                if (data.q17) document.getElementById('q17').value = data.q17;
+                if (data.q19) document.getElementById('q19').value = data.q19;
+                if (data.q21_notes) document.getElementById('q21_notes').value = data.q21_notes;
+                if (data.takeawayNotes) document.getElementById('takeawayNotes').value = data.takeawayNotes;
+
+                // Radio buttons
+                if (data.q2_numBaths) {
+                    const radio = document.querySelector(`input[name="q2_numBaths"][value="${data.q2_numBaths}"]`);
+                    if (radio) radio.checked = true;
+                }
+                if (data.q6_seenBath) {
+                    const radio = document.querySelector(`input[name="q6_seenBath"][value="${data.q6_seenBath}"]`);
+                    if (radio) {
+                        radio.checked = true;
+                        if (data.q6_seenBath === 'Yes') document.getElementById('q7_container').style.display = 'block';
+                    }
+                }
+                if (data.q11_accessibility) {
+                    const radio = document.querySelector(`input[name="q11_accessibility"][value="${data.q11_accessibility}"]`);
+                    if (radio) radio.checked = true;
+                }
+                if (data.q18_funding) {
+                    const radio = document.querySelector(`input[name="q18_funding"][value="${data.q18_funding}"]`);
+                    if (radio) {
+                        radio.checked = true;
+                        if (data.q18_funding === 'Cash') document.getElementById('q19_container').style.display = 'block';
+                        if (data.q18_funding === 'Monthly') document.getElementById('q20_container').style.display = 'block';
+                    }
+                }
+                if (data.q20_range) {
+                    const radio = document.querySelector(`input[name="q20_range"][value="${data.q20_range}"]`);
+                    if (radio) radio.checked = true;
+                }
+                if (data.q21_deposit) {
+                    const radio = document.querySelector(`input[name="q21_deposit"][value="${data.q21_deposit}"]`);
+                    if (radio) radio.checked = true;
+                }
+
+                // Checkboxes for which baths
+                if (data.q3_whichBaths && Array.isArray(data.q3_whichBaths)) {
+                    data.q3_whichBaths.forEach(bath => {
+                        const checkbox = document.querySelector(`input[name="q3_whichBaths"][value="${bath}"]`);
+                        if (checkbox) checkbox.checked = true;
+                    });
+                }
+
+                console.log('✓ Cached data loaded');
+            } catch (e) {
+                console.error('Failed to load cached data:', e);
+            }
+        }
+
+        function setupAutoSave() {
+            document.querySelectorAll('input[type="text"], textarea').forEach(el => {
+                el.addEventListener('input', autoSaveCache);
+            });
+            document.querySelectorAll('input[type="radio"], input[type="checkbox"]').forEach(el => {
+                el.addEventListener('change', autoSaveCache);
+            });
+            document.querySelectorAll('select').forEach(el => {
+                el.addEventListener('change', autoSaveCache);
+            });
+        }
+
+        window.clearFormCache = function () {
+            if (confirm('⚠️ This will clear all unsaved form data. Are you sure?')) {
+                localStorage.removeItem(CACHE_KEY);
+                location.reload();
+            }
+        };
+
+        // Initialize on DOM ready
+        document.addEventListener('DOMContentLoaded', function () {
+            loadCachedData();
+            setupAutoSave();
+            setInterval(autoSaveCache, 5000);
+        });
+
+        // Display customer name
+        if (currentCustomer && currentCustomer !== 'default') {
+            document.getElementById('customerNameHeader').textContent = `Customer: ${currentCustomer}`;
+        }
+    </script>
+    <script src="assets/js/ezapp-data.js"></script>
+</body>
+
+</html>

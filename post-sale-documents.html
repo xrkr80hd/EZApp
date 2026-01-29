@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <title>Post Sale Documents</title>
+    <link rel="stylesheet" href="assets/css/responsive-fixes.css">
+    <script src="assets/js/toast-notifications.js" defer></script>
+    <script src="assets/js/loading-spinner.js" defer></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+            min-height: 100vh;
+            padding: 80px 20px 20px 20px;
+            position: relative;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 10%;
+            left: 5%;
+            width: 300px;
+            height: 300px;
+            background: radial-gradient(circle, rgba(46, 204, 113, 0.15) 0%, transparent 70%);
+            border-radius: 50%;
+            animation: pulse 8s ease-in-out infinite;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        body::after {
+            content: '';
+            position: fixed;
+            bottom: 10%;
+            right: 5%;
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, rgba(52, 152, 219, 0.12) 0%, transparent 70%);
+            border-radius: 50%;
+            animation: pulse 10s ease-in-out infinite reverse;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        @keyframes pulse {
+
+            0%,
+            100% {
+                transform: scale(1);
+                opacity: 0.6;
+            }
+
+            50% {
+                transform: scale(1.1);
+                opacity: 0.8;
+            }
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.98);
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+            overflow: hidden;
+            position: relative;
+            z-index: 1;
+            backdrop-filter: blur(10px);
+        }
+
+        .header {
+            background: linear-gradient(135deg, #2ecc71 0%, #27ae60 100%);
+            color: white;
+            padding: 30px 25px;
+            text-align: center;
+            box-shadow: 0 4px 12px rgba(46, 204, 113, 0.3);
+        }
+
+        .header h1 {
+            font-size: 26px;
+            margin-bottom: 10px;
+        }
+
+        .header .subtitle {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+
+        .customer-info {
+            background: linear-gradient(135deg, rgba(52, 152, 219, 0.1) 0%, rgba(46, 204, 113, 0.1) 100%);
+            padding: 20px;
+            border-bottom: 3px solid #3498db;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .customer-info h3 {
+            color: #333;
+            font-size: 18px;
+        }
+
+        .customer-info h3 span {
+            color: #3498db;
+            font-weight: 700;
+        }
+
+        .customer-info p {
+            color: #666;
+            font-size: 14px;
+        }
+
+        .content-wrapper {
+            padding: 25px;
+        }
+
+        .document-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+        }
+
+        .document-card {
+            background: white;
+            border-radius: 16px;
+            padding: 25px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s;
+            cursor: pointer;
+            border: 2px solid transparent;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .document-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #3498db, #2ecc71);
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .document-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            border-color: #3498db;
+        }
+
+        .document-card:hover::before {
+            opacity: 1;
+        }
+
+        .document-card.completed {
+            border-color: #2ecc71;
+            background: linear-gradient(135deg, rgba(46, 204, 113, 0.05) 0%, rgba(39, 174, 96, 0.05) 100%);
+        }
+
+        .document-card.completed::before {
+            background: linear-gradient(90deg, #2ecc71, #27ae60);
+            opacity: 1;
+        }
+
+        .document-icon {
+            font-size: 48px;
+            margin-bottom: 15px;
+        }
+
+        .document-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: #333;
+            margin-bottom: 8px;
+        }
+
+        .document-description {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 15px;
+            line-height: 1.5;
+        }
+
+        .document-status {
+            font-size: 13px;
+            font-weight: 600;
+            padding: 8px 16px;
+            border-radius: 25px;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .status-pending {
+            background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
+            color: white;
+        }
+
+        .status-completed {
+            background: linear-gradient(135deg, #2ecc71 0%, #27ae60 100%);
+            color: white;
+        }
+
+        .action-buttons {
+            display: flex;
+            justify-content: center;
+            padding: 20px;
+            background: #f8f9fa;
+            border-top: 2px solid #e0e0e0;
+        }
+
+        .btn-back {
+            background: linear-gradient(135deg, #3498db 0%, #2ecc71 100%);
+            color: white;
+            padding: 14px 30px;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            box-shadow: 0 4px 12px rgba(52, 152, 219, 0.3);
+        }
+
+        .btn-back:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(52, 152, 219, 0.4);
+        }
+
+        .btn-back:active {
+            transform: scale(0.98);
+        }
+
+        @media (max-width: 768px) {
+            body {
+                padding: 10px;
+            }
+
+            .header h1 {
+                font-size: 22px;
+            }
+
+            .customer-info {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .document-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .document-card {
+                padding: 20px;
+            }
+
+            .document-icon {
+                font-size: 40px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>✅ Post Sale Documents</h1>
+            <div class="subtitle">Congratulations on the sale! Complete these documents:</div>
+        </div>
+
+        <div class="customer-info">
+            <h3>Customer: <span id="customerName">—</span></h3>
+            <p>Sale Date: <span id="saleDate">—</span></p>
+        </div>
+
+        <div class="content-wrapper">
+            <div class="document-grid">
+                <!-- Bathroom Measurements -->
+                <div class="document-card" onclick="window.location.href='bathroom-measurement.html'">
+                    <div class="document-icon">📐</div>
+                    <div class="document-title">Bathroom Measurements</div>
+                    <div class="document-description">Complete measurement form with diagram</div>
+                    <span class="document-status status-pending" id="status-measurements">Start Form →</span>
+                </div>
+
+                <!-- Important Install Notes -->
+                <div class="document-card" onclick="window.location.href='important-install-notes.html'">
+                    <div class="document-icon">⚠️</div>
+                    <div class="document-title">Important Install Notes</div>
+                    <div class="document-description">Office & installer instructions (free-form text)</div>
+                    <span class="document-status status-pending" id="status-installNotes">Start Form →</span>
+                </div>
+
+                <!-- JOC (Job Order Checklist) -->
+                <div class="document-card" onclick="window.location.href='joc-complete.html'">
+                    <div class="document-icon">📝</div>
+                    <div class="document-title">JOC - Job Order Checklist</div>
+                    <div class="document-description">Product specs, accessories & plumbing (combined form)</div>
+                    <span class="document-status status-pending" id="status-joc">Start Form →</span>
+                </div>
+
+                <!-- Office Processing -->
+                <div class="document-card" onclick="window.location.href='office-processing.html'">
+                    <div class="document-icon">🏢</div>
+                    <div class="document-title">Office Processing Checklist</div>
+                    <div class="document-description">30-point process verification checklist</div>
+                    <span class="document-status status-pending" id="status-officeProcessing">Start Form →</span>
+                </div>
+
+                <!-- Post Sale Checklist -->
+                <div class="document-card" onclick="window.location.href='post-sale-checklist.html'">
+                    <div class="document-icon">✅</div>
+                    <div class="document-title">Post Sale Checklist</div>
+                    <div class="document-description">Dropbox & One Click upload tracking</div>
+                    <span class="document-status status-pending" id="status-postSaleChecklist">Start Form →</span>
+                </div>
+
+                <!-- Commission Calculator -->
+                <div class="document-card" onclick="window.location.href='commission_calculator.html'">
+                    <div class="document-icon">💰</div>
+                    <div class="document-title">Commission Calculator</div>
+                    <div class="document-description">Calculate your earnings</div>
+                    <span class="document-status status-pending" id="status-commission">Calculate →</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="action-buttons">
+            <button class="btn-back" onclick="goBack()">
+                ← Back to Tools
+            </button>
+        </div>
+    </div>
+
+    <script src="assets/js/ezapp-data.js"></script>
+    <script>
+        window.onload = function () {
+            loadCustomerInfo();
+            checkDocumentStatus();
+        };
+
+        function loadCustomerInfo() {
+            const customerName = localStorage.getItem('currentCustomer') || 'Unknown';
+            document.getElementById('customerName').textContent = customerName;
+            document.getElementById('saleDate').textContent = new Date().toLocaleDateString();
+        }
+
+        function checkDocumentStatus() {
+            // Check each document's completion status
+            const customerKey = (localStorage.getItem('currentCustomer') || '').replace(/[^a-zA-Z0-9]/g, '_');
+
+            const statusChecks = [
+                { key: 'measurements', storageKey: `ezbath_measurements_${customerKey}` },
+                { key: 'installNotes', storageKey: `install_notes_${customerKey}` },
+                { key: 'joc', storageKey: `joc_${customerKey}` },
+                { key: 'officeProcessing', storageKey: `office_processing_${customerKey}` },
+                { key: 'postSaleChecklist', storageKey: `post_sale_checklist_${customerKey}` },
+                { key: 'commission', storageKey: `commission_${customerKey}` }
+            ];
+
+            statusChecks.forEach(check => {
+                const data = localStorage.getItem(check.storageKey);
+                const statusEl = document.getElementById(`status-${check.key}`);
+                const cardEl = statusEl?.closest('.document-card');
+
+                if (data && cardEl && statusEl) {
+                    cardEl.classList.add('completed');
+                    statusEl.textContent = '✓ Completed';
+                    statusEl.classList.remove('status-pending');
+                    statusEl.classList.add('status-completed');
+                }
+            });
+        }
+
+        function goBack() {
+            window.location.href = 'tools.html';
+        }
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,66 @@
+# EZApp .htaccess Configuration
+# Simplified version - allows assets to load
+
+# Force HTTPS
+RewriteEngine On
+RewriteCond %{HTTPS} off
+RewriteRule ^(.*)$ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+
+# Default Document
+DirectoryIndex index.html login.html
+
+# Prevent Directory Browsing
+Options -Indexes
+
+# Protect ONLY config and database files
+<Files "config.php">
+    Require all denied
+</Files>
+
+<Files "database.php">
+    Require all denied
+</Files>
+
+<Files "database-auth.sql">
+    Require all denied
+</Files>
+
+<Files "database-setup.sql">
+    Require all denied
+</Files>
+
+<Files "database.sql">
+    Require all denied
+</Files>
+
+# Cache Control for Assets
+<IfModule mod_expires.c>
+    ExpiresActive On
+    
+    # Images
+    ExpiresByType image/jpeg "access plus 1 year"
+    ExpiresByType image/png "access plus 1 year"
+    ExpiresByType image/gif "access plus 1 year"
+    ExpiresByType image/svg+xml "access plus 1 year"
+    ExpiresByType image/webp "access plus 1 year"
+    
+    # CSS and JavaScript
+    ExpiresByType text/css "access plus 1 month"
+    ExpiresByType application/javascript "access plus 1 month"
+    ExpiresByType text/javascript "access plus 1 month"
+    
+    # Fonts
+    ExpiresByType font/woff2 "access plus 1 year"
+    ExpiresByType font/woff "access plus 1 year"
+    ExpiresByType font/ttf "access plus 1 year"
+    
+    # Manifest
+    ExpiresByType application/manifest+json "access plus 1 week"
+</IfModule>
+
+# GZIP Compression
+<IfModule mod_deflate.c>
+    AddOutputFilterByType DEFLATE text/html text/plain text/css
+    AddOutputFilterByType DEFLATE application/javascript text/javascript
+    AddOutputFilterByType DEFLATE image/svg+xml
+</IfModule>

@@ -1,0 +1,21 @@
+# Sample .htaccess for HTTP Basic Auth. Rename to ".htaccess" on your server.
+# IMPORTANT: Replace AuthUserFile with an absolute filesystem path on the server.
+
+<IfModule mod_authn_file.c>
+    AuthType Basic
+    AuthName "EZ App — Private"
+    # Absolute path to password file (NOT a URL). Example: /var/www/.htpasswd_ezapp
+    AuthUserFile "/absolute/path/to/.htpasswd_ezapp"
+    Require valid-user
+</IfModule>
+
+# Optional: Combine with IP allowlist (uncomment to allow either IP or password)
+#<RequireAny>
+#    Require ip 203.0.113.10
+#    Require valid-user
+#</RequireAny>
+
+# Optional: Add an anti-indexing header
+<IfModule mod_headers.c>
+    Header set X-Robots-Tag "noindex, nofollow"
+</IfModule>

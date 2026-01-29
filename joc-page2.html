@@ -1,0 +1,761 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JOC - Job Order Checklist (Page 2) - EZ Baths</title>
+    <link rel="stylesheet" href="assets/css/responsive-fixes.css">
+    <script src="assets/js/toast-notifications.js" defer></script>
+    <script src="assets/js/loading-spinner.js" defer></script>
+    <script src="assets/js/html2canvas.min.js"></script>
+    <link rel="stylesheet" href="assets/css/styles.css">
+    <style>
+        .joc-form {
+            max-width: 900px;
+            margin: 20px auto;
+            padding: 20px;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .form-header {
+            text-align: center;
+            border-bottom: 3px solid #333;
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+        }
+
+        .form-header h1 {
+            margin: 0;
+            font-size: 26px;
+            color: #333;
+            font-weight: bold;
+        }
+
+        .form-header p {
+            margin: 5px 0;
+            color: #666;
+            font-size: 14px;
+        }
+
+        .info-row {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #ddd;
+        }
+
+        .info-field {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .info-field label {
+            font-weight: bold;
+            font-size: 12px;
+            margin-bottom: 3px;
+            color: #333;
+        }
+
+        .info-field input {
+            padding: 6px;
+            border: 1px solid #999;
+            border-radius: 3px;
+            font-size: 13px;
+        }
+
+        .section {
+            margin: 25px 0;
+            padding: 20px;
+            background: #fafafa;
+            border: 2px solid #333;
+            border-radius: 4px;
+        }
+
+        .section h2 {
+            margin: 0 0 20px 0;
+            font-size: 18px;
+            font-weight: bold;
+            text-transform: uppercase;
+            border-bottom: 2px solid #333;
+            padding-bottom: 8px;
+        }
+
+        .item-row {
+            display: grid;
+            grid-template-columns: 2fr 80px 1fr 1fr;
+            gap: 10px;
+            margin-bottom: 12px;
+            align-items: center;
+            padding: 10px;
+            background: white;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+
+        .item-label {
+            font-weight: 600;
+            font-size: 13px;
+            color: #333;
+        }
+
+        .item-input {
+            padding: 6px;
+            border: 1px solid #999;
+            border-radius: 3px;
+            font-size: 12px;
+        }
+
+        .item-input-small {
+            padding: 6px;
+            border: 1px solid #999;
+            border-radius: 3px;
+            font-size: 12px;
+            text-align: center;
+        }
+
+        .subsection {
+            margin: 15px 0;
+        }
+
+        .subsection h3 {
+            font-size: 14px;
+            font-weight: bold;
+            margin-bottom: 10px;
+            color: #555;
+            padding: 8px;
+            background: #e8e8e8;
+            border-left: 4px solid #007bff;
+        }
+
+        .field-group {
+            display: flex;
+            flex-direction: column;
+            margin-bottom: 10px;
+        }
+
+        .field-group label {
+            font-weight: bold;
+            font-size: 12px;
+            margin-bottom: 3px;
+        }
+
+        .field-group input,
+        .field-group select,
+        .field-group textarea {
+            padding: 8px;
+            border: 1px solid #999;
+            border-radius: 3px;
+            font-size: 13px;
+        }
+
+        .checkbox-group {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            margin: 8px 0;
+        }
+
+        .checkbox-item {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            color: #333;
+        }
+
+        .checkbox-item input {
+            width: 18px;
+            height: 18px;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 2px solid #ddd;
+        }
+
+        .btn {
+            padding: 12px 30px;
+            border: none;
+            border-radius: 4px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        .btn-primary {
+            background: #007bff;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #0056b3;
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background: #545b62;
+        }
+
+        .btn-success {
+            background: #28a745;
+            color: white;
+        }
+
+        .btn-success:hover {
+            background: #218838;
+        }
+
+        /* Tablet Responsive */
+        @media (max-width: 768px) {
+            body {
+                padding: 10px;
+            }
+
+            .joc-form {
+                padding: 15px;
+            }
+
+            .form-header h1 {
+                font-size: 18px;
+            }
+
+            .info-row {
+                grid-template-columns: 1fr;
+            }
+
+            .checkbox-group {
+                flex-direction: column;
+                gap: 8px;
+            }
+
+            .section-row {
+                grid-template-columns: 1fr;
+            }
+
+            .button-group {
+                flex-direction: column;
+            }
+
+            .btn {
+                width: 100%;
+            }
+        }
+
+        /* Small Mobile */
+        @media (max-width: 480px) {
+            .form-header h1 {
+                font-size: 16px;
+            }
+
+            .form-header p {
+                font-size: 12px;
+            }
+
+            .section-title {
+                font-size: 13px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <a href="joc-page1.html" class="back-button" style="margin: 20px;">← Back to Page 1</a>
+    <div class="joc-form">
+        <div class="form-header">
+            <h1>JOC - JOB ORDER CHECKLIST</h1>
+            <p>PAGE 2 - Accessories & Plumbing</p>
+            <p>EZ Baths - Bath Planet</p>
+        </div>
+
+        <!-- Customer Info (carried from Page 1) -->
+        <div class="info-row">
+            <div class="info-field">
+                <label>CUSTOMER NAME:</label>
+                <input type="text" id="customerName">
+            </div>
+            <div class="info-field">
+                <label>JOB NUMBER:</label>
+                <input type="text" id="jobNumber">
+            </div>
+        </div>
+
+        <!-- ACCESSORIES SECTION -->
+        <div class="section">
+            <h2>🔧 Accessories</h2>
+
+            <!-- Lestello Trim -->
+            <div class="item-row">
+                <div class="item-label">Lestello Trim</div>
+                <input type="number" class="item-input-small" id="trimQty" placeholder="Qty">
+                <input type="text" class="item-input" id="trimColor" placeholder="Color">
+                <div></div>
+            </div>
+
+            <!-- Wall Cap -->
+            <div class="item-row">
+                <div class="item-label">Wall Cap</div>
+                <input type="number" class="item-input-small" id="wallCapQty" placeholder="Qty">
+                <input type="text" class="item-input" id="wallCapSize" placeholder="Size">
+                <select class="item-input" id="wallCapMaterial">
+                    <option value="">Material...</option>
+                    <option value="Acrylic">Acrylic</option>
+                    <option value="Onyx">Onyx</option>
+                    <option value="Other">Other</option>
+                </select>
+            </div>
+
+            <!-- Corner Pieces -->
+            <div class="item-row">
+                <div class="item-label">Corner Pieces</div>
+                <input type="number" class="item-input-small" id="cornerPiecesQty" placeholder="Qty">
+                <input type="text" class="item-input" id="cornerPiecesColor" placeholder="Color">
+                <div></div>
+            </div>
+
+            <!-- Corner Shelf -->
+            <div class="item-row">
+                <div class="item-label">Corner Shelf</div>
+                <input type="number" class="item-input-small" id="cornerShelfQty" placeholder="Qty">
+                <input type="text" class="item-input" id="cornerShelfColor" placeholder="Color">
+                <div></div>
+            </div>
+
+            <!-- Corner Footrest -->
+            <div class="item-row">
+                <div class="item-label">Corner Footrest</div>
+                <input type="number" class="item-input-small" id="footrestQty" placeholder="Qty">
+                <input type="text" class="item-input" id="footrestColor" placeholder="Color">
+                <div></div>
+            </div>
+
+            <!-- Soap Dish -->
+            <div class="item-row">
+                <div class="item-label">Soap Dish</div>
+                <input type="number" class="item-input-small" id="soapDishQty" placeholder="Qty">
+                <input type="text" class="item-input" id="soapDishColor" placeholder="Color">
+                <select class="item-input" id="soapDishSize">
+                    <option value="">Type...</option>
+                    <option value="Recessed">Recessed</option>
+                    <option value="XL">XL</option>
+                    <option value="Surface">Surface</option>
+                    <option value="Niche">Niche</option>
+                </select>
+            </div>
+
+            <!-- Towel Bar -->
+            <div class="item-row">
+                <div class="item-label">Towel Bar</div>
+                <input type="number" class="item-input-small" id="towelBarQty" placeholder="Qty">
+                <input type="text" class="item-input" id="towelBarColor" placeholder="Color">
+                <input type="text" class="item-input" id="towelBarSize" placeholder="Size">
+            </div>
+
+            <!-- Grab Bar 1 -->
+            <div class="item-row">
+                <div class="item-label">Grab Bar #1</div>
+                <input type="number" class="item-input-small" id="grabBar1Qty" placeholder="Qty">
+                <input type="text" class="item-input" id="grabBar1Color" placeholder="Color">
+                <input type="text" class="item-input" id="grabBar1Size" placeholder="Size">
+            </div>
+
+            <!-- Grab Bar 2 -->
+            <div class="item-row">
+                <div class="item-label">Grab Bar #2</div>
+                <input type="number" class="item-input-small" id="grabBar2Qty" placeholder="Qty">
+                <input type="text" class="item-input" id="grabBar2Color" placeholder="Color">
+                <input type="text" class="item-input" id="grabBar2Size" placeholder="Size">
+            </div>
+
+            <!-- Grab Bar Caddie -->
+            <div class="item-row">
+                <div class="item-label">Grab Bar Caddie</div>
+                <input type="number" class="item-input-small" id="caddieQty" placeholder="Qty">
+                <input type="text" class="item-input" id="caddieColor" placeholder="Color">
+                <input type="text" class="item-input" id="caddieSize" placeholder="Size">
+            </div>
+
+            <!-- Window Kit -->
+            <div class="subsection">
+                <h3>Window Kit</h3>
+                <div class="item-row">
+                    <div class="item-label">Window Kit</div>
+                    <input type="text" class="item-input" id="windowKitColor" placeholder="Color">
+                    <input type="text" class="item-input" id="windowKitSize" placeholder="Size">
+                    <div></div>
+                </div>
+                <div class="field-group">
+                    <label>Block in Window:</label>
+                    <div class="checkbox-group">
+                        <label class="checkbox-item">
+                            <input type="radio" name="blockWindow" value="None"> None
+                        </label>
+                        <label class="checkbox-item">
+                            <input type="radio" name="blockWindow" value="Full"> Full
+                        </label>
+                        <label class="checkbox-item">
+                            <input type="radio" name="blockWindow" value="Partial"> Partial
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Curtain Rod -->
+            <div class="subsection">
+                <h3>Curtain Rod</h3>
+                <div class="item-row">
+                    <div class="item-label">Curtain Rod</div>
+                    <input type="text" class="item-input" id="curtainRodColor" placeholder="Color">
+                    <input type="text" class="item-input" id="curtainRodSize" placeholder="Size">
+                    <select class="item-input" id="curtainRodStyle">
+                        <option value="">Style...</option>
+                        <option value="Curved">Curved</option>
+                        <option value="Straight">Straight</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Shower Door -->
+            <div class="subsection">
+                <h3>Shower Door</h3>
+                <div class="field-group">
+                    <label>Size:</label>
+                    <input type="text" id="doorSize" placeholder="e.g., 60 x 72">
+                </div>
+                <div class="field-group">
+                    <label>Style:</label>
+                    <input type="text" id="doorStyle" placeholder="Sliding, Pivot, Frameless, etc.">
+                </div>
+                <div class="field-group">
+                    <label>Frame Color:</label>
+                    <input type="text" id="doorFrameColor" placeholder="Chrome, Brushed Nickel, etc.">
+                </div>
+                <div class="field-group">
+                    <label>Glass Size/Type:</label>
+                    <input type="text" id="doorGlass" placeholder="Clear, Frosted, Textured">
+                </div>
+            </div>
+        </div>
+
+        <!-- PLUMBING SECTION -->
+        <div class="section">
+            <h2>🚰 Plumbing</h2>
+
+            <!-- Color/Finish -->
+            <div class="field-group">
+                <label>Color/Finish:</label>
+                <div class="checkbox-group">
+                    <label class="checkbox-item">
+                        <input type="radio" name="plumbingColor" value="Chrome"> Chrome
+                    </label>
+                    <label class="checkbox-item">
+                        <input type="radio" name="plumbingColor" value="Brushed"> Brushed Nickel
+                    </label>
+                    <label class="checkbox-item">
+                        <input type="radio" name="plumbingColor" value="ORB"> ORB (Oil Rubbed Bronze)
+                    </label>
+                    <label class="checkbox-item">
+                        <input type="radio" name="plumbingColor" value="Black"> Black
+                    </label>
+                    <label class="checkbox-item">
+                        <input type="radio" name="plumbingColor" value="Other"> Other
+                    </label>
+                </div>
+                <input type="text" id="plumbingColorOther" placeholder="If Other, specify..." style="margin-top: 8px;">
+            </div>
+
+            <!-- Valve Body -->
+            <div class="field-group">
+                <label>Valve Body:</label>
+                <input type="text" id="valveBody" placeholder="Brand/Model">
+            </div>
+
+            <!-- In-Wall Diverter -->
+            <div class="field-group">
+                <label>In-Wall Diverter:</label>
+                <div class="checkbox-group">
+                    <label class="checkbox-item">
+                        <input type="radio" name="inWallDiverter" value="Yes"> Yes
+                    </label>
+                    <label class="checkbox-item">
+                        <input type="radio" name="inWallDiverter" value="No"> No
+                    </label>
+                </div>
+                <label class="checkbox-item" style="margin-top: 8px;">
+                    <input type="checkbox" id="wall90Required"> WALL 90 REQUIRED
+                </label>
+            </div>
+
+            <!-- Valve Trim Kit -->
+            <div class="field-group">
+                <label>Valve Trim Kit:</label>
+                <input type="text" id="valveTrimKit" placeholder="Model/Style">
+            </div>
+
+            <!-- Tub Spout -->
+            <div class="field-group">
+                <label>Tub Spout:</label>
+                <input type="text" id="tubSpout" placeholder="Model/Style">
+            </div>
+
+            <!-- Handheld -->
+            <div class="field-group">
+                <label>Handheld Shower:</label>
+                <input type="text" id="handheld" placeholder="Model/Style">
+            </div>
+
+            <!-- Hose Length -->
+            <div class="field-group">
+                <label>Hose Length:</label>
+                <input type="text" id="hoseLength" placeholder="e.g., 60 inches">
+            </div>
+
+            <!-- Diverter Options -->
+            <div class="field-group">
+                <label>Diverter Options:</label>
+                <textarea id="diverterOptions" rows="2"
+                    placeholder="Specify diverter type and configuration..."></textarea>
+            </div>
+
+            <!-- Slider Bar -->
+            <div class="field-group">
+                <label>Slider Bar Color:</label>
+                <input type="text" id="sliderBarColor" placeholder="Chrome, Brushed, etc.">
+            </div>
+
+            <!-- Wall Mount -->
+            <div class="item-row">
+                <div class="item-label">Wall Mount</div>
+                <input type="number" class="item-input-small" id="wallMountQty" placeholder="Qty">
+                <input type="text" class="item-input" id="wallMountColor" placeholder="Color">
+                <div></div>
+            </div>
+
+            <!-- Drain Options -->
+            <div class="field-group">
+                <label>Drain:</label>
+                <input type="text" id="drainOptions" placeholder="Type, finish, trip lever, etc.">
+            </div>
+
+            <!-- Body Sprayers -->
+            <div class="field-group">
+                <label>Body Sprayers:</label>
+                <input type="text" id="bodySprayers" placeholder="Qty and placement">
+            </div>
+
+            <!-- Other Plumbing -->
+            <div class="field-group">
+                <label>Other Plumbing:</label>
+                <textarea id="otherPlumbing" rows="3"
+                    placeholder="Any additional plumbing items or special instructions..."></textarea>
+            </div>
+
+            <!-- Consultant Notes -->
+            <div class="field-group" style="margin-top: 20px;">
+                <label>CONSULTANT NOTES:</label>
+                <textarea id="consultantNotes" rows="4"
+                    placeholder="Additional notes, special instructions, or important details..."></textarea>
+            </div>
+        </div>
+
+        <!-- Buttons -->
+        <div class="button-group">
+            <button class="btn btn-secondary" onclick="window.location.href='joc-page1.html'">← Back</button>
+            <button class="btn btn-secondary" onclick="populateForm()">Auto-Fill from EZAPP</button>
+            <button class="btn btn-primary" onclick="saveForm()">💾 Save Data</button>
+            <button class="btn btn-primary" onclick="saveAsImage()" style="background: #10b981;">📱 Save to
+                Phone</button>
+            <button class="btn btn-primary" onclick="window.print()" style="background: #6366f1;">🖨️ Print</button>
+            <button class="btn btn-success" onclick="window.location.href='post-sale-documents.html'">Complete JOC
+                ✓</button>
+        </div>
+    </div>
+
+    <script src="assets/js/ezapp-data.js"></script>
+    <script>
+        // Save as image function
+        async function saveAsImage() {
+            const btn = event.target;
+            const originalText = btn.textContent;
+            btn.textContent = '📸 Capturing...';
+            btn.disabled = true;
+
+            try {
+                const formElement = document.querySelector('.joc-form');
+
+                if (typeof html2canvas === 'undefined') {
+                    throw new Error('html2canvas library not loaded');
+                }
+
+                const canvas = await html2canvas(formElement, {
+                    backgroundColor: '#ffffff',
+                    scale: 2,
+                    logging: false,
+                    useCORS: true,
+                    allowTaint: true
+                });
+
+                const customerName = document.getElementById('customerName')?.value || 'Customer';
+                const fileName = `JOC_Page2_${customerName.replace(/[^a-zA-Z0-9]/g, '_')}_${new Date().toISOString().split('T')[0]}.png`;
+
+                canvas.toBlob((blob) => {
+                    const url = URL.createObjectURL(blob);
+                    const link = document.createElement('a');
+                    link.download = fileName;
+                    link.href = url;
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
+                    URL.revokeObjectURL(url);
+
+                    alert('✅ JOC Page 2 saved as image!\n\nCheck your downloads folder.');
+                    btn.textContent = originalText;
+                    btn.disabled = false;
+                }, 'image/png');
+
+            } catch (error) {
+                console.error('Error saving:', error);
+                alert('❌ Unable to save: ' + error.message + '\n\nTry using Print instead.');
+                btn.textContent = originalText;
+                btn.disabled = false;
+            }
+        }
+
+        // Auto-populate on load
+        window.addEventListener('DOMContentLoaded', () => {
+            populateForm();
+        });
+
+        function populateForm() {
+            const ezappData = EZAPP.getCurrentData();
+            if (!ezappData) return;
+
+            // Customer info from EZAPP or Page 1
+            if (ezappData.customer) {
+                document.getElementById('customerName').value =
+                    `${ezappData.customer.firstName || ''} ${ezappData.customer.lastName || ''}`.trim();
+            }
+
+            // Job number from Page 1 if saved
+            if (ezappData.documents && ezappData.documents.jocPage1) {
+                document.getElementById('jobNumber').value = ezappData.documents.jocPage1.jobNumber || '';
+            }
+
+            console.log('JOC Page 2 populated from EZAPP');
+        }
+
+        function saveForm() {
+            const formData = {
+                customerName: document.getElementById('customerName').value,
+                jobNumber: document.getElementById('jobNumber').value,
+                accessories: {
+                    trim: {
+                        qty: document.getElementById('trimQty').value,
+                        color: document.getElementById('trimColor').value
+                    },
+                    wallCap: {
+                        qty: document.getElementById('wallCapQty').value,
+                        size: document.getElementById('wallCapSize').value,
+                        material: document.getElementById('wallCapMaterial').value
+                    },
+                    cornerPieces: {
+                        qty: document.getElementById('cornerPiecesQty').value,
+                        color: document.getElementById('cornerPiecesColor').value
+                    },
+                    cornerShelf: {
+                        qty: document.getElementById('cornerShelfQty').value,
+                        color: document.getElementById('cornerShelfColor').value
+                    },
+                    footrest: {
+                        qty: document.getElementById('footrestQty').value,
+                        color: document.getElementById('footrestColor').value
+                    },
+                    soapDish: {
+                        qty: document.getElementById('soapDishQty').value,
+                        color: document.getElementById('soapDishColor').value,
+                        size: document.getElementById('soapDishSize').value
+                    },
+                    towelBar: {
+                        qty: document.getElementById('towelBarQty').value,
+                        color: document.getElementById('towelBarColor').value,
+                        size: document.getElementById('towelBarSize').value
+                    },
+                    grabBar1: {
+                        qty: document.getElementById('grabBar1Qty').value,
+                        color: document.getElementById('grabBar1Color').value,
+                        size: document.getElementById('grabBar1Size').value
+                    },
+                    grabBar2: {
+                        qty: document.getElementById('grabBar2Qty').value,
+                        color: document.getElementById('grabBar2Color').value,
+                        size: document.getElementById('grabBar2Size').value
+                    },
+                    caddie: {
+                        qty: document.getElementById('caddieQty').value,
+                        color: document.getElementById('caddieColor').value,
+                        size: document.getElementById('caddieSize').value
+                    },
+                    windowKit: {
+                        color: document.getElementById('windowKitColor').value,
+                        size: document.getElementById('windowKitSize').value,
+                        blockWindow: document.querySelector('input[name="blockWindow"]:checked')?.value
+                    },
+                    curtainRod: {
+                        color: document.getElementById('curtainRodColor').value,
+                        size: document.getElementById('curtainRodSize').value,
+                        style: document.getElementById('curtainRodStyle').value
+                    },
+                    showerDoor: {
+                        size: document.getElementById('doorSize').value,
+                        style: document.getElementById('doorStyle').value,
+                        frameColor: document.getElementById('doorFrameColor').value,
+                        glass: document.getElementById('doorGlass').value
+                    }
+                },
+                plumbing: {
+                    color: document.querySelector('input[name="plumbingColor"]:checked')?.value,
+                    colorOther: document.getElementById('plumbingColorOther').value,
+                    valveBody: document.getElementById('valveBody').value,
+                    inWallDiverter: document.querySelector('input[name="inWallDiverter"]:checked')?.value,
+                    wall90Required: document.getElementById('wall90Required').checked,
+                    valveTrimKit: document.getElementById('valveTrimKit').value,
+                    tubSpout: document.getElementById('tubSpout').value,
+                    handheld: document.getElementById('handheld').value,
+                    hoseLength: document.getElementById('hoseLength').value,
+                    diverterOptions: document.getElementById('diverterOptions').value,
+                    sliderBarColor: document.getElementById('sliderBarColor').value,
+                    wallMount: {
+                        qty: document.getElementById('wallMountQty').value,
+                        color: document.getElementById('wallMountColor').value
+                    },
+                    drainOptions: document.getElementById('drainOptions').value,
+                    bodySprayers: document.getElementById('bodySprayers').value,
+                    otherPlumbing: document.getElementById('otherPlumbing').value,
+                    consultantNotes: document.getElementById('consultantNotes').value
+                },
+                timestamp: new Date().toISOString()
+            };
+
+            const ezappData = EZAPP.getCurrentData() || {};
+            if (!ezappData.documents) ezappData.documents = {};
+            ezappData.documents.jocPage2 = formData;
+            localStorage.setItem('EZAPP_current', JSON.stringify(ezappData));
+
+            alert('JOC Page 2 saved successfully!');
+            console.log('Saved JOC Page 2:', formData);
+        }
+    </script>
+</body>
+
+</html>

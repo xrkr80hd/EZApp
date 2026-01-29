@@ -1,0 +1,1052 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="theme-color" content="#1a1a2e">
+    <meta name="description" content="EZBaths Consultant Portal - Professional tools for Bath Planet consultants">
+    <meta name="robots" content="noindex, nofollow">
+    <title>EZ Baths Portal - Home</title>
+    <link rel="manifest" href="manifest.json">
+    <link rel="apple-touch-icon" href="assets/app_icons/icon-180.png">
+    <link rel="stylesheet" href="assets/css/responsive-fixes.css">
+    <script src="assets/js/toast-notifications.js" defer></script>
+    <script src="assets/js/loading-spinner.js" defer></script>
+    <style>
+        /* ============================================
+           CSS CUSTOM PROPERTIES (Variables)
+           ============================================ */
+        :root {
+            /* Colors */
+            --color-primary: #1a1a2e;
+            --color-secondary: #16213e;
+            --color-tertiary: #0f3460;
+            --color-accent-blue: #3498db;
+            --color-accent-green: #2ecc71;
+            --color-accent-gold: #FFB84D;
+            --color-accent-coral: #FF6B6B;
+            --color-text-primary: #ffffff;
+            --color-text-secondary: #c5c5c5;
+
+            /* Spacing */
+            --spacing-xs: 8px;
+            --spacing-sm: 12px;
+            --spacing-md: 20px;
+            --spacing-lg: 30px;
+            --spacing-xl: 40px;
+
+            /* Border Radius */
+            --radius-sm: 8px;
+            --radius-md: 12px;
+            --radius-lg: 20px;
+
+            /* Transitions */
+            --transition-fast: 0.2s ease;
+            --transition-normal: 0.3s ease;
+            --transition-slow: 0.5s ease;
+
+            /* Shadows */
+            --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.1);
+            --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.2);
+            --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.3);
+            --shadow-glow: 0 0 20px rgba(52, 152, 219, 0.3);
+        }
+
+        /* ============================================
+           RESET & BASE STYLES
+           ============================================ */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-secondary) 50%, var(--color-tertiary) 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: var(--spacing-md);
+            position: relative;
+            overflow-x: hidden;
+            overflow-y: auto;
+            color: var(--color-text-primary);
+        }
+
+        /* ============================================
+           ANIMATED BACKGROUND ELEMENTS
+           ============================================ */
+        .bg-animation {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            overflow: hidden;
+            z-index: 0;
+        }
+
+        .bg-circle {
+            position: absolute;
+            border-radius: 50%;
+            opacity: 0.1;
+        }
+
+        .bg-circle-1 {
+            width: 500px;
+            height: 500px;
+            background: radial-gradient(circle, var(--color-accent-blue) 0%, transparent 70%);
+            top: -250px;
+            right: -250px;
+            animation: float 20s ease-in-out infinite;
+        }
+
+        .bg-circle-2 {
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, var(--color-accent-green) 0%, transparent 70%);
+            bottom: -200px;
+            left: -200px;
+            animation: float 25s ease-in-out infinite reverse;
+        }
+
+        .bg-circle-3 {
+            width: 300px;
+            height: 300px;
+            background: radial-gradient(circle, var(--color-accent-gold) 0%, transparent 70%);
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            animation: pulse 15s ease-in-out infinite;
+        }
+
+        /* Particle effect */
+        .particle {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            animation: particle-float 10s linear infinite;
+        }
+
+        @keyframes float {
+
+            0%,
+            100% {
+                transform: translate(0, 0) rotate(0deg);
+            }
+
+            33% {
+                transform: translate(30px, -30px) rotate(120deg);
+            }
+
+            66% {
+                transform: translate(-20px, 20px) rotate(240deg);
+            }
+        }
+
+        @keyframes pulse {
+
+            0%,
+            100% {
+                transform: translate(-50%, -50%) scale(1);
+                opacity: 0.1;
+            }
+
+            50% {
+                transform: translate(-50%, -50%) scale(1.2);
+                opacity: 0.15;
+            }
+        }
+
+        @keyframes particle-float {
+            0% {
+                transform: translateY(100vh) translateX(0);
+                opacity: 0;
+            }
+
+            10% {
+                opacity: 0.3;
+            }
+
+            90% {
+                opacity: 0.3;
+            }
+
+            100% {
+                transform: translateY(-100vh) translateX(100px);
+                opacity: 0;
+            }
+        }
+
+        /* ============================================
+           SKIP NAVIGATION (Accessibility)
+           ============================================ */
+        .skip-link {
+            position: absolute;
+            top: -40px;
+            left: 0;
+            background: var(--color-accent-blue);
+            color: white;
+            padding: var(--spacing-sm) var(--spacing-md);
+            text-decoration: none;
+            border-radius: 0 0 var(--radius-sm) 0;
+            z-index: 100;
+            transition: top var(--transition-fast);
+        }
+
+        .skip-link:focus {
+            top: 0;
+            outline: 3px solid var(--color-accent-gold);
+            outline-offset: 2px;
+        }
+
+        /* ============================================
+           MAIN CONTAINER
+           ============================================ */
+        .container {
+            max-width: 600px;
+            width: 100%;
+            position: relative;
+            z-index: 1;
+            animation: fadeIn 0.6s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* ============================================
+           HEADER SECTION
+           ============================================ */
+        .header {
+            position: relative;
+            margin-bottom: var(--spacing-xl);
+            padding-top: 10vh;
+            animation: slideDown 0.8s ease-out 0.2s both;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-30px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .logo {
+            width: 60px;
+            height: 60px;
+            position: absolute;
+            left: 0;
+            top: 10vh;
+            filter: drop-shadow(0 4px 12px rgba(52, 152, 219, 0.4));
+            animation: logoFloat 4s ease-in-out infinite;
+            transition: transform var(--transition-normal);
+        }
+
+        .logo:hover {
+            transform: scale(1.1) rotate(5deg);
+        }
+
+        @keyframes logoFloat {
+
+            0%,
+            100% {
+                transform: translateY(0);
+            }
+
+            50% {
+                transform: translateY(-15px);
+            }
+        }
+
+        .header-content {
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: clamp(24px, 5vw, 32px);
+            margin-bottom: var(--spacing-xs);
+            background: linear-gradient(135deg, var(--color-accent-blue) 0%, var(--color-accent-green) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+        }
+
+        .header p {
+            font-size: clamp(13px, 3vw, 15px);
+            opacity: 0.7;
+            color: var(--color-text-secondary);
+            font-weight: 400;
+        }
+
+        /* ============================================
+           MENU OPTIONS
+           ============================================ */
+        .menu-options {
+            display: flex;
+            flex-direction: column;
+            gap: var(--spacing-md);
+        }
+
+        .menu-card {
+            position: relative;
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border: 2px solid rgba(52, 152, 219, 0.3);
+            border-radius: var(--radius-lg);
+            padding: var(--spacing-lg);
+            text-decoration: none;
+            color: var(--color-text-primary);
+            transition: all var(--transition-normal);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            overflow: hidden;
+            cursor: pointer;
+            animation: slideUp 0.8s ease-out both;
+            min-height: 200px;
+            justify-content: center;
+        }
+
+        .menu-card:nth-child(1) {
+            animation-delay: 0.3s;
+        }
+
+        .menu-card:nth-child(2) {
+            animation-delay: 0.4s;
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Top accent bar */
+        .menu-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 5px;
+            background: linear-gradient(90deg, var(--color-accent-blue) 0%, var(--color-accent-green) 100%);
+            transform: scaleX(0);
+            transition: transform var(--transition-normal);
+        }
+
+        .menu-card:hover::before,
+        .menu-card:focus::before {
+            transform: scaleX(1);
+        }
+
+        /* Hover & Focus Effects */
+        .menu-card:hover,
+        .menu-card:focus {
+            transform: translateY(-8px) scale(1.02);
+            border-color: var(--color-accent-blue);
+            box-shadow: 0 20px 60px rgba(52, 152, 219, 0.4), var(--shadow-glow);
+        }
+
+        .menu-card:active {
+            transform: translateY(-4px) scale(1.01);
+        }
+
+        /* Focus visible for keyboard navigation */
+        .menu-card:focus-visible {
+            outline: 3px solid var(--color-accent-gold);
+            outline-offset: 4px;
+        }
+
+        /* Card variants */
+        .customer-option {
+            border-color: rgba(52, 152, 219, 0.3);
+        }
+
+        .customer-option:hover,
+        .customer-option:focus {
+            border-color: var(--color-accent-blue);
+        }
+
+        .scheduler-option {
+            border-color: rgba(46, 204, 113, 0.3);
+        }
+
+        .scheduler-option:hover,
+        .scheduler-option:focus {
+            border-color: var(--color-accent-green);
+        }
+
+        .scheduler-option::before {
+            background: linear-gradient(90deg, var(--color-accent-green) 0%, var(--color-accent-blue) 100%);
+        }
+
+        /* ============================================
+           ICON STYLING
+           ============================================ */
+        .option-icon {
+            width: 64px;
+            height: 64px;
+            margin-bottom: var(--spacing-md);
+            filter: drop-shadow(0 4px 12px rgba(52, 152, 219, 0.4));
+            transition: all var(--transition-normal);
+        }
+
+        .menu-card:hover .option-icon,
+        .menu-card:focus .option-icon {
+            transform: scale(1.15) translateY(-5px);
+            filter: drop-shadow(0 8px 24px rgba(52, 152, 219, 0.8));
+            animation: iconPulse 2s ease-in-out infinite;
+        }
+
+        @keyframes iconPulse {
+
+            0%,
+            100% {
+                filter: drop-shadow(0 8px 24px rgba(52, 152, 219, 0.8));
+            }
+
+            50% {
+                filter: drop-shadow(0 8px 32px rgba(52, 152, 219, 1));
+            }
+        }
+
+        /* ============================================
+           CARD CONTENT
+           ============================================ */
+        .menu-card h2 {
+            font-size: clamp(18px, 4vw, 22px);
+            margin-bottom: var(--spacing-sm);
+            background: linear-gradient(135deg, var(--color-accent-blue) 0%, var(--color-accent-green) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            font-weight: 600;
+        }
+
+        .menu-card p {
+            font-size: clamp(13px, 2.5vw, 15px);
+            opacity: 0.8;
+            line-height: 1.5;
+            margin-bottom: var(--spacing-md);
+            color: var(--color-text-secondary);
+        }
+
+        .option-badge {
+            display: inline-block;
+            padding: var(--spacing-xs) var(--spacing-md);
+            background: rgba(52, 152, 219, 0.2);
+            border: 1px solid rgba(52, 152, 219, 0.5);
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--color-accent-blue);
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+            transition: all var(--transition-fast);
+        }
+
+        .menu-card:hover .option-badge,
+        .menu-card:focus .option-badge {
+            background: rgba(52, 152, 219, 0.3);
+            transform: scale(1.05);
+        }
+
+        .scheduler-option .option-badge {
+            background: rgba(46, 204, 113, 0.2);
+            border-color: rgba(46, 204, 113, 0.5);
+            color: var(--color-accent-green);
+        }
+
+        .scheduler-option:hover .option-badge,
+        .scheduler-option:focus .option-badge {
+            background: rgba(46, 204, 113, 0.3);
+        }
+
+        /* Keyboard shortcut indicator - only shows on hover/focus */
+        .shortcut-key {
+            position: absolute;
+            top: var(--spacing-md);
+            right: var(--spacing-md);
+            padding: 6px 12px;
+            background: linear-gradient(135deg, rgba(52, 152, 219, 0.3), rgba(46, 204, 113, 0.3));
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            border-radius: 8px;
+            font-size: 12px;
+            font-weight: 600;
+            opacity: 0;
+            transform: translateY(-5px);
+            transition: all var(--transition-normal);
+            color: rgba(255, 255, 255, 0.95);
+            letter-spacing: 0.5px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        }
+
+        .menu-card:hover .shortcut-key,
+        .menu-card:focus .shortcut-key {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .shortcut-key kbd {
+            display: inline-block;
+            padding: 3px 8px;
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 4px;
+            font-family: 'Courier New', monospace;
+            font-weight: bold;
+            font-size: 14px;
+            margin-right: 4px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        /* ============================================
+           FOOTER
+           ============================================ */
+        .footer {
+            text-align: center;
+            margin-top: var(--spacing-lg);
+            padding-bottom: var(--spacing-md);
+            color: rgba(255, 255, 255, 0.5);
+            font-size: 12px;
+            animation: fadeIn 1s ease-out 0.6s both;
+        }
+
+        .version {
+            margin-top: var(--spacing-xs);
+            font-size: 13px;
+            font-weight: 600;
+            background: linear-gradient(135deg, #fff 0%, var(--color-accent-green) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        /* ============================================
+           LOADING INDICATOR
+           ============================================ */
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: var(--color-primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+            opacity: 1;
+            transition: opacity 0.5s ease;
+        }
+
+        .loading-overlay.hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 4px solid rgba(52, 152, 219, 0.2);
+            border-top-color: var(--color-accent-blue);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        /* ============================================
+           TOOLTIP
+           ============================================ */
+        .tooltip {
+            position: absolute;
+            bottom: 100%;
+            left: 50%;
+            transform: translateX(-50%) translateY(-10px);
+            background: rgba(0, 0, 0, 0.9);
+            color: white;
+            padding: var(--spacing-xs) var(--spacing-sm);
+            border-radius: var(--radius-sm);
+            font-size: 12px;
+            white-space: nowrap;
+            opacity: 0;
+            pointer-events: none;
+            transition: all var(--transition-fast);
+            z-index: 10;
+        }
+
+        .tooltip::after {
+            content: '';
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            border: 6px solid transparent;
+            border-top-color: rgba(0, 0, 0, 0.9);
+        }
+
+        .menu-card:hover .tooltip,
+        .menu-card:focus .tooltip {
+            opacity: 1;
+            transform: translateX(-50%) translateY(-5px);
+        }
+
+        /* ============================================
+           CUSTOM SCROLLBAR
+           ============================================ */
+        ::-webkit-scrollbar {
+            width: 12px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: linear-gradient(135deg, var(--color-accent-blue) 0%, var(--color-accent-green) 100%);
+            border-radius: 10px;
+            border: 2px solid rgba(26, 26, 46, 0.8);
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: linear-gradient(135deg, #5dade2 0%, #58d68d 100%);
+        }
+
+        /* ============================================
+           RESPONSIVE DESIGN
+           ============================================ */
+        @media (max-width: 768px) {
+            body {
+                padding: var(--spacing-sm);
+            }
+
+            .header {
+                padding-top: 8vh;
+            }
+
+            .logo {
+                width: 50px;
+                height: 50px;
+                top: 8vh;
+            }
+
+            .menu-card {
+                min-height: 180px;
+                padding: var(--spacing-md);
+            }
+
+            .option-icon {
+                width: 56px;
+                height: 56px;
+            }
+
+            .shortcut-key {
+                padding: 4px 8px;
+                font-size: 11px;
+            }
+
+            .shortcut-key kbd {
+                padding: 2px 6px;
+                font-size: 12px;
+            }
+        }
+
+        /* ============================================
+           REDUCED MOTION (Accessibility)
+           ============================================ */
+        @media (prefers-reduced-motion: reduce) {
+
+            *,
+            *::before,
+            *::after {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+            }
+
+            .logo,
+            .bg-circle,
+            .particle {
+                animation: none !important;
+            }
+        }
+
+        /* ============================================
+           PRINT STYLES
+           ============================================ */
+        @media print {
+
+            .bg-animation,
+            .particle {
+                display: none;
+            }
+
+            body {
+                background: white;
+                color: black;
+            }
+
+            .menu-card {
+                border: 2px solid #333;
+                page-break-inside: avoid;
+            }
+        }
+
+        /* ============================================
+           HIGH CONTRAST MODE (Accessibility)
+           ============================================ */
+        @media (prefers-contrast: high) {
+            .menu-card {
+                border-width: 3px;
+            }
+
+            .menu-card:focus {
+                outline-width: 4px;
+            }
+        }
+
+        /* ============================================
+           SCREEN READER ONLY
+           ============================================ */
+        .sr-only {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            padding: 0;
+            margin: -1px;
+            overflow: hidden;
+            clip: rect(0, 0, 0, 0);
+            white-space: nowrap;
+            border-width: 0;
+        }
+
+        /* ============================================
+           LOADING STATE
+           ============================================ */
+        .menu-card.loading {
+            pointer-events: none;
+            opacity: 0.6;
+        }
+
+        .menu-card.loading::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 30px;
+            height: 30px;
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-top-color: white;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Skip Navigation Link for Accessibility -->
+    <a href="#main-content" class="skip-link">Skip to main content</a>
+
+    <!-- Loading Overlay -->
+    <div class="loading-overlay" id="loadingOverlay" aria-hidden="true">
+        <div class="spinner" role="status">
+            <span class="sr-only">Loading...</span>
+        </div>
+    </div>
+
+    <!-- Animated Background -->
+    <div class="bg-animation" aria-hidden="true">
+        <div class="bg-circle bg-circle-1"></div>
+        <div class="bg-circle bg-circle-2"></div>
+        <div class="bg-circle bg-circle-3"></div>
+        <!-- Particles will be added via JavaScript -->
+    </div>
+
+    <!-- Main Content -->
+    <main class="container" id="main-content" role="main">
+        <!-- Header Section -->
+        <header class="header">
+            <img src="assets/app_icons/icon-192.png" alt="EZ Baths Logo" class="logo" loading="lazy" width="60"
+                height="60">
+            <div class="header-content">
+                <h1>EZBaths Portal</h1>
+                <p>Choose how you want to get started</p>
+            </div>
+        </header>
+
+        <!-- Menu Options -->
+        <nav class="menu-options" role="navigation" aria-label="Main navigation">
+            <!-- Customer Workflow Card -->
+            <a href="create-customer.html" class="menu-card customer-option" id="customerCard" role="button"
+                aria-label="Start a new customer workflow - Press 1 or Enter" tabindex="0" data-shortcut="1">
+                <span class="tooltip" role="tooltip">Press 1 or click to start</span>
+                <span class="shortcut-key" aria-label="Keyboard shortcut"><kbd>1</kbd> Quick Start</span>
+                <img src="assets/app_icons/customer_survey.svg" alt="" class="option-icon" aria-hidden="true"
+                    loading="lazy" width="64" height="64">
+                <h2>Start a New Customer</h2>
+                <p>Begin a new customer file and access all job-related tools</p>
+                <span class="option-badge" aria-label="Customer workflow">Customer Workflow</span>
+            </a>
+
+            <!-- Scheduler Workflow Card -->
+            <a href="scheduler.html" class="menu-card scheduler-option" id="schedulerCard" role="button"
+                aria-label="Create your weekly schedule - Press 2 or Enter" tabindex="0" data-shortcut="2">
+                <span class="tooltip" role="tooltip">Press 2 or click to schedule</span>
+                <span class="shortcut-key" aria-label="Keyboard shortcut"><kbd>2</kbd> Quick Start</span>
+                <img src="assets/app_icons/ez_scheduler.svg" alt="" class="option-icon" aria-hidden="true"
+                    loading="lazy" width="64" height="64">
+                <h2>Create Your Weekly Schedule</h2>
+                <p>Fill out your weekly availability schedule for the call center</p>
+                <span class="option-badge" aria-label="Start your schedule">Start Your Schedule</span>
+            </a>
+        </nav>
+
+        <!-- Footer -->
+        <footer class="footer" role="contentinfo">
+            <p>&copy; 2024 XRKR80HD Design</p>
+            <p class="version">Consultant Portal v1.0</p>
+        </footer>
+    </main>
+
+    <!-- JavaScript -->
+    <script>
+        (function () {
+            'use strict';
+
+            // ============================================
+            // INITIALIZATION
+            // ============================================
+
+            // Hide loading overlay after page load
+            window.addEventListener('load', function () {
+                setTimeout(function () {
+                    const overlay = document.getElementById('loadingOverlay');
+                    overlay.classList.add('hidden');
+                }, 300);
+            });
+
+            // ============================================
+            // PARTICLE BACKGROUND EFFECT
+            // ============================================
+            function createParticles() {
+                const bgAnimation = document.querySelector('.bg-animation');
+                const particleCount = window.innerWidth < 768 ? 15 : 25;
+
+                for (let i = 0; i < particleCount; i++) {
+                    const particle = document.createElement('div');
+                    particle.className = 'particle';
+                    particle.style.left = Math.random() * 100 + '%';
+                    particle.style.animationDelay = Math.random() * 10 + 's';
+                    particle.style.animationDuration = (Math.random() * 10 + 10) + 's';
+                    bgAnimation.appendChild(particle);
+                }
+            }
+
+            // Create particles on load
+            createParticles();
+
+            // ============================================
+            // KEYBOARD NAVIGATION
+            // ============================================
+            document.addEventListener('keydown', function (e) {
+                // Keyboard shortcuts
+                if (e.key === '1' && !e.ctrlKey && !e.metaKey) {
+                    e.preventDefault();
+                    document.getElementById('customerCard').click();
+                } else if (e.key === '2' && !e.ctrlKey && !e.metaKey) {
+                    e.preventDefault();
+                    document.getElementById('schedulerCard').click();
+                }
+            });
+
+            // Enhanced keyboard interaction for cards
+            document.querySelectorAll('.menu-card').forEach(function (card) {
+                card.addEventListener('keydown', function (e) {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                        e.preventDefault();
+                        this.click();
+                    }
+                });
+            });
+
+            // ============================================
+            // CLICK FEEDBACK
+            // ============================================
+            document.querySelectorAll('.menu-card').forEach(function (card) {
+                card.addEventListener('click', function (e) {
+                    // Add loading state
+                    this.classList.add('loading');
+
+                    // Store last visited for potential "recently accessed" feature
+                    const href = this.getAttribute('href');
+                    if (href) {
+                        localStorage.setItem('lastVisited', href);
+                        localStorage.setItem('lastVisitTime', new Date().toISOString());
+                    }
+                });
+            });
+
+            // ============================================
+            // STANDALONE APP DETECTION
+            // ============================================
+            if (window.navigator.standalone || window.matchMedia('(display-mode: standalone)').matches) {
+                document.body.style.paddingTop = '40px';
+            }
+
+            // ============================================
+            // SERVICE WORKER REGISTRATION
+            // ============================================
+            if ('serviceWorker' in navigator) {
+                window.addEventListener('load', function () {
+                    navigator.serviceWorker.register('service-worker.js')
+                        .then(function (reg) {
+                            console.log('Service Worker registered successfully');
+                        })
+                        .catch(function (err) {
+                            console.log('Service Worker registration failed:', err);
+                        });
+                });
+            }
+
+            // ============================================
+            // ACCESSIBILITY ANNOUNCEMENTS
+            // ============================================
+            function announceToScreenReader(message) {
+                const announcement = document.createElement('div');
+                announcement.setAttribute('role', 'status');
+                announcement.setAttribute('aria-live', 'polite');
+                announcement.className = 'sr-only';
+                announcement.textContent = message;
+                document.body.appendChild(announcement);
+
+                setTimeout(function () {
+                    document.body.removeChild(announcement);
+                }, 1000);
+            }
+
+            // ============================================
+            // INTERSECTION OBSERVER FOR ANIMATIONS
+            // ============================================
+            if ('IntersectionObserver' in window) {
+                const observer = new IntersectionObserver(function (entries) {
+                    entries.forEach(function (entry) {
+                        if (entry.isIntersecting) {
+                            entry.target.style.opacity = '1';
+                            entry.target.style.transform = 'translateY(0)';
+                        }
+                    });
+                }, {
+                    threshold: 0.1
+                });
+
+                document.querySelectorAll('.menu-card').forEach(function (card) {
+                    observer.observe(card);
+                });
+            }
+
+            // ============================================
+            // FOCUS MANAGEMENT
+            // ============================================
+            let lastFocusedElement = null;
+
+            document.addEventListener('focusin', function (e) {
+                lastFocusedElement = e.target;
+            });
+
+            // Trap focus within main content when needed
+            document.addEventListener('keydown', function (e) {
+                if (e.key === 'Tab') {
+                    const focusableElements = document.querySelectorAll(
+                        'a[href], button, input, select, textarea, [tabindex]:not([tabindex="-1"])'
+                    );
+                    const firstElement = focusableElements[0];
+                    const lastElement = focusableElements[focusableElements.length - 1];
+
+                    if (e.shiftKey && document.activeElement === firstElement) {
+                        e.preventDefault();
+                        lastElement.focus();
+                    } else if (!e.shiftKey && document.activeElement === lastElement) {
+                        e.preventDefault();
+                        firstElement.focus();
+                    }
+                }
+            });
+
+            // ============================================
+            // PERFORMANCE MONITORING
+            // ============================================
+            if (window.performance && window.performance.timing) {
+                window.addEventListener('load', function () {
+                    setTimeout(function () {
+                        const perfData = window.performance.timing;
+                        const pageLoadTime = perfData.loadEventEnd - perfData.navigationStart;
+                        console.log('Page load time:', pageLoadTime + 'ms');
+                    }, 0);
+                });
+            }
+
+            // ============================================
+            // ERROR HANDLING
+            // ============================================
+            window.addEventListener('error', function (e) {
+                console.error('Error occurred:', e.error);
+            });
+
+            // ============================================
+            // ONLINE/OFFLINE STATUS
+            // ============================================
+            function updateOnlineStatus() {
+                const status = navigator.onLine ? 'online' : 'offline';
+                document.body.setAttribute('data-connection', status);
+
+                if (!navigator.onLine) {
+                    announceToScreenReader('You are currently offline. Some features may be limited.');
+                }
+            }
+
+            window.addEventListener('online', updateOnlineStatus);
+            window.addEventListener('offline', updateOnlineStatus);
+            updateOnlineStatus();
+
+        })();
+    </script>
+</body>
+
+</html>

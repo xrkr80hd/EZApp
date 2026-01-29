@@ -1,0 +1,555 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Office Processing Checklist - EZ Baths</title>
+    <link rel="stylesheet" href="assets/css/responsive-fixes.css">
+    <script src="assets/js/toast-notifications.js" defer></script>
+    <script src="assets/js/loading-spinner.js" defer></script>
+    <script src="assets/js/html2canvas.min.js"></script>
+    <link rel="stylesheet" href="assets/css/styles.css">
+    <style>
+        body {
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+            padding: 80px 20px 40px 20px;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            min-height: 100vh;
+        }
+
+        .checklist-form {
+            max-width: 1000px;
+            margin: 20px auto;
+            padding: 30px;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        .form-header {
+            text-align: center;
+            border-bottom: 3px solid #3498db;
+            padding-bottom: 15px;
+            margin-bottom: 25px;
+        }
+
+        .form-header h1 {
+            margin: 0;
+            font-size: 28px;
+            background: linear-gradient(135deg, #3498db 0%, #2ecc71 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            font-weight: bold;
+        }
+
+        .form-header p {
+            margin: 8px 0 0 0;
+            color: #666;
+            font-size: 14px;
+        }
+
+        .info-row {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            margin-bottom: 25px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid #e0e0e0;
+        }
+
+        .info-field {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .info-field label {
+            font-weight: bold;
+            font-size: 13px;
+            margin-bottom: 5px;
+            color: #333;
+        }
+
+        .info-field input {
+            padding: 10px;
+            border: 2px solid #3498db;
+            border-radius: 6px;
+            font-size: 14px;
+            transition: border-color 0.3s;
+        }
+
+        .info-field input:focus {
+            outline: none;
+            border-color: #2ecc71;
+        }
+
+        .section {
+            margin: 30px 0;
+        }
+
+        .section-header {
+            background: linear-gradient(135deg, #3498db 0%, #2ecc71 100%);
+            color: white;
+            padding: 12px 20px;
+            border-radius: 8px;
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 15px;
+            box-shadow: 0 2px 8px rgba(52, 152, 219, 0.3);
+        }
+
+        .checklist-grid {
+            display: grid;
+            grid-template-columns: auto 1fr 100px 100px;
+            gap: 0;
+            border: 2px solid #3498db;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .grid-header {
+            background: #3498db;
+            color: white;
+            padding: 12px;
+            font-weight: bold;
+            font-size: 13px;
+            text-align: center;
+            border-right: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .grid-header:last-child {
+            border-right: none;
+        }
+
+        .grid-number {
+            background: #f8f9fa;
+            padding: 12px;
+            text-align: center;
+            font-weight: bold;
+            color: #3498db;
+            border-right: 1px solid #ddd;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .grid-item {
+            background: white;
+            padding: 12px 15px;
+            border-right: 1px solid #ddd;
+            border-bottom: 1px solid #ddd;
+            font-size: 14px;
+            color: #333;
+        }
+
+        .grid-input {
+            background: white;
+            padding: 8px;
+            border-right: 1px solid #ddd;
+            border-bottom: 1px solid #ddd;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .grid-input input {
+            width: 100%;
+            padding: 6px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            text-align: center;
+            font-size: 12px;
+        }
+
+        .grid-input input:focus {
+            outline: none;
+            border-color: #2ecc71;
+        }
+
+        .grid-input:last-child {
+            border-right: none;
+        }
+
+        .grid-number:nth-child(4n+1),
+        .grid-item:nth-child(4n+2),
+        .grid-input:nth-child(4n+3),
+        .grid-input:nth-child(4n+4) {
+            background: #f8f9fa;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 2px solid #e0e0e0;
+        }
+
+        .btn {
+            padding: 14px 35px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(52, 152, 219, 0.4);
+        }
+
+        .btn-secondary {
+            background: linear-gradient(135deg, #95a5a6 0%, #7f8c8d 100%);
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(149, 165, 166, 0.4);
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, #2ecc71 0%, #27ae60 100%);
+            color: white;
+        }
+
+        .btn-success:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(46, 204, 113, 0.4);
+        }
+    </style>
+</head>
+
+<body>
+    <a href="portal.html" class="back-button" style="margin: 20px;">← Back to Portal</a>
+    <div class="checklist-form">
+        <div class="form-header">
+            <h1>EZ BATHS OFFICE PROCESSING CHECKLIST</h1>
+            <p>30-Point Process Verification</p>
+        </div>
+
+        <!-- Customer & Job Info -->
+        <div class="info-row">
+            <div class="info-field">
+                <label>JOB NUMBER:</label>
+                <input type="text" id="jobNumber">
+            </div>
+            <div class="info-field">
+                <label>CUSTOMER NAME:</label>
+                <input type="text" id="customerName">
+            </div>
+            <div class="info-field">
+                <label>CONSULTANT:</label>
+                <input type="text" id="consultant">
+            </div>
+        </div>
+
+        <!-- CONSULTANT SECTION -->
+        <div class="section">
+            <div class="section-header">📋 CONSULTANT SECTION</div>
+            <div class="checklist-grid">
+                <div class="grid-header">#</div>
+                <div class="grid-header">TASK</div>
+                <div class="grid-header">INITIALS</div>
+                <div class="grid-header">DATE</div>
+
+                <div class="grid-number">1</div>
+                <div class="grid-item">Dropbox pictures uploaded</div>
+                <div class="grid-input"><input type="text" id="init1"></div>
+                <div class="grid-input"><input type="date" id="date1"></div>
+
+                <div class="grid-number">2</div>
+                <div class="grid-item">Dropbox video uploaded</div>
+                <div class="grid-input"><input type="text" id="init2"></div>
+                <div class="grid-input"><input type="date" id="date2"></div>
+
+                <div class="grid-number">3</div>
+                <div class="grid-item">Contract uploaded to One Click</div>
+                <div class="grid-input"><input type="text" id="init3"></div>
+                <div class="grid-input"><input type="date" id="date3"></div>
+
+                <div class="grid-number">4</div>
+                <div class="grid-item">Copy of contract to customer</div>
+                <div class="grid-input"><input type="text" id="init4"></div>
+                <div class="grid-input"><input type="date" id="date4"></div>
+
+                <div class="grid-number">5</div>
+                <div class="grid-item">JOC form completed</div>
+                <div class="grid-input"><input type="text" id="init5"></div>
+                <div class="grid-input"><input type="date" id="date5"></div>
+
+                <div class="grid-number">6</div>
+                <div class="grid-item">Measurement form completed</div>
+                <div class="grid-input"><input type="text" id="init6"></div>
+                <div class="grid-input"><input type="date" id="date6"></div>
+
+                <div class="grid-number">7</div>
+                <div class="grid-item">Customer expectations form completed</div>
+                <div class="grid-input"><input type="text" id="init7"></div>
+                <div class="grid-input"><input type="date" id="date7"></div>
+
+                <div class="grid-number">8</div>
+                <div class="grid-item">Commission calculator completed</div>
+                <div class="grid-input"><input type="text" id="init8"></div>
+                <div class="grid-input"><input type="date" id="date8"></div>
+
+                <div class="grid-number">9</div>
+                <div class="grid-item">All documents uploaded to One Click</div>
+                <div class="grid-input"><input type="text" id="init9"></div>
+                <div class="grid-input"><input type="date" id="date9"></div>
+
+                <div class="grid-number">10</div>
+                <div class="grid-item">Financing information submitted (if applicable)</div>
+                <div class="grid-input"><input type="text" id="init10"></div>
+                <div class="grid-input"><input type="date" id="date10"></div>
+
+                <div class="grid-number">11</div>
+                <div class="grid-item">Customer contact info verified</div>
+                <div class="grid-input"><input type="text" id="init11"></div>
+                <div class="grid-input"><input type="date" id="date11"></div>
+
+                <div class="grid-number">12</div>
+                <div class="grid-item">Special requests noted</div>
+                <div class="grid-input"><input type="text" id="init12"></div>
+                <div class="grid-input"><input type="date" id="date12"></div>
+
+                <div class="grid-number">13</div>
+                <div class="grid-item">Post-sale checklist completed</div>
+                <div class="grid-input"><input type="text" id="init13"></div>
+                <div class="grid-input"><input type="date" id="date13"></div>
+            </div>
+        </div>
+
+        <!-- ADMIN SECTION -->
+        <div class="section">
+            <div class="section-header">🏢 ADMIN SECTION</div>
+            <div class="checklist-grid">
+                <div class="grid-header">#</div>
+                <div class="grid-header">TASK</div>
+                <div class="grid-header">INITIALS</div>
+                <div class="grid-header">DATE</div>
+
+                <div class="grid-number">14</div>
+                <div class="grid-item">Contract reviewed and approved</div>
+                <div class="grid-input"><input type="text" id="init14"></div>
+                <div class="grid-input"><input type="date" id="date14"></div>
+
+                <div class="grid-number">15</div>
+                <div class="grid-item">Job entered into system</div>
+                <div class="grid-input"><input type="text" id="init15"></div>
+                <div class="grid-input"><input type="date" id="date15"></div>
+            </div>
+        </div>
+
+        <!-- CUSTOMER CARE SECTION -->
+        <div class="section">
+            <div class="section-header">💬 CUSTOMER CARE</div>
+            <div class="checklist-grid">
+                <div class="grid-header">#</div>
+                <div class="grid-header">TASK</div>
+                <div class="grid-header">INITIALS</div>
+                <div class="grid-header">DATE</div>
+
+                <div class="grid-number">16</div>
+                <div class="grid-item">Welcome call completed</div>
+                <div class="grid-input"><input type="text" id="init16"></div>
+                <div class="grid-input"><input type="date" id="date16"></div>
+            </div>
+        </div>
+
+        <!-- PRODUCTION SECTION -->
+        <div class="section">
+            <div class="section-header">🔧 PRODUCTION</div>
+            <div class="checklist-grid">
+                <div class="grid-header">#</div>
+                <div class="grid-header">TASK</div>
+                <div class="grid-header">INITIALS</div>
+                <div class="grid-header">DATE</div>
+
+                <div class="grid-number">17</div>
+                <div class="grid-item">Product ordered</div>
+                <div class="grid-input"><input type="text" id="init17"></div>
+                <div class="grid-input"><input type="date" id="date17"></div>
+
+                <div class="grid-number">18</div>
+                <div class="grid-item">Product received</div>
+                <div class="grid-input"><input type="text" id="init18"></div>
+                <div class="grid-input"><input type="date" id="date18"></div>
+
+                <div class="grid-number">19</div>
+                <div class="grid-item">Product staged for installation</div>
+                <div class="grid-input"><input type="text" id="init19"></div>
+                <div class="grid-input"><input type="date" id="date19"></div>
+
+                <div class="grid-number">20</div>
+                <div class="grid-item">Installation scheduled</div>
+                <div class="grid-input"><input type="text" id="init20"></div>
+                <div class="grid-input"><input type="date" id="date20"></div>
+
+                <div class="grid-number">21</div>
+                <div class="grid-item">Customer notified of install date</div>
+                <div class="grid-input"><input type="text" id="init21"></div>
+                <div class="grid-input"><input type="date" id="date21"></div>
+            </div>
+        </div>
+
+        <!-- ADMIN AFTER INSTALLATION -->
+        <div class="section">
+            <div class="section-header">✅ ADMIN AFTER INSTALLATION</div>
+            <div class="checklist-grid">
+                <div class="grid-header">#</div>
+                <div class="grid-header">TASK</div>
+                <div class="grid-header">INITIALS</div>
+                <div class="grid-header">DATE</div>
+
+                <div class="grid-number">22</div>
+                <div class="grid-item">Installation photos received</div>
+                <div class="grid-input"><input type="text" id="init22"></div>
+                <div class="grid-input"><input type="date" id="date22"></div>
+
+                <div class="grid-number">23</div>
+                <div class="grid-item">Final invoice sent to customer</div>
+                <div class="grid-input"><input type="text" id="init23"></div>
+                <div class="grid-input"><input type="date" id="date23"></div>
+
+                <div class="grid-number">24</div>
+                <div class="grid-item">Payment received in full</div>
+                <div class="grid-input"><input type="text" id="init24"></div>
+                <div class="grid-input"><input type="date" id="date24"></div>
+
+                <div class="grid-number">25</div>
+                <div class="grid-item">Warranty information sent to customer</div>
+                <div class="grid-input"><input type="text" id="init25"></div>
+                <div class="grid-input"><input type="date" id="date25"></div>
+
+                <div class="grid-number">26</div>
+                <div class="grid-item">Follow-up call completed (1 week)</div>
+                <div class="grid-input"><input type="text" id="init26"></div>
+                <div class="grid-input"><input type="date" id="date26"></div>
+
+                <div class="grid-number">27</div>
+                <div class="grid-item">Follow-up call completed (1 month)</div>
+                <div class="grid-input"><input type="text" id="init27"></div>
+                <div class="grid-input"><input type="date" id="date27"></div>
+
+                <div class="grid-number">28</div>
+                <div class="grid-item">Review request sent to customer</div>
+                <div class="grid-input"><input type="text" id="init28"></div>
+                <div class="grid-input"><input type="date" id="date28"></div>
+
+                <div class="grid-number">29</div>
+                <div class="grid-item">Job photos uploaded to marketing</div>
+                <div class="grid-input"><input type="text" id="init29"></div>
+                <div class="grid-input"><input type="date" id="date29"></div>
+
+                <div class="grid-number">30</div>
+                <div class="grid-item">Job closed in system</div>
+                <div class="grid-input"><input type="text" id="init30"></div>
+                <div class="grid-input"><input type="date" id="date30"></div>
+            </div>
+        </div>
+
+        <!-- Buttons -->
+        <div class="button-group">
+            <button class="btn btn-secondary" onclick="populateForm()">Auto-Fill Customer Info</button>
+            <button class="btn btn-primary" onclick="saveForm()">Save Checklist</button>
+            <button class="btn btn-info" onclick="saveAsImage()">📷 Save to Phone</button>
+            <button class="btn btn-secondary" onclick="printForm()">🖨️ Print</button>
+            <button class="btn btn-success" onclick="window.location.href='post-sale-documents.html'">Complete
+                ✓</button>
+        </div>
+    </div>
+
+    <script src="assets/js/ezapp-data.js"></script>
+    <script>
+        window.addEventListener('DOMContentLoaded', () => {
+            populateForm();
+        });
+
+        function populateForm() {
+            const ezappData = EZAPP.getCurrentData();
+            if (!ezappData) return;
+
+            if (ezappData.customer) {
+                document.getElementById('customerName').value =
+                    `${ezappData.customer.firstName || ''} ${ezappData.customer.lastName || ''}`.trim();
+            }
+
+            if (ezappData.documents && ezappData.documents.jocComplete) {
+                document.getElementById('jobNumber').value = ezappData.documents.jocComplete.jobNumber || '';
+            }
+
+            console.log('Office Processing Checklist populated');
+        }
+
+        function saveForm() {
+            const formData = {
+                jobNumber: document.getElementById('jobNumber').value,
+                customerName: document.getElementById('customerName').value,
+                consultant: document.getElementById('consultant').value,
+                items: []
+            };
+
+            // Collect all 30 checklist items
+            for (let i = 1; i <= 30; i++) {
+                formData.items.push({
+                    number: i,
+                    initials: document.getElementById(`init${i}`).value,
+                    date: document.getElementById(`date${i}`).value
+                });
+            }
+
+            formData.timestamp = new Date().toISOString();
+
+            const ezappData = EZAPP.getCurrentData() || {};
+            if (!ezappData.documents) ezappData.documents = {};
+            ezappData.documents.officeProcessing = formData;
+            localStorage.setItem('EZAPP_current', JSON.stringify(ezappData));
+
+            alert('Office Processing Checklist saved successfully!');
+            console.log('Saved checklist:', formData);
+        }
+
+        function saveAsImage() {
+            const formElement = document.querySelector('.checklist-form');
+            const buttons = document.querySelector('.button-group');
+
+            // Hide buttons during capture
+            buttons.style.display = 'none';
+
+            html2canvas(formElement, {
+                backgroundColor: '#1a1a2e',
+                scale: 2,
+                useCORS: true,
+                logging: false
+            }).then(canvas => {
+                buttons.style.display = 'flex';
+
+                const link = document.createElement('a');
+                const customerName = document.getElementById('customerName').value || 'Office-Processing';
+                const date = new Date().toISOString().split('T')[0];
+                link.download = `${customerName.replace(/\s+/g, '-')}_Office-Processing_${date}.png`;
+                link.href = canvas.toDataURL('image/png');
+                link.click();
+            }).catch(err => {
+                buttons.style.display = 'flex';
+                console.error('Save failed:', err);
+                alert('Save failed. Please try again.');
+            });
+        }
+
+        function printForm() {
+            window.print();
+        }
+    </script>
+</body>
+
+</html>

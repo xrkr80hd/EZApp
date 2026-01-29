@@ -1,0 +1,3736 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EZ Baths - Weekly Scheduler</title>
+    <link rel="stylesheet" href="assets/css/responsive-fixes.css">
+    <script src="assets/js/toast-notifications.js" defer></script>
+    <script src="assets/js/loading-spinner.js" defer></script>
+    <!-- html2canvas for image capture - LOCAL copy for reliability -->
+    <script src="assets/js/html2canvas.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+            color: white;
+            padding: 15px;
+            min-height: 100vh;
+            position: relative;
+            overflow-x: hidden;
+            overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 10%;
+            left: 5%;
+            width: 300px;
+            height: 300px;
+            background: radial-gradient(circle, rgba(52, 152, 219, 0.15) 0%, transparent 70%);
+            border-radius: 50%;
+            animation: pulse 8s ease-in-out infinite;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        body::after {
+            content: '';
+            position: fixed;
+            bottom: 10%;
+            right: 5%;
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, rgba(255, 107, 107, 0.12) 0%, transparent 70%);
+            border-radius: 50%;
+            animation: pulse 10s ease-in-out infinite reverse;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        @keyframes pulse {
+
+            0%,
+            100% {
+                transform: scale(1);
+                opacity: 0.6;
+            }
+
+            50% {
+                transform: scale(1.1);
+                opacity: 0.8;
+            }
+        }
+
+        .container {
+            max-width: 1100px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.98);
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Input Form Section */
+        .form-section {
+            background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+            padding: 30px 25px;
+            color: white;
+            border-radius: 20px 20px 0 0;
+            box-shadow: 0 4px 12px rgba(44, 62, 80, 0.3);
+        }
+
+        /* Mobile Back Button */
+        .back-button-mobile {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, #3498db 0%, #2ecc71 100%);
+            border: none;
+            color: white;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 16px;
+            box-shadow: 0 2px 8px rgba(52, 152, 219, 0.3);
+            margin-bottom: 20px;
+            transition: all 0.3s ease;
+        }
+
+        .back-button-mobile:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(52, 152, 219, 0.4);
+        }
+
+        /* Form Header Styling */
+        .form-header {
+            text-align: center;
+            margin-bottom: 25px;
+        }
+
+        .form-logo {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            margin-bottom: 8px;
+        }
+
+        .form-logo img {
+            width: 40px;
+            height: 40px;
+        }
+
+        .form-brand {
+            font-size: 32px;
+            font-weight: 900;
+            background: linear-gradient(135deg, #667eea 0%, #3b82f6 50%, #06b6d4 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            letter-spacing: 3px;
+        }
+
+        .form-slogan {
+            font-size: 12px;
+            color: #a0aec0;
+            letter-spacing: 4px;
+            text-transform: uppercase;
+            margin-bottom: 15px;
+            font-style: italic;
+        }
+
+        .form-title {
+            font-size: 28px;
+            font-weight: 700;
+            margin: 0 0 8px 0;
+            color: #fff;
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+        }
+
+        .form-subtitle {
+            font-size: 14px;
+            color: rgba(255, 255, 255, 0.8);
+            margin: 0;
+            padding: 8px 20px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            display: inline-block;
+        }
+
+        .form-section h1 {
+            font-size: 28px;
+            margin-bottom: 10px;
+            text-align: center;
+        }
+
+        .form-section .subtitle {
+            text-align: center;
+            font-size: 14px;
+            opacity: 0.9;
+            margin-bottom: 20px;
+        }
+
+        .info-grid {
+            display: grid;
+            gap: 15px;
+            margin: 20px 0;
+        }
+
+        .info-row {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 12px;
+            border-radius: 5px;
+        }
+
+        .info-row label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 5px;
+            font-size: 13px;
+        }
+
+        .info-row input {
+            width: 100%;
+            padding: 10px;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            max-width: 100%;
+            box-sizing: border-box;
+        }
+
+        .info-row input[type="date"] {
+            max-width: 200px;
+        }
+
+        .week-range {
+            display: block;
+            margin-top: 8px;
+            background: rgba(255, 255, 255, 0.2);
+            padding: 5px 10px;
+            border-radius: 3px;
+            font-weight: 600;
+            word-break: break-word;
+        }
+
+        .saturday-tracker {
+            background: rgba(255, 255, 255, 0.15);
+            padding: 15px;
+            border-radius: 8px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .saturday-tracker input[type="number"] {
+            width: 70px;
+            padding: 8px;
+            font-size: 18px;
+            font-weight: bold;
+            text-align: center;
+            border: 2px solid #4CAF50;
+        }
+
+        .tracker-note {
+            font-size: 11px;
+            opacity: 0.8;
+            margin-top: 5px;
+        }
+
+        /* Checkbox Grid - Using Output Grid Style */
+        .checkbox-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 4px;
+            margin: 20px 0;
+            background: transparent;
+            border-radius: 8px;
+        }
+
+        @media screen and (max-width: 1100px) {
+            .checkbox-grid {
+                grid-template-columns: repeat(4, 1fr);
+            }
+        }
+
+        @media screen and (max-width: 700px) {
+            .checkbox-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 12px;
+            }
+
+            .info-row input[type="date"] {
+                max-width: 100%;
+            }
+        }
+
+        @media screen and (max-width: 500px) {
+            .checkbox-grid {
+                grid-template-columns: 1fr;
+                gap: 16px;
+            }
+        }
+
+        .day-section {
+            background: rgba(255, 255, 255, 0.15);
+            padding: 6px 2px;
+            border-radius: 6px;
+            text-align: center;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            min-width: 0;
+            width: 100%;
+        }
+
+        .day-section h4 {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            padding: 8px 4px;
+            font-size: 11px;
+            letter-spacing: 0.3px;
+            font-weight: 600;
+            border-radius: 4px;
+            margin-bottom: 6px;
+            text-align: center;
+        }
+
+        .time-labels {
+            display: flex;
+            justify-content: space-around;
+            gap: 2px;
+            margin-bottom: 6px;
+        }
+
+        .time-label {
+            background: #FFD700;
+            padding: 2px;
+            font-size: 10px;
+            font-weight: bold;
+            border: 2px solid rgba(255, 255, 255, 0.5);
+            border-radius: 4px;
+            color: #333;
+            flex: 1;
+            text-align: center;
+        }
+
+        .checkbox-row {
+            display: flex;
+            justify-content: space-around;
+            gap: 2px;
+        }
+
+        .checkbox-row label {
+            flex: 1;
+            width: 100%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .checkbox-row label span {
+            display: none;
+        }
+
+        .checkbox-row input[type="checkbox"] {
+            width: 100%;
+            height: 24px;
+            cursor: pointer;
+            -webkit-appearance: none;
+            appearance: none;
+            background-color: white;
+            border: 2px solid #ccc;
+            border-radius: 3px;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .checkbox-row input[type="checkbox"]::before {
+            content: '✕';
+            font-size: 18px;
+            font-weight: 900;
+            color: #f44336;
+            text-shadow: 0 0 1px #f44336;
+        }
+
+        .checkbox-row input[type="checkbox"]:checked {
+            border-color: #4CAF50;
+            border-width: 2px;
+        }
+
+        .checkbox-row input[type="checkbox"]:checked::before {
+            content: '✓';
+            font-size: 20px;
+            font-weight: 900;
+            color: #4CAF50;
+            text-shadow: 0 0 1px #4CAF50;
+        }
+
+        .checkbox-row label:hover {
+            transform: scale(1.02);
+        }
+
+        .checkbox-row input[type="checkbox"]:hover {
+            border-color: #3498db;
+        }
+
+        /* Input Schedule Grid - Styled for Input Section */
+        .input-schedule-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 8px;
+            margin: 20px 0;
+            background: transparent;
+            border-radius: 8px;
+        }
+
+        @media screen and (max-width: 1100px) {
+            .input-schedule-grid {
+                grid-template-columns: repeat(4, 1fr);
+            }
+        }
+
+        @media screen and (max-width: 700px) {
+            .input-schedule-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 12px;
+            }
+        }
+
+        @media screen and (max-width: 500px) {
+            .input-schedule-grid {
+                grid-template-columns: 1fr;
+                gap: 16px;
+            }
+        }
+
+        .input-day-section {
+            background: rgba(255, 255, 255, 0.15);
+            padding: 8px 4px;
+            border-radius: 8px;
+            text-align: center;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            min-width: 0;
+            width: 100%;
+        }
+
+        .input-day-section h4 {
+            background: rgba(255, 255, 255, 0.25);
+            color: white;
+            padding: 8px 4px;
+            font-size: 12px;
+            letter-spacing: 0.5px;
+            font-weight: 700;
+            border-radius: 4px;
+            margin-bottom: 8px;
+            text-align: center;
+        }
+
+        .input-time-labels {
+            display: flex;
+            justify-content: space-around;
+            gap: 3px;
+            margin-bottom: 8px;
+        }
+
+        .input-time-label {
+            background: #FFD700;
+            padding: 4px;
+            font-size: 11px;
+            font-weight: bold;
+            border: 2px solid rgba(255, 255, 255, 0.6);
+            border-radius: 4px;
+            color: #333;
+            flex: 1;
+            text-align: center;
+        }
+
+        .input-checkbox-row {
+            display: flex;
+            justify-content: space-around;
+            gap: 3px;
+        }
+
+        .input-checkbox-box {
+            flex: 1;
+            height: 32px;
+            background: white;
+            border: 3px solid #ccc;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .input-checkbox-box::before {
+            content: '✕';
+            font-size: 20px;
+            font-weight: 900;
+            color: #f44336;
+            text-shadow: 0 0 1px #f44336;
+        }
+
+        .input-checkbox-box.available {
+            border-color: #4CAF50;
+            border-width: 3px;
+        }
+
+        .input-checkbox-box.available::before {
+            content: '✓';
+            font-size: 22px;
+            font-weight: 900;
+            color: #4CAF50;
+            text-shadow: 0 0 1px #4CAF50;
+        }
+
+        .input-checkbox-box:hover {
+            transform: scale(1.05);
+            border-color: #3498db;
+        }
+
+        /* Input Requirements Box - Dark Theme */
+        .input-requirements-box {
+            background: linear-gradient(135deg, #1a1a3e 0%, #0d0d2b 100%);
+            border: 2px solid #3498db;
+            border-radius: 12px;
+            padding: 20px;
+            margin-top: 25px;
+        }
+
+        .input-requirements-box h4 {
+            color: #ffffff;
+            font-size: 20px;
+            text-align: center;
+            margin: 0 0 20px 0;
+            padding-bottom: 15px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .input-requirements-counters {
+            display: grid;
+            grid-template-columns: 1fr 2fr 1fr;
+            gap: 20px;
+            align-items: stretch;
+        }
+
+        @media screen and (max-width: 900px) {
+            .input-requirements-counters {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .input-requirement-counter {
+            text-align: center;
+            padding: 20px 15px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .input-requirement-counter.saturday {
+            padding: 15px 10px;
+            justify-content: flex-start;
+        }
+
+        .input-counter-label {
+            color: #aaa;
+            font-size: 16px;
+            margin-bottom: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .input-counter-display {
+            display: flex;
+            justify-content: center;
+            align-items: baseline;
+            gap: 8px;
+            margin-bottom: 15px;
+        }
+
+        .input-counter-value {
+            font-size: 52px;
+            font-weight: bold;
+            color: #4CAF50;
+        }
+
+        .input-counter-separator {
+            font-size: 32px;
+            color: #666;
+        }
+
+        .input-counter-min,
+        .input-counter-max {
+            font-size: 20px;
+            color: #888;
+        }
+
+        .input-counter-status {
+            font-size: 14px;
+            padding: 8px 14px;
+            border-radius: 15px;
+            display: inline-block;
+        }
+
+        .input-counter-status.success {
+            background: rgba(76, 175, 80, 0.2);
+            color: #4CAF50;
+        }
+
+        .input-counter-status.warning {
+            background: rgba(255, 152, 0, 0.2);
+            color: #FF9800;
+        }
+
+        .input-counter-status.danger {
+            background: rgba(244, 67, 54, 0.2);
+            color: #f44336;
+        }
+
+        /* Saturday Circles in Input Section */
+        .input-saturday-circles {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 8px;
+            margin: 10px auto;
+            max-width: 280px;
+        }
+
+        .input-counter-circle {
+            width: 42px;
+            height: 42px;
+            border-radius: 50%;
+            border: 2px solid #555;
+            background: rgba(255, 255, 255, 0.05);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #666;
+            font-weight: bold;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.2s;
+            margin: 0 auto;
+        }
+
+        .input-counter-circle:hover {
+            border-color: #4CAF50;
+            transform: scale(1.1);
+        }
+
+        .input-counter-circle.filled {
+            background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%);
+            border-color: #4CAF50;
+            color: white;
+            box-shadow: 0 2px 8px rgba(76, 175, 80, 0.4);
+        }
+
+        .input-counter-note {
+            color: #888;
+            font-size: 12px;
+            margin-top: 10px;
+        }
+
+        .update-button {
+            width: 100%;
+            background: #4CAF50;
+            color: white;
+            padding: 15px;
+            border: none;
+            border-radius: 8px;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-top: 15px;
+        }
+
+        .update-button:hover {
+            background: #45a049;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        .update-button:active {
+            transform: translateY(0);
+        }
+
+        /* Vacation Toggle Styles */
+        .vacation-toggle-label {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            cursor: pointer;
+            padding: 8px 0;
+        }
+
+        .vacation-checkbox {
+            /* Hide native checkbox */
+            position: absolute;
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        /* Custom toggle switch */
+        .vacation-toggle-switch {
+            position: relative;
+            display: inline-block;
+            width: 56px;
+            height: 28px;
+            background: #e67e22;
+            border-radius: 28px;
+            transition: all 0.3s ease;
+            flex-shrink: 0;
+            margin-left: 15px;
+            border: 2px solid rgba(255, 255, 255, 0.4);
+            box-shadow: inset 0 2px 6px rgba(0, 0, 0, 0.3);
+            vertical-align: middle;
+        }
+
+        .vacation-toggle-switch::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 2px;
+            transform: translateY(-50%);
+            width: 22px;
+            height: 22px;
+            background: #fff;
+            border-radius: 50%;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+        }
+
+        .vacation-checkbox:checked~.vacation-toggle-switch {
+            background: #4CAF50;
+            border-color: rgba(255, 255, 255, 0.5);
+        }
+
+        .vacation-checkbox:checked~.vacation-toggle-switch::after {
+            left: 30px;
+        }
+
+        /* Vacation row centered layout */
+        .vacation-row {
+            text-align: center;
+        }
+
+        .vacation-toggle-label {
+            justify-content: center;
+        }
+
+        .vacation-toggle-text {
+            font-size: 16px;
+            font-weight: 600;
+            color: #fff;
+        }
+
+        .vacation-notice {
+            font-size: 12px;
+            color: #f39c12;
+            margin-top: 8px;
+            text-align: center;
+        }
+
+        .vacation-input-container {
+            margin-top: 15px;
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 8px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            animation: slideDown 0.3s ease;
+        }
+
+        .vacation-dates-row {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .vacation-date-field {
+            flex: 1;
+        }
+
+        .vacation-date-field label {
+            display: block;
+            font-size: 12px;
+            color: #aaa;
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+
+        .vacation-date-field input {
+            width: 100%;
+            padding: 10px;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            box-sizing: border-box;
+        }
+
+        .vacation-arrow {
+            color: #aaa;
+            padding-top: 20px;
+            font-size: 18px;
+        }
+
+        @media (max-width: 500px) {
+            .vacation-dates-row {
+                flex-direction: column;
+                gap: 15px;
+            }
+
+            .vacation-arrow {
+                padding-top: 0;
+                transform: rotate(90deg);
+            }
+
+            .vacation-date-field {
+                width: 100%;
+            }
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Preview Toggle Button */
+        .preview-toggle {
+            width: 100%;
+            background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
+            color: white;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 15px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            font-size: 18px;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(52, 152, 219, 0.3);
+            box-sizing: border-box;
+            text-align: center;
+        }
+
+        .preview-toggle:hover {
+            background: linear-gradient(135deg, #2980b9 0%, #1a5276 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(52, 152, 219, 0.4);
+        }
+
+        .preview-toggle.active {
+            background: linear-gradient(135deg, #27ae60 0%, #1e8449 100%);
+            box-shadow: 0 4px 15px rgba(39, 174, 96, 0.3);
+        }
+
+        .preview-toggle.active .preview-toggle-arrow {
+            transform: rotate(180deg);
+        }
+
+        .preview-toggle-icon {
+            font-size: 22px;
+        }
+
+        .preview-toggle-arrow {
+            transition: transform 0.3s ease;
+            font-size: 14px;
+        }
+
+        /* Output Schedule Section - Optimized for Export */
+        .output-section {
+            background: white;
+            border: 3px solid #000;
+            padding: 30px;
+            margin-top: 20px;
+        }
+
+        .output-header {
+            text-align: center;
+            border-bottom: 3px solid #000;
+            padding-bottom: 20px;
+            margin-bottom: 25px;
+        }
+
+        .output-header h2 {
+            font-size: 18px;
+            margin: 0;
+            letter-spacing: 2px;
+            color: #555;
+            font-weight: 600;
+        }
+
+        .output-header .company-logo {
+            font-size: 42px;
+            font-weight: 900;
+            background: linear-gradient(135deg, #667eea 0%, #3b82f6 50%, #06b6d4 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 8px;
+            letter-spacing: 4px;
+            text-shadow: none;
+            position: relative;
+            display: inline-block;
+        }
+
+        .output-header .company-logo::before {
+            content: '🛁';
+            font-size: 28px;
+            margin-right: 10px;
+            -webkit-text-fill-color: initial;
+        }
+
+        .output-header .company-logo::after {
+            content: '🛁';
+            font-size: 28px;
+            margin-left: 10px;
+            -webkit-text-fill-color: initial;
+        }
+
+        .output-header .tagline {
+            font-size: 11px;
+            color: #888;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            margin-top: 5px;
+        }
+
+        /* Output Schedule Grid - Matches Input Style */
+        .output-schedule-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 4px;
+            margin: 20px 0;
+            background: white;
+            border-radius: 8px;
+        }
+
+        @media screen and (max-width: 1100px) {
+            .output-schedule-grid {
+                grid-template-columns: repeat(4, 1fr);
+            }
+        }
+
+        @media screen and (max-width: 700px) {
+            .output-schedule-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 12px;
+                padding: 10px;
+            }
+
+            .output-day-section {
+                min-width: 0;
+                padding: 8px 2px;
+            }
+        }
+
+        @media screen and (max-width: 500px) {
+            .output-schedule-grid {
+                grid-template-columns: 1fr;
+                gap: 16px;
+                padding: 5px;
+            }
+        }
+
+        .output-day-section {
+            background: #f5f5f5;
+            padding: 6px 2px;
+            border-radius: 6px;
+            text-align: center;
+            border: 2px solid #ddd;
+            min-width: 0;
+            width: 100%;
+        }
+
+        .output-day-section h4 {
+            background: #666;
+            color: white;
+            padding: 8px 4px;
+            font-size: 11px;
+            letter-spacing: 0.3px;
+            font-weight: 600;
+            border-radius: 4px;
+            margin-bottom: 6px;
+            text-align: center;
+        }
+
+        .output-time-labels {
+            display: flex;
+            justify-content: space-around;
+            gap: 2px;
+            margin-bottom: 6px;
+        }
+
+        .output-time-label {
+            background: #FFD700;
+            padding: 2px;
+            font-size: 10px;
+            font-weight: bold;
+            border: 2px solid #000;
+            border-radius: 4px;
+            color: #333;
+            flex: 1;
+            text-align: center;
+        }
+
+        .output-checkbox-row {
+            display: flex;
+            justify-content: space-around;
+            gap: 2px;
+        }
+
+        .output-checkbox-box {
+            flex: 1;
+            width: 100%;
+            height: 24px;
+            background: white;
+            border: 2px solid #ccc;
+            border-radius: 3px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            font-weight: 900;
+            position: relative;
+        }
+
+        .output-checkbox-box::before {
+            content: '✕';
+            color: #f44336;
+            text-shadow: 0 0 1px #f44336;
+        }
+
+        .output-checkbox-box.available {
+            border-color: #4CAF50;
+            border-width: 2px;
+        }
+
+        .output-checkbox-box.available::before {
+            content: '✓';
+            color: #4CAF50;
+            font-size: 20px;
+            text-shadow: 0 0 1px #4CAF50;
+        }
+
+        .output-grid {
+            display: grid;
+            grid-template-columns: repeat(21, 1fr);
+            gap: 0;
+            width: 100%;
+        }
+
+        .output-cell {
+            width: 100%;
+            height: 0;
+            padding-bottom: 100%;
+            position: relative;
+            border: 2px solid #000;
+            background: #5DADE2;
+        }
+
+        .output-cell-content {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            font-weight: bold;
+            color: white;
+        }
+
+        .output-cell.available .output-cell-content::before {
+            content: '✓';
+        }
+
+        .output-cell.unavailable .output-cell-content::before {
+            content: '✕';
+            font-size: 32px;
+            color: #FF0000;
+            font-weight: 900;
+            text-shadow: 1px 1px 2px rgba(255, 255, 255, 0.9);
+        }
+
+        /* Info Boxes Grid */
+        .info-boxes-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin: 20px 0;
+        }
+
+        /* Requirements Box */
+        .requirements-box {
+            background: #f9f9f9;
+            border: 3px solid #333;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .requirements-box h3 {
+            font-size: 18px;
+            margin-bottom: 15px;
+            color: #333;
+            font-weight: bold;
+        }
+
+        .requirements-box ul {
+            list-style: none;
+            padding-left: 0;
+            margin-bottom: 15px;
+        }
+
+        .requirements-box li {
+            padding: 6px 0;
+            font-size: 14px;
+            line-height: 1.6;
+            color: #111;
+        }
+
+        .requirements-box li strong {
+            color: #000;
+        }
+
+        .requirements-box li::before {
+            content: "✓ ";
+            color: #4CAF50;
+            font-weight: bold;
+            margin-right: 8px;
+            font-size: 16px;
+        }
+
+        .requirements-box .goal {
+            font-style: italic;
+            color: #111;
+            margin-top: 10px;
+            padding-top: 12px;
+            border-top: 2px solid #ddd;
+            font-size: 13px;
+        }
+
+        /* Consultant Info Section */
+        .consultant-info {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 20px;
+            margin: 20px 0;
+            padding: 15px;
+            background: #fafafa;
+            border: 2px solid #ccc;
+        }
+
+        .info-item {
+            font-size: 14px;
+            line-height: 1.8;
+        }
+
+        .info-item strong {
+            display: inline-block;
+            min-width: 120px;
+        }
+
+        .info-value {
+            display: inline-block;
+            font-weight: 600;
+            border-bottom: 2px solid #000;
+            min-width: 200px;
+            padding: 2px 5px;
+        }
+
+        /* Saturday Box in Output Section */
+        .saturday-box {
+            text-align: center;
+            background: #e3f2fd;
+            border: 3px solid #2196F3;
+            border-radius: 8px;
+            padding: 15px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .saturday-box h3 {
+            color: #2196F3;
+            font-size: 14px;
+            font-weight: bold;
+            margin: 0 0 12px 0;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .saturday-box .counter-grid {
+            margin: 0 auto;
+        }
+
+        .counter-label-line {
+            color: #555;
+            font-size: 13px;
+            margin-top: 10px;
+            font-style: italic;
+        }
+
+        /* Saturday Counter Inside Requirements Box */
+        .saturday-counter-inline {
+            background: #e3f2fd;
+            border: 3px solid #2196F3;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            min-width: 220px;
+        }
+
+        .saturday-counter-inline h4 {
+            color: #2196F3;
+            font-size: 14px;
+            margin-bottom: 15px;
+            font-weight: bold;
+            text-align: center;
+        }
+
+        .counter-grid {
+            display: grid !important;
+            grid-template-columns: repeat(5, 1fr) !important;
+            gap: 8px;
+            margin: 0 auto;
+            min-width: 180px;
+            width: 180px;
+        }
+
+        @media screen and (max-width: 400px) {
+            .counter-grid {
+                grid-template-columns: repeat(3, 1fr) !important;
+                min-width: 110px;
+                width: 110px;
+            }
+        }
+
+        .counter-circle {
+            width: 32px;
+            height: 32px;
+            border: 2px solid #2196F3;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 13px;
+            color: #2196F3;
+            background: white;
+            transition: all 0.3s ease;
+        }
+
+        .counter-circle.active {
+            background: #2196F3;
+            color: white;
+            transform: scale(1.1);
+        }
+
+        /* Schedule Requirements Box - The Awesome One */
+        .schedule-requirements-box {
+            background: linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 100%);
+            border: 3px solid #4CAF50;
+            border-radius: 12px;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .schedule-requirements-box h3 {
+            font-size: 16px;
+            color: #2e7d32;
+            margin-bottom: 15px;
+            font-weight: bold;
+            text-align: center;
+            border-bottom: 2px solid #4CAF50;
+            padding-bottom: 10px;
+        }
+
+        .requirements-counters {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .requirement-counter {
+            background: white;
+            border-radius: 8px;
+            padding: 12px 15px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .counter-label {
+            font-size: 12px;
+            font-weight: bold;
+            color: #555;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .counter-display {
+            display: flex;
+            align-items: baseline;
+            gap: 5px;
+        }
+
+        .counter-value {
+            font-size: 32px;
+            font-weight: 900;
+            color: #4CAF50;
+        }
+
+        .counter-value.warning {
+            color: #ff9800;
+        }
+
+        .counter-value.danger {
+            color: #f44336;
+        }
+
+        .counter-separator {
+            font-size: 20px;
+            color: #999;
+        }
+
+        .counter-min,
+        .counter-max {
+            font-size: 14px;
+            color: #777;
+            font-weight: 600;
+        }
+
+        .counter-status {
+            font-size: 11px;
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-weight: bold;
+        }
+
+        .counter-status.success {
+            background: #e8f5e9;
+            color: #2e7d32;
+        }
+
+        .counter-status.warning {
+            background: #fff3e0;
+            color: #e65100;
+        }
+
+        .counter-status.danger {
+            background: #ffebee;
+            color: #c62828;
+        }
+
+        .saturday-counter-section {
+            background: #e3f2fd;
+            border: 2px solid #2196F3;
+        }
+
+        .saturday-circles {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 6px;
+            margin: 8px 0;
+        }
+
+        .saturday-circles .counter-circle {
+            width: 28px;
+            height: 28px;
+            font-size: 11px;
+            cursor: pointer;
+        }
+
+        .saturday-circles .counter-circle:hover {
+            transform: scale(1.15);
+            box-shadow: 0 2px 8px rgba(33, 150, 243, 0.4);
+        }
+
+        .counter-note {
+            font-size: 11px;
+            color: #1976d2;
+            font-weight: 600;
+        }
+
+        /* Mobile Responsive for Requirements Box */
+        @media screen and (max-width: 768px) {
+            .schedule-requirements-box {
+                padding: 15px;
+            }
+
+            .schedule-requirements-box h3 {
+                font-size: 14px;
+            }
+
+            .requirement-counter {
+                padding: 10px 12px;
+            }
+
+            .counter-value {
+                font-size: 26px;
+            }
+
+            .saturday-circles {
+                grid-template-columns: repeat(5, 1fr);
+                gap: 4px;
+            }
+
+            .saturday-circles .counter-circle {
+                width: 24px;
+                height: 24px;
+                font-size: 10px;
+            }
+        }
+
+        @media screen and (max-width: 480px) {
+            .saturday-circles {
+                grid-template-columns: repeat(5, 1fr);
+                gap: 3px;
+            }
+
+            .saturday-circles .counter-circle {
+                width: 22px;
+                height: 22px;
+                font-size: 9px;
+            }
+        }
+
+        /* Vacation Box */
+        .vacation-box {
+            background: #fff9e6;
+            border: 3px solid #ffc107;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .vacation-box h4 {
+            font-size: 16px;
+            margin-bottom: 15px;
+            color: #ff6b6b;
+            font-weight: bold;
+            text-align: center;
+        }
+
+        .vacation-box .info-item {
+            font-size: 14px;
+            text-align: center;
+        }
+
+        .vacation-input-container {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .vacation-input-container input[readonly] {
+            background: #f0f0f0;
+            cursor: not-allowed;
+        }
+
+        .btn-edit-vacation,
+        .btn-save-vacation {
+            padding: 8px 15px;
+            border: none;
+            border-radius: 6px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            white-space: nowrap;
+        }
+
+        .btn-edit-vacation {
+            background: #3498db;
+            color: white;
+        }
+
+        .btn-edit-vacation:hover {
+            background: #2980b9;
+        }
+
+        .btn-save-vacation {
+            background: #4CAF50;
+            color: white;
+        }
+
+        .btn-save-vacation:hover {
+            background: #45a049;
+        }
+
+        .vacation-locked-indicator {
+            font-size: 12px;
+            color: #666;
+            font-style: italic;
+            margin-top: 5px;
+            display: none;
+        }
+
+
+        /* Combined Info Box - Professional Layout */
+        .combined-info-box {
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            border: 2px solid #3b82f6;
+            border-radius: 8px;
+            padding: 15px 20px;
+            margin: 15px 0;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .combined-info-content {
+            display: flex;
+            gap: 20px;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .info-left {
+            flex: 0 0 auto;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            min-width: 200px;
+        }
+
+        .info-left .info-item {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+            text-align: left;
+        }
+
+        .info-left .info-item strong {
+            color: #3b82f6;
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .info-left .info-value {
+            color: #333;
+            font-size: 14px;
+            font-weight: 500;
+            border-bottom: 2px solid #3b82f6;
+            padding: 2px 0;
+            display: inline-block;
+            min-width: 150px;
+        }
+
+        .info-right {
+            flex: 1 1 auto;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            max-width: 280px;
+        }
+
+        .info-right .notice-box {
+            background: #fff3cd;
+            border: 1px solid #ffc107;
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-size: 11px;
+            font-weight: 600;
+            color: #856404;
+            text-align: center;
+        }
+
+        .info-right .deadline-notice {
+            background: #f8d7da;
+            border: 1px solid #f5c6cb;
+            padding: 6px 10px;
+            border-radius: 6px;
+            font-size: 10px;
+            color: #721c24;
+            font-weight: 600;
+            text-align: center;
+        }
+
+        /* Logo graphic - prominent display */
+        .print-graphic {
+            flex: 0 0 auto;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 10px;
+            margin-left: 25px;
+            margin-right: 10px;
+            background: white;
+            border-radius: 8px;
+            border: 1px solid #dee2e6;
+            box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
+        }
+
+        .print-graphic img {
+            width: auto;
+            height: 110px;
+            max-width: 260px;
+            object-fit: contain;
+        }
+
+        /* Saturday Counter Box */
+        .saturday-counter {
+            margin: 20px 0;
+            padding: 20px;
+            background: white;
+            border: 3px solid #2196F3;
+            border-radius: 8px;
+            text-align: center;
+            display: none;
+            /* Hidden - now integrated into requirements box */
+        }
+
+        .saturday-counter h4 {
+            color: #2196F3;
+            font-size: 14px;
+            margin-bottom: 10px;
+            font-weight: bold;
+        }
+
+        .counter-number {
+            padding: 8px;
+            border: 2px solid #ccc;
+            border-radius: 50%;
+            font-weight: bold;
+            font-size: 14px;
+        }
+
+        .counter-number.active {
+            background: #4CAF50;
+            color: white;
+            border-color: #4CAF50;
+            transform: scale(1.2);
+        }
+
+        /* Bottom Info Section */
+        .bottom-info-section {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 20px;
+            margin: 20px 0;
+        }
+
+        .consultant-details {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .info-item {
+            font-size: 14px;
+            line-height: 1.8;
+        }
+
+        .info-item strong {
+            display: inline-block;
+            min-width: 140px;
+            font-weight: 600;
+        }
+
+        .info-value {
+            display: inline-block;
+            font-weight: 600;
+            border-bottom: 2px solid #000;
+            min-width: 200px;
+            padding: 2px 5px;
+        }
+
+        .deadline-notice {
+            background: #fff3cd;
+            color: #856404;
+            padding: 10px;
+            margin: 15px 0;
+            border: 2px solid #ffc107;
+            border-radius: 5px;
+            text-align: center;
+            font-size: 12px;
+            font-style: italic;
+        }
+
+        .notice-box {
+            background: #ff6b6b;
+            color: white;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 5px;
+            font-weight: 600;
+            text-align: center;
+            font-size: 14px;
+        }
+
+        .notice-wrapper {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Action Buttons */
+        .action-buttons {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin: 20px 0;
+            padding: 0 30px;
+        }
+
+        .action-button {
+            padding: 15px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn-print {
+            background: #2196F3;
+            color: white;
+        }
+
+        .btn-save {
+            background: #4CAF50;
+            color: white;
+        }
+
+        .btn-share {
+            background: #FF9800;
+            color: white;
+        }
+
+        .btn-reset {
+            background: #f0f4ff;
+            color: #1f3b57;
+            border: 2px solid rgba(52, 152, 219, 0.3);
+        }
+
+        .btn-reset:hover {
+            background: #e3ecff;
+        }
+
+        .action-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        /* Print Styles - Compact single page */
+        @media print {
+            @page {
+                size: letter portrait;
+                margin: 0.5in 0.75in;
+            }
+
+            * {
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+                box-sizing: border-box !important;
+            }
+
+            html,
+            body {
+                background: #fff !important;
+                margin: 0 !important;
+                padding: 0 !important;
+                width: 100% !important;
+                height: auto !important;
+                overflow: visible !important;
+                font-size: 11px !important;
+            }
+
+            /* HIDE EVERYTHING by default */
+            body>* {
+                display: none !important;
+            }
+
+            /* Hide pseudo-elements */
+            body::before,
+            body::after {
+                display: none !important;
+                content: none !important;
+            }
+
+            /* Show only the container */
+            .container {
+                display: block !important;
+                max-width: 7in !important;
+                width: 7in !important;
+                box-shadow: none !important;
+                border-radius: 0 !important;
+                margin: 0 auto !important;
+                padding: 0 !important;
+                background: #fff !important;
+            }
+
+            /* Hide form inputs, buttons, navbar */
+            .navbar,
+            .form-section,
+            .action-buttons,
+            .bottom-info-section,
+            .consultant-info,
+            .preview-toggle,
+            .back-button-mobile,
+            .input-schedule-grid {
+                display: none !important;
+            }
+
+            /* SHOW the output section */
+            .output-section {
+                display: block !important;
+                visibility: visible !important;
+                border: 2px solid #333 !important;
+                padding: 12px !important;
+                background: #fff !important;
+                margin: 0 auto !important;
+                width: 100% !important;
+                max-width: 7in !important;
+                page-break-inside: avoid !important;
+            }
+
+            /* Compact Header */
+            .output-header {
+                text-align: center !important;
+                margin-bottom: 8px !important;
+                padding-bottom: 6px !important;
+                border-bottom: 2px solid #333 !important;
+            }
+
+            .output-header .company-logo {
+                font-size: 20px !important;
+                color: #3b82f6 !important;
+                -webkit-text-fill-color: #3b82f6 !important;
+                background: none !important;
+                letter-spacing: 2px !important;
+                margin-bottom: 0 !important;
+            }
+
+            .output-header .tagline {
+                font-size: 7px !important;
+                margin: 1px 0 !important;
+                color: #666 !important;
+            }
+
+            .output-header h2 {
+                font-size: 11px !important;
+                margin: 2px 0 !important;
+                font-weight: bold !important;
+                color: #333 !important;
+            }
+
+            /* Schedule Grid - 7 columns, compact */
+            .output-schedule-grid {
+                display: grid !important;
+                grid-template-columns: repeat(7, 1fr) !important;
+                gap: 3px !important;
+                margin: 6px 0 !important;
+                width: 100% !important;
+            }
+
+            .output-day-section {
+                border: 1px solid #999 !important;
+                background: #f5f5f5 !important;
+                padding: 3px !important;
+                border-radius: 3px !important;
+                text-align: center !important;
+            }
+
+            .output-day-section h4 {
+                background: #444 !important;
+                color: #fff !important;
+                font-size: 8px !important;
+                padding: 3px 1px !important;
+                margin: 0 0 3px 0 !important;
+                border-radius: 2px !important;
+                font-weight: 600 !important;
+            }
+
+            .output-time-labels {
+                display: flex !important;
+                justify-content: center !important;
+                gap: 2px !important;
+                margin-bottom: 2px !important;
+            }
+
+            .output-time-label {
+                background: #FFD700 !important;
+                border: 1px solid #333 !important;
+                color: #333 !important;
+                font-size: 7px !important;
+                padding: 1px 3px !important;
+                font-weight: bold !important;
+                border-radius: 2px !important;
+            }
+
+            .output-checkbox-row {
+                display: flex !important;
+                justify-content: center !important;
+                gap: 2px !important;
+            }
+
+            .output-checkbox-box {
+                width: 16px !important;
+                height: 16px !important;
+                border: 1px solid #999 !important;
+                background: #fff !important;
+                border-radius: 2px !important;
+                display: flex !important;
+                align-items: center !important;
+                justify-content: center !important;
+            }
+
+            .output-checkbox-box::before {
+                font-size: 11px !important;
+                font-weight: bold !important;
+            }
+
+            .output-checkbox-box.available {
+                border-color: #4CAF50 !important;
+                background: #e8f5e9 !important;
+            }
+
+            .output-checkbox-box.available::before {
+                content: "✓" !important;
+                color: #4CAF50 !important;
+            }
+
+            .output-checkbox-box:not(.available)::before {
+                content: "✗" !important;
+                color: #f44336 !important;
+            }
+
+            /* Info Boxes - side by side */
+            .info-boxes-grid {
+                display: grid !important;
+                grid-template-columns: 1fr 1fr !important;
+                gap: 6px !important;
+                margin-top: 6px !important;
+            }
+
+            .requirements-box,
+            .saturday-box {
+                padding: 5px !important;
+                border: 1px solid #ccc !important;
+                border-radius: 3px !important;
+                background: #fafafa !important;
+            }
+
+            .requirements-box h3,
+            .saturday-box h3 {
+                font-size: 9px !important;
+                margin-bottom: 4px !important;
+                font-weight: bold !important;
+                color: #333 !important;
+            }
+
+            .requirements-box ul {
+                margin: 0 !important;
+                padding-left: 12px !important;
+                font-size: 8px !important;
+                line-height: 1.3 !important;
+            }
+
+            .requirements-box ul li {
+                margin-bottom: 1px !important;
+            }
+
+            .requirements-box .goal {
+                font-size: 7px !important;
+                margin-top: 3px !important;
+                color: #666 !important;
+            }
+
+            /* Saturday counter - compact */
+            .saturday-box {
+                text-align: center !important;
+                background: #e3f2fd !important;
+                border-color: #2196F3 !important;
+            }
+
+            .counter-grid {
+                display: flex !important;
+                flex-wrap: wrap !important;
+                justify-content: center !important;
+                gap: 2px !important;
+                margin: 4px 0 !important;
+            }
+
+            .counter-circle {
+                width: 18px !important;
+                height: 18px !important;
+                min-width: 18px !important;
+                min-height: 18px !important;
+                aspect-ratio: 1 / 1 !important;
+                border: 2px solid #2196F3 !important;
+                border-radius: 50% !important;
+                display: inline-flex !important;
+                align-items: center !important;
+                justify-content: center !important;
+                font-size: 9px !important;
+                font-weight: bold !important;
+                background: #fff !important;
+                flex-shrink: 0 !important;
+            }
+
+            .counter-circle.filled,
+            .counter-circle.active {
+                background: #2196F3 !important;
+                color: #fff !important;
+            }
+
+            .counter-label-line {
+                font-size: 7px !important;
+                color: #666 !important;
+            }
+
+            /* Combined info box - match web layout exactly */
+            .combined-info-box {
+                padding: 10px 15px !important;
+                border: 2px solid #3b82f6 !important;
+                border-radius: 6px !important;
+                margin-top: 8px !important;
+                background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%) !important;
+            }
+
+            .combined-info-content {
+                display: flex !important;
+                gap: 15px !important;
+                align-items: center !important;
+                justify-content: space-between !important;
+            }
+
+            .info-left {
+                flex: 0 0 auto !important;
+                min-width: 140px !important;
+            }
+
+            .info-left .info-item {
+                margin-bottom: 5px !important;
+            }
+
+            .info-left .info-item strong {
+                font-size: 8px !important;
+                color: #3b82f6 !important;
+                display: block !important;
+                text-transform: uppercase !important;
+                letter-spacing: 0.3px !important;
+            }
+
+            .info-left .info-value {
+                font-size: 10px !important;
+                font-weight: 500 !important;
+                border-bottom: 1px solid #3b82f6 !important;
+                color: #333 !important;
+            }
+
+            /* Show the notice boxes like on web */
+            .info-right {
+                display: flex !important;
+                flex-direction: column !important;
+                gap: 6px !important;
+                flex: 1 1 auto !important;
+                max-width: 220px !important;
+            }
+
+            .info-right .notice-box {
+                display: block !important;
+                background: #fff3cd !important;
+                border: 1px solid #ffc107 !important;
+                padding: 6px 8px !important;
+                border-radius: 4px !important;
+                font-size: 8px !important;
+                font-weight: 600 !important;
+                color: #856404 !important;
+                text-align: center !important;
+            }
+
+            .info-right .deadline-notice {
+                display: block !important;
+                background: #f8d7da !important;
+                border: 1px solid #f5c6cb !important;
+                padding: 5px 8px !important;
+                border-radius: 4px !important;
+                font-size: 7px !important;
+                color: #721c24 !important;
+                font-weight: 600 !important;
+                text-align: center !important;
+            }
+
+            /* EZ Baths logo - BIG container and logo */
+            .print-graphic {
+                display: flex !important;
+                align-items: center !important;
+                justify-content: center !important;
+                flex: 0 0 auto !important;
+                padding: 10px 15px !important;
+                margin-left: 20px !important;
+                margin-right: 6px !important;
+                background: white !important;
+                border-radius: 6px !important;
+                border: 1px solid #dee2e6 !important;
+                box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08) !important;
+                min-width: 200px !important;
+                min-height: 100px !important;
+            }
+
+            .print-graphic img {
+                width: auto !important;
+                height: 100px !important;
+                max-width: 250px !important;
+                object-fit: contain !important;
+            }
+        }
+
+        /* Mobile Optimizations */
+        @media screen and (max-width: 768px) {
+            body {
+                padding: 10px;
+            }
+
+            .form-section h1 {
+                font-size: 22px;
+            }
+
+            /* Hide logo on mobile - but NOT for print */
+            .print-graphic {
+                display: none !important;
+            }
+
+            .checkbox-grid {
+                grid-template-columns: repeat(7, 1fr);
+                gap: 2px;
+            }
+
+            .day-section {
+                padding: 4px 1px;
+            }
+
+            .day-section h4 {
+                font-size: 8px;
+                margin-bottom: 2px;
+            }
+
+            .checkbox-row {
+                flex-direction: row;
+                gap: 1px;
+                justify-content: center;
+            }
+
+            .checkbox-row label {
+                padding: 2px 1px;
+                font-size: 7px;
+            }
+
+            .checkbox-row input[type="checkbox"] {
+                width: 14px;
+                height: 14px;
+                min-width: 14px;
+            }
+
+            .checkbox-row input[type="checkbox"]::before {
+                font-size: 11px;
+                line-height: 14px;
+            }
+
+            .checkbox-row input[type="checkbox"]:checked::before {
+                font-size: 14px;
+            }
+
+            .info-boxes-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .info-right {
+                display: none !important;
+            }
+
+            .combined-info-box .info-row {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .combined-info-box .info-item {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 5px;
+            }
+
+            .bottom-info-section {
+                grid-template-columns: 1fr;
+            }
+
+            .consultant-info {
+                grid-template-columns: 1fr;
+            }
+
+            .action-buttons {
+                grid-template-columns: 1fr;
+                max-width: 100%;
+                margin-left: auto;
+                margin-right: auto;
+                padding: 0 15px;
+                box-sizing: border-box;
+            }
+
+            .output-cell {
+                font-size: 14px;
+            }
+
+            .counter-grid {
+                grid-template-columns: repeat(5, 1fr);
+                gap: 6px;
+            }
+
+            .counter-circle {
+                width: 28px;
+                height: 28px;
+                font-size: 11px;
+            }
+
+            .output-schedule-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 10px;
+                padding: 10px;
+            }
+
+            .output-day-section {
+                padding: 8px 4px;
+            }
+
+            .output-day-section h4 {
+                font-size: 10px;
+                padding: 6px 2px;
+            }
+
+            .output-time-label {
+                font-size: 10px;
+                padding: 4px 6px;
+            }
+
+            .output-checkbox-box {
+                height: 35px;
+            }
+
+            .output-checkbox-box::before {
+                font-size: 22px;
+            }
+
+            .output-checkbox-box.available::before {
+                font-size: 24px;
+            }
+        }
+
+        /* Navigation Bar Styles */
+        .navbar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            background: rgba(26, 26, 46, 0.95);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 1000;
+            border-bottom: 1px solid rgba(52, 152, 219, 0.3);
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+        }
+
+        .nav-brand {
+            font-size: 20px;
+            font-weight: 700;
+            background: linear-gradient(135deg, #3498db 0%, #2ecc71 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .nav-buttons {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .nav-btn {
+            background: rgba(52, 152, 219, 0.2);
+            border: 1px solid rgba(52, 152, 219, 0.5);
+            color: #3498db;
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            white-space: nowrap;
+            min-width: 100px;
+        }
+
+        .nav-btn:hover {
+            background: rgba(52, 152, 219, 0.3);
+            transform: translateY(-2px);
+        }
+
+        .hamburger {
+            display: none;
+            flex-direction: column;
+            gap: 4px;
+            cursor: pointer;
+            padding: 8px;
+        }
+
+        .hamburger span {
+            width: 25px;
+            height: 3px;
+            background: #3498db;
+            border-radius: 2px;
+            transition: all 0.3s ease;
+        }
+
+        @media (max-width: 768px) {
+            .hamburger {
+                display: flex;
+            }
+
+            .nav-buttons {
+                position: fixed;
+                top: 60px;
+                right: -100%;
+                background: rgba(26, 26, 46, 0.98);
+                padding: 20px;
+                border-radius: 0 0 0 20px;
+                flex-direction: column;
+                transition: right 0.3s ease;
+                box-shadow: -5px 5px 20px rgba(0, 0, 0, 0.5);
+                border: 1px solid rgba(52, 152, 219, 0.3);
+                z-index: 1000;
+            }
+
+            .nav-buttons.active {
+                right: 0;
+            }
+
+            .nav-btn {
+                width: 100%;
+                min-width: 180px;
+                padding: 12px 24px;
+                font-size: 16px;
+                justify-content: center;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .nav-btn {
+                padding: 10px 18px;
+                font-size: 14px;
+                min-width: 140px;
+            }
+        }
+
+        body {
+            padding-top: 80px;
+        }
+
+        @media (max-width: 768px) {
+            body {
+                padding-top: 75px;
+            }
+
+            .form-brand {
+                font-size: 24px;
+            }
+
+            .form-title {
+                font-size: 22px;
+            }
+
+            .form-slogan {
+                font-size: 10px;
+                letter-spacing: 2px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Navigation Bar -->
+    <nav class="navbar">
+        <div class="nav-brand">EZBaths Scheduler</div>
+        <div class="hamburger" onclick="toggleMenu()">
+            <span></span>
+            <span></span>
+            <span></span>
+        </div>
+        <div class="nav-buttons" id="navButtons">
+            <a href="index.html" class="nav-btn">🏠 Home</a>
+            <a href="index.html" class="nav-btn">← Back</a>
+        </div>
+    </nav>
+
+    <div class="container">
+        <!-- INPUT FORM SECTION -->
+        <div class="form-section">
+            <button onclick="goBack()" class="back-button-mobile">← Back</button>
+
+            <div class="form-header">
+                <div class="form-logo">
+                    <img src="assets/app_icons/commision_calc.svg" alt="EZ Bath">
+                    <span class="form-brand">EZ BATHS</span>
+                </div>
+                <div class="form-slogan">Awaken to Excellence</div>
+                <h1 class="form-title">Weekly Scheduler</h1>
+                <p class="form-subtitle">Select your available appointment times</p>
+            </div>
+
+            <div class="info-grid">
+                <div class="info-row">
+                    <label>👤 Consultant Name</label>
+                    <input type="text" id="consultantName" placeholder="Enter your name" value="">
+                </div>
+
+                <div class="info-row">
+                    <label>📅 Week Starting (Monday)</label>
+                    <input type="date" id="weekStartDate">
+                    <span class="week-range" id="weekRange"></span>
+                </div>
+
+                <div class="info-row vacation-row">
+                    <label class="vacation-toggle-label">
+                        <span class="vacation-toggle-text">🏖️ Need a vacation?</span>
+                        <input type="checkbox" id="vacationToggle" class="vacation-checkbox">
+                        <span class="vacation-toggle-switch"></span>
+                    </label>
+                    <div class="vacation-notice">⚠️ You must notify the office 30 days prior to your vacation date</div>
+                    <div class="vacation-input-container" id="vacationFields" style="display: none;">
+                        <div class="vacation-dates-row">
+                            <div class="vacation-date-field">
+                                <label>Start Date</label>
+                                <input type="date" id="vacationStartDate">
+                            </div>
+                            <span class="vacation-arrow">→</span>
+                            <div class="vacation-date-field">
+                                <label>End Date</label>
+                                <input type="date" id="vacationEndDate">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Consultant Schedule Requirements Box -->
+                <div class="input-requirements-box">
+                    <h4>📊 Consultant Schedule Requirements</h4>
+
+                    <div class="input-requirements-counters">
+                        <!-- Weekly Slots Counter -->
+                        <div class="input-requirement-counter">
+                            <div class="input-counter-label">Weekly Slots Open</div>
+                            <div class="input-counter-display">
+                                <span class="input-counter-value" id="weeklySlotCount">21</span>
+                                <span class="input-counter-separator">/</span>
+                                <span class="input-counter-min">15 min</span>
+                            </div>
+                            <div class="input-counter-status success" id="weeklySlotStatus">✓ Meets Requirement</div>
+                        </div>
+
+                        <!-- Saturday Slots Counter (Manual) -->
+                        <div class="input-requirement-counter saturday">
+                            <div class="input-counter-label">Saturday Slots (Monthly)</div>
+                            <div class="input-saturday-circles">
+                                <div class="input-counter-circle" data-num="1">1</div>
+                                <div class="input-counter-circle" data-num="2">2</div>
+                                <div class="input-counter-circle" data-num="3">3</div>
+                                <div class="input-counter-circle" data-num="4">4</div>
+                                <div class="input-counter-circle" data-num="5">5</div>
+                                <div class="input-counter-circle" data-num="6">6</div>
+                                <div class="input-counter-circle" data-num="7">7</div>
+                                <div class="input-counter-circle" data-num="8">8</div>
+                                <div class="input-counter-circle" data-num="9">9</div>
+                                <div class="input-counter-circle" data-num="10">10</div>
+                                <div class="input-counter-circle" data-num="11">11</div>
+                                <div class="input-counter-circle" data-num="12">12</div>
+                                <div class="input-counter-circle" data-num="13">13</div>
+                                <div class="input-counter-circle" data-num="14">14</div>
+                                <div class="input-counter-circle" data-num="15">15</div>
+                            </div>
+                            <div class="input-counter-note">/ 6 minimum required</div>
+                            <input type="hidden" id="saturdayCount" value="6">
+                        </div>
+
+                        <!-- Night Slots Off Counter -->
+                        <div class="input-requirement-counter">
+                            <div class="input-counter-label">Night Slots Off</div>
+                            <div class="input-counter-display">
+                                <span class="input-counter-value" id="nightSlotCount">0</span>
+                                <span class="input-counter-separator">/</span>
+                                <span class="input-counter-max">3 max</span>
+                            </div>
+                            <div class="input-counter-status success" id="nightSlotStatus">✓ Within Limit</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="input-schedule-grid">
+                <!-- MONDAY -->
+                <div class="input-day-section">
+                    <h4>MONDAY</h4>
+                    <div class="input-time-labels">
+                        <div class="input-time-label">M</div>
+                        <div class="input-time-label">A</div>
+                        <div class="input-time-label">E</div>
+                    </div>
+                    <div class="input-checkbox-row">
+                        <div class="input-checkbox-box" id="input-cell-0-M"></div>
+                        <div class="input-checkbox-box" id="input-cell-0-A"></div>
+                        <div class="input-checkbox-box" id="input-cell-0-E"></div>
+                    </div>
+                </div>
+
+                <!-- TUESDAY -->
+                <div class="input-day-section">
+                    <h4>TUESDAY</h4>
+                    <div class="input-time-labels">
+                        <div class="input-time-label">M</div>
+                        <div class="input-time-label">A</div>
+                        <div class="input-time-label">E</div>
+                    </div>
+                    <div class="input-checkbox-row">
+                        <div class="input-checkbox-box" id="input-cell-1-M"></div>
+                        <div class="input-checkbox-box" id="input-cell-1-A"></div>
+                        <div class="input-checkbox-box" id="input-cell-1-E"></div>
+                    </div>
+                </div>
+
+                <!-- WEDNESDAY -->
+                <div class="input-day-section">
+                    <h4>WEDNESDAY</h4>
+                    <div class="input-time-labels">
+                        <div class="input-time-label">M</div>
+                        <div class="input-time-label">A</div>
+                        <div class="input-time-label">E</div>
+                    </div>
+                    <div class="input-checkbox-row">
+                        <div class="input-checkbox-box" id="input-cell-2-M"></div>
+                        <div class="input-checkbox-box" id="input-cell-2-A"></div>
+                        <div class="input-checkbox-box" id="input-cell-2-E"></div>
+                    </div>
+                </div>
+
+                <!-- THURSDAY -->
+                <div class="input-day-section">
+                    <h4>THURSDAY</h4>
+                    <div class="input-time-labels">
+                        <div class="input-time-label">M</div>
+                        <div class="input-time-label">A</div>
+                        <div class="input-time-label">E</div>
+                    </div>
+                    <div class="input-checkbox-row">
+                        <div class="input-checkbox-box" id="input-cell-3-M"></div>
+                        <div class="input-checkbox-box" id="input-cell-3-A"></div>
+                        <div class="input-checkbox-box" id="input-cell-3-E"></div>
+                    </div>
+                </div>
+
+                <!-- FRIDAY -->
+                <div class="input-day-section">
+                    <h4>FRIDAY</h4>
+                    <div class="input-time-labels">
+                        <div class="input-time-label">M</div>
+                        <div class="input-time-label">A</div>
+                        <div class="input-time-label">E</div>
+                    </div>
+                    <div class="input-checkbox-row">
+                        <div class="input-checkbox-box" id="input-cell-4-M"></div>
+                        <div class="input-checkbox-box" id="input-cell-4-A"></div>
+                        <div class="input-checkbox-box" id="input-cell-4-E"></div>
+                    </div>
+                </div>
+
+                <!-- SATURDAY -->
+                <div class="input-day-section">
+                    <h4>SATURDAY</h4>
+                    <div class="input-time-labels">
+                        <div class="input-time-label">M</div>
+                        <div class="input-time-label">A</div>
+                        <div class="input-time-label">E</div>
+                    </div>
+                    <div class="input-checkbox-row">
+                        <div class="input-checkbox-box" id="input-cell-5-M"></div>
+                        <div class="input-checkbox-box" id="input-cell-5-A"></div>
+                        <div class="input-checkbox-box" id="input-cell-5-E"></div>
+                    </div>
+                </div>
+
+                <!-- SUNDAY -->
+                <div class="input-day-section">
+                    <h4>SUNDAY</h4>
+                    <div class="input-time-labels">
+                        <div class="input-time-label">M</div>
+                        <div class="input-time-label">A</div>
+                        <div class="input-time-label">E</div>
+                    </div>
+                    <div class="input-checkbox-row">
+                        <div class="input-checkbox-box" id="input-cell-6-M"></div>
+                        <div class="input-checkbox-box" id="input-cell-6-A"></div>
+                        <div class="input-checkbox-box" id="input-cell-6-E"></div>
+                    </div>
+                </div>
+            </div>
+
+            <button onclick="updateSchedule()" class="update-button">
+                ✓ Update Schedule Preview
+            </button>
+
+            <!-- Preview Toggle Button -->
+            <div class="preview-toggle" id="previewToggle" onclick="togglePreview()">
+                <span class="preview-toggle-icon">�</span>
+                <span class="preview-toggle-text">Click to see preview of your schedule</span>
+                <span class="preview-toggle-arrow">▼</span>
+            </div>
+        </div>
+
+        <!-- OUTPUT SCHEDULE SECTION (Print/Export Ready) -->
+        <div class="output-section" id="scheduleOutput" style="display: none;">
+            <div class="output-header">
+                <div class="company-logo">EZ BATHS</div>
+                <div class="tagline">Transform Your Bathroom Experience</div>
+                <h2>CONSULTANT WEEKLY SCHEDULER</h2>
+            </div>
+
+            <div class="output-schedule-grid">
+                <!-- MONDAY -->
+                <div class="output-day-section">
+                    <h4>MONDAY</h4>
+                    <div class="output-time-labels">
+                        <div class="output-time-label">M</div>
+                        <div class="output-time-label">A</div>
+                        <div class="output-time-label">E</div>
+                    </div>
+                    <div class="output-checkbox-row">
+                        <div class="output-checkbox-box" id="cell-0-M"></div>
+                        <div class="output-checkbox-box" id="cell-0-A"></div>
+                        <div class="output-checkbox-box" id="cell-0-E"></div>
+                    </div>
+                </div>
+
+                <!-- TUESDAY -->
+                <div class="output-day-section">
+                    <h4>TUESDAY</h4>
+                    <div class="output-time-labels">
+                        <div class="output-time-label">M</div>
+                        <div class="output-time-label">A</div>
+                        <div class="output-time-label">E</div>
+                    </div>
+                    <div class="output-checkbox-row">
+                        <div class="output-checkbox-box" id="cell-1-M"></div>
+                        <div class="output-checkbox-box" id="cell-1-A"></div>
+                        <div class="output-checkbox-box" id="cell-1-E"></div>
+                    </div>
+                </div>
+
+                <!-- WEDNESDAY -->
+                <div class="output-day-section">
+                    <h4>WEDNESDAY</h4>
+                    <div class="output-time-labels">
+                        <div class="output-time-label">M</div>
+                        <div class="output-time-label">A</div>
+                        <div class="output-time-label">E</div>
+                    </div>
+                    <div class="output-checkbox-row">
+                        <div class="output-checkbox-box" id="cell-2-M"></div>
+                        <div class="output-checkbox-box" id="cell-2-A"></div>
+                        <div class="output-checkbox-box" id="cell-2-E"></div>
+                    </div>
+                </div>
+
+                <!-- THURSDAY -->
+                <div class="output-day-section">
+                    <h4>THURSDAY</h4>
+                    <div class="output-time-labels">
+                        <div class="output-time-label">M</div>
+                        <div class="output-time-label">A</div>
+                        <div class="output-time-label">E</div>
+                    </div>
+                    <div class="output-checkbox-row">
+                        <div class="output-checkbox-box" id="cell-3-M"></div>
+                        <div class="output-checkbox-box" id="cell-3-A"></div>
+                        <div class="output-checkbox-box" id="cell-3-E"></div>
+                    </div>
+                </div>
+
+                <!-- FRIDAY -->
+                <div class="output-day-section">
+                    <h4>FRIDAY</h4>
+                    <div class="output-time-labels">
+                        <div class="output-time-label">M</div>
+                        <div class="output-time-label">A</div>
+                        <div class="output-time-label">E</div>
+                    </div>
+                    <div class="output-checkbox-row">
+                        <div class="output-checkbox-box" id="cell-4-M"></div>
+                        <div class="output-checkbox-box" id="cell-4-A"></div>
+                        <div class="output-checkbox-box" id="cell-4-E"></div>
+                    </div>
+                </div>
+
+                <!-- SATURDAY -->
+                <div class="output-day-section">
+                    <h4>SATURDAY</h4>
+                    <div class="output-time-labels">
+                        <div class="output-time-label">M</div>
+                        <div class="output-time-label">A</div>
+                        <div class="output-time-label">E</div>
+                    </div>
+                    <div class="output-checkbox-row">
+                        <div class="output-checkbox-box" id="cell-5-M"></div>
+                        <div class="output-checkbox-box" id="cell-5-A"></div>
+                        <div class="output-checkbox-box" id="cell-5-E"></div>
+                    </div>
+                </div>
+
+                <!-- SUNDAY -->
+                <div class="output-day-section">
+                    <h4>SUNDAY</h4>
+                    <div class="output-time-labels">
+                        <div class="output-time-label">M</div>
+                        <div class="output-time-label">A</div>
+                        <div class="output-time-label">E</div>
+                    </div>
+                    <div class="output-checkbox-row">
+                        <div class="output-checkbox-box" id="cell-6-M"></div>
+                        <div class="output-checkbox-box" id="cell-6-A"></div>
+                        <div class="output-checkbox-box" id="cell-6-E"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Info Boxes: Requirements | Saturday Counter | Vacation Notice -->
+            <div class="info-boxes-grid">
+                <!-- LEFT BOX: Weekly Requirements (static info) -->
+                <div class="requirements-box">
+                    <h3>📋 Weekly Requirements</h3>
+                    <ul>
+                        <li><strong>15 of 21 Slots Open</strong> - Weekly Minimum</li>
+                        <li><strong>6 Saturday Slots Open</strong> - Monthly Minimum</li>
+                        <li><strong>3 Night Slots Off</strong> - Weekly Maximum</li>
+                        <li><strong>2.5 Hour Drive</strong> - Territory Max One Way</li>
+                    </ul>
+                    <div class="goal">*EZ Goal: 8-12 Appointments Weekly Per Consultant</div>
+                </div>
+
+                <!-- RIGHT BOX: Saturday Slots Opened Month to Date -->
+                <div class="info-box saturday-box">
+                    <h3>SATURDAY SLOTS OPENED MONTH TO DATE</h3>
+                    <div class="counter-grid" id="outputSaturdayCounter">
+                        <div class="counter-circle" data-num="1">1</div>
+                        <div class="counter-circle" data-num="2">2</div>
+                        <div class="counter-circle" data-num="3">3</div>
+                        <div class="counter-circle" data-num="4">4</div>
+                        <div class="counter-circle" data-num="5">5</div>
+                        <div class="counter-circle" data-num="6">6</div>
+                        <div class="counter-circle" data-num="7">7</div>
+                        <div class="counter-circle" data-num="8">8</div>
+                        <div class="counter-circle" data-num="9">9</div>
+                        <div class="counter-circle" data-num="10">10</div>
+                        <div class="counter-circle" data-num="11">11</div>
+                        <div class="counter-circle" data-num="12">12</div>
+                        <div class="counter-circle" data-num="13">13</div>
+                        <div class="counter-circle" data-num="14">14</div>
+                        <div class="counter-circle" data-num="15">15</div>
+                    </div>
+                    <div class="counter-label-line">/ 6 minimum required</div>
+                </div>
+            </div>
+
+            <!-- Combined Info Box -->
+            <div class="combined-info-box">
+                <div class="combined-info-content">
+                    <div class="info-left">
+                        <div class="info-item">
+                            <strong>⚠️ 30 Day+ Vacation Notice:</strong>
+                            <span class="info-value" id="outputVacation">_________________________</span>
+                        </div>
+                        <div class="info-item">
+                            <strong>Week Schedule:</strong>
+                            <span class="info-value" id="outputDate">_______________________</span>
+                        </div>
+                        <div class="info-item">
+                            <strong>Consultant Name:</strong>
+                            <span class="info-value" id="outputName">_______________________</span>
+                        </div>
+                    </div>
+                    <div class="info-right">
+                        <div class="notice-box">
+                            ❌ <span id="consultantNotice">Marks the blocks that [Consultant Name] requests OFF next
+                                week</span>
+                        </div>
+                        <div class="deadline-notice">
+                            *Must be completed and texted to Call Center each Monday by 5:00 PM
+                        </div>
+                    </div>
+                    <div class="print-graphic">
+                        <img src="assets/images/EZBATHS-graphic.jpg" alt="EZ Baths">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ACTION BUTTONS -->
+        <div class="action-buttons">
+            <button onclick="printSchedule()" class="action-button btn-print">
+                🖨️ Print Schedule
+            </button>
+            <button onclick="saveAsImage(event)" class="action-button btn-save">
+                💾 Save to Phone
+            </button>
+            <button onclick="shareSchedule(event)" class="action-button btn-share">
+                📤 Share Schedule
+            </button>
+            <button onclick="resetScheduleCache()" class="action-button btn-reset">
+                ↺ Reset Schedule
+            </button>
+        </div>
+    </div>
+
+    <script>
+        function updateSchedule() {
+            const consultantName = document.getElementById('consultantName').value;
+            const weekStartDate = document.getElementById('weekStartDate').value;
+            const vacationStartDate = document.getElementById('vacationStartDate').value;
+            const vacationEndDate = document.getElementById('vacationEndDate').value;
+            const saturdayCount = parseInt(document.getElementById('saturdayCount').value) || 0;
+            const vacationEnabled = document.getElementById('vacationToggle').checked;
+
+            // Format vacation dates for display
+            let vacationDisplay = vacationEnabled ? '_________' : 'None Scheduled';
+            if (vacationEnabled && (vacationStartDate || vacationEndDate)) {
+                const formatDate = (dateStr) => {
+                    if (!dateStr) return '';
+                    const date = new Date(dateStr);
+                    const month = date.toLocaleDateString('en-US', { month: 'short' });
+                    const day = date.getDate();
+                    return `${month} ${day}`;
+                };
+
+                if (vacationStartDate && vacationEndDate) {
+                    vacationDisplay = `${formatDate(vacationStartDate)} - ${formatDate(vacationEndDate)}`;
+                } else if (vacationStartDate) {
+                    vacationDisplay = `Starting ${formatDate(vacationStartDate)}`;
+                } else if (vacationEndDate) {
+                    vacationDisplay = `Until ${formatDate(vacationEndDate)}`;
+                }
+            }
+
+            // Calculate week range - FIX: Use proper date parsing to avoid timezone issues
+            let weekRange = '';
+            if (weekStartDate) {
+                // Parse date correctly by adding time component to avoid timezone shift
+                const [year, month, day] = weekStartDate.split('-').map(Number);
+                const startDate = new Date(year, month - 1, day);
+                const dayOfWeek = startDate.getDay();
+                const mondayDate = new Date(year, month - 1, day);
+
+                // Adjust to Monday if not already Monday
+                if (dayOfWeek !== 1) {
+                    const daysToSubtract = dayOfWeek === 0 ? 6 : dayOfWeek - 1;
+                    mondayDate.setDate(mondayDate.getDate() - daysToSubtract);
+                }
+
+                // Calculate Sunday (6 days after Monday)
+                const sundayDate = new Date(mondayDate);
+                sundayDate.setDate(mondayDate.getDate() + 6);
+
+                // Format dates as MM/DD
+                const formatDate = (date) => {
+                    const m = (date.getMonth() + 1).toString().padStart(2, '0');
+                    const d = date.getDate().toString().padStart(2, '0');
+                    return `${m}/${d}`;
+                };
+
+                weekRange = `${formatDate(mondayDate)} - ${formatDate(sundayDate)}`;
+            }
+
+            // Update output fields
+            document.getElementById('outputName').textContent = consultantName || '________________________';
+            document.getElementById('outputDate').textContent = weekRange || '________________';
+            document.getElementById('outputVacation').textContent = vacationDisplay;
+            document.getElementById('weekRange').textContent = weekRange ? `(${weekRange})` : '';
+
+            // Update consultant notice text
+            const consultantNotice = document.getElementById('consultantNotice');
+            if (consultantNotice) {
+                consultantNotice.textContent = consultantName
+                    ? `Marks the blocks that ${consultantName} requests OFF next week`
+                    : 'Marks the blocks that [Consultant Name] requests OFF next week';
+            }
+
+            // Update Saturday counter - fill all circles up to the count
+            document.querySelectorAll('.counter-circle').forEach(el => {
+                const num = parseInt(el.dataset.num);
+                if (num <= saturdayCount) {
+                    el.classList.add('active');
+                    el.classList.add('filled');
+                } else {
+                    el.classList.remove('active');
+                    el.classList.remove('filled');
+                }
+            });
+
+            // Update availability display boxes - sync from input boxes
+            const times = ['M', 'A', 'E'];
+            for (let day = 0; day < 7; day++) {
+                for (let time = 0; time < 3; time++) {
+                    const inputBox = document.getElementById(`input-cell-${day}-${times[time]}`);
+                    const cell = document.getElementById(`cell-${day}-${times[time]}`);
+
+                    if (cell) {
+                        if (inputBox && inputBox.classList.contains('available')) {
+                            // Available (Green checkmark via CSS)
+                            cell.classList.add('available');
+                        } else {
+                            // Not Available (Red X via CSS)
+                            cell.classList.remove('available');
+                        }
+                    }
+                }
+            }
+
+            // Update the requirement counters
+            updateRequirementCounters();
+        }
+
+        // Calculate and update the requirement counters (in INPUT section)
+        function updateRequirementCounters() {
+            const times = ['M', 'A', 'E'];
+            let totalSlotsOpen = 0;
+            let nightSlotsOff = 0;
+
+            // Count slots from input boxes
+            for (let day = 0; day < 7; day++) {
+                for (let time of times) {
+                    const inputBox = document.getElementById(`input-cell-${day}-${time}`);
+                    if (inputBox) {
+                        if (inputBox.classList.contains('available')) {
+                            totalSlotsOpen++;
+                        } else if (time === 'E') {
+                            // Evening slot is OFF
+                            nightSlotsOff++;
+                        }
+                    }
+                }
+            }
+
+            // Update Weekly Slots Counter
+            const weeklySlotEl = document.getElementById('weeklySlotCount');
+            const weeklyStatusEl = document.getElementById('weeklySlotStatus');
+            if (weeklySlotEl) {
+                weeklySlotEl.textContent = totalSlotsOpen;
+                weeklySlotEl.style.color = totalSlotsOpen >= 15 ? '#4CAF50' : (totalSlotsOpen >= 12 ? '#FF9800' : '#f44336');
+
+                if (weeklyStatusEl) {
+                    if (totalSlotsOpen >= 15) {
+                        weeklyStatusEl.textContent = '✓ Meets Requirement';
+                        weeklyStatusEl.className = 'input-counter-status success';
+                    } else if (totalSlotsOpen >= 12) {
+                        weeklyStatusEl.textContent = '⚠ Almost There';
+                        weeklyStatusEl.className = 'input-counter-status warning';
+                    } else {
+                        weeklyStatusEl.textContent = '✗ Need More Slots';
+                        weeklyStatusEl.className = 'input-counter-status danger';
+                    }
+                }
+            }
+
+            // Update Night Slots Counter
+            const nightSlotEl = document.getElementById('nightSlotCount');
+            const nightStatusEl = document.getElementById('nightSlotStatus');
+            if (nightSlotEl) {
+                nightSlotEl.textContent = nightSlotsOff;
+                nightSlotEl.style.color = nightSlotsOff <= 3 ? '#4CAF50' : '#f44336';
+
+                if (nightStatusEl) {
+                    if (nightSlotsOff <= 3) {
+                        nightStatusEl.textContent = '✓ Within Limit';
+                        nightStatusEl.className = 'input-counter-status success';
+                    } else {
+                        nightStatusEl.textContent = '✗ Too Many Nights Off';
+                        nightStatusEl.className = 'input-counter-status danger';
+                    }
+                }
+            }
+        }
+
+        // Initialize and handle input schedule grid clicks
+        function initializeInputSchedule() {
+            const times = ['M', 'A', 'E'];
+
+            // Initialize all boxes as available (checked) by default
+            for (let day = 0; day < 7; day++) {
+                for (let time of times) {
+                    const inputBox = document.getElementById(`input-cell-${day}-${time}`);
+
+                    if (inputBox) {
+                        // Start with checkmark (available)
+                        inputBox.classList.add('available');
+
+                        // Store day and time as data attributes for the click handler
+                        inputBox.dataset.day = day;
+                        inputBox.dataset.time = time;
+
+                        // Add click handler to toggle
+                        inputBox.addEventListener('click', function () {
+                            this.classList.toggle('available');
+
+                            // Get the corresponding output box using data attributes
+                            const d = this.dataset.day;
+                            const t = this.dataset.time;
+                            const outputBox = document.getElementById(`cell-${d}-${t}`);
+
+                            // Sync with output
+                            if (outputBox) {
+                                if (this.classList.contains('available')) {
+                                    outputBox.classList.add('available');
+                                } else {
+                                    outputBox.classList.remove('available');
+                                }
+                            }
+
+                            // Update the requirement counters
+                            updateRequirementCounters();
+                        });
+                    }
+
+                    // Initialize output box to match (available/green check)
+                    const outputBox = document.getElementById(`cell-${day}-${time}`);
+                    if (outputBox) {
+                        outputBox.classList.add('available');
+                    }
+                }
+            }
+
+            // Initialize Saturday circles to be clickable
+            initializeSaturdayCircles();
+
+            // Initial counter update
+            updateRequirementCounters();
+        }
+
+        // Initialize Saturday circles click handlers (INPUT section)
+        function initializeSaturdayCircles() {
+            const inputCircles = document.querySelectorAll('.input-saturday-circles .input-counter-circle');
+            const outputCircles = document.querySelectorAll('#outputSaturdayCounter .counter-circle');
+
+            inputCircles.forEach(circle => {
+                circle.addEventListener('click', function () {
+                    const clickedNum = parseInt(this.dataset.num);
+
+                    // Toggle logic: if clicking the active one, deactivate it
+                    // Otherwise, activate up to and including the clicked number
+                    inputCircles.forEach(c => {
+                        const num = parseInt(c.dataset.num);
+                        if (num <= clickedNum) {
+                            c.classList.add('filled');
+                        } else {
+                            c.classList.remove('filled');
+                        }
+                    });
+
+                    // Sync to OUTPUT circles
+                    outputCircles.forEach(c => {
+                        const num = parseInt(c.textContent);
+                        if (num <= clickedNum) {
+                            c.classList.add('active');
+                        } else {
+                            c.classList.remove('active');
+                        }
+                    });
+
+                    // Also update the hidden input field
+                    const saturdayInput = document.getElementById('saturdayCount');
+                    if (saturdayInput) {
+                        saturdayInput.value = clickedNum;
+                    }
+                });
+            });
+
+            // Initialize on load from hidden input value
+            const saturdayInput = document.getElementById('saturdayCount');
+            if (saturdayInput) {
+                const currentVal = parseInt(saturdayInput.value) || 0;
+                inputCircles.forEach(c => {
+                    const num = parseInt(c.dataset.num);
+                    if (num <= currentVal) {
+                        c.classList.add('filled');
+                    }
+                });
+                outputCircles.forEach(c => {
+                    const num = parseInt(c.textContent);
+                    if (num <= currentVal) {
+                        c.classList.add('active');
+                    }
+                });
+            }
+        }
+
+        function setCurrentWeek() {
+            const today = new Date();
+            const currentDay = today.getDay();
+            const monday = new Date(today);
+            const daysUntilMonday = currentDay === 0 ? 1 : 8 - currentDay;
+            monday.setDate(today.getDate() + daysUntilMonday);
+            document.getElementById('weekStartDate').value = monday.toISOString().split('T')[0];
+        }
+
+        function printSchedule() {
+            try { updateSchedule(); } catch (e) { console.warn('updateSchedule failed before print', e); }
+            // Allow DOM to update, then trigger print
+            setTimeout(() => window.print(), 50);
+        }
+
+        // Toggle preview section visibility
+        function togglePreview() {
+            const outputSection = document.getElementById('scheduleOutput');
+            const toggleBtn = document.getElementById('previewToggle');
+            const toggleText = toggleBtn.querySelector('.preview-toggle-text');
+
+            if (outputSection.style.display === 'none') {
+                outputSection.style.display = 'block';
+                toggleBtn.classList.add('active');
+                toggleText.textContent = 'Hide schedule preview';
+                // Update schedule when showing
+                try { updateSchedule(); } catch (e) { }
+            } else {
+                outputSection.style.display = 'none';
+                toggleBtn.classList.remove('active');
+                toggleText.textContent = 'Click to see preview of your schedule';
+            }
+        }
+
+        // Toggle vacation fields visibility
+        function toggleVacationFields() {
+            const checkbox = document.getElementById('vacationToggle');
+            const fields = document.getElementById('vacationFields');
+
+            if (checkbox.checked) {
+                fields.style.display = 'block';
+            } else {
+                fields.style.display = 'none';
+                // Clear dates when unchecked
+                document.getElementById('vacationStartDate').value = '';
+                document.getElementById('vacationEndDate').value = '';
+            }
+            // Update schedule to reflect changes
+            try { updateSchedule(); } catch (e) { }
+        }
+
+        // Keep output section live-updated as the user edits inputs
+        window.addEventListener('DOMContentLoaded', () => {
+            // Initialize the input schedule grid
+            initializeInputSchedule();
+
+            // Set up vacation toggle listener
+            document.getElementById('vacationToggle').addEventListener('change', toggleVacationFields);
+
+            const bind = (sel, evt = 'input') => {
+                const el = document.querySelector(sel);
+                if (el) el.addEventListener(evt, updateSchedule);
+            };
+            bind('#consultantName');
+            bind('#weekStartDate', 'change');
+            bind('#vacationStartDate', 'change');
+            bind('#vacationEndDate', 'change');
+            bind('#saturdayCount', 'input');
+
+            // Initial compute so placeholders sync once
+            try { updateSchedule(); } catch { }
+        });
+
+        async function saveAsImage(clickEvent) {
+            // Store button reference immediately
+            const btn = clickEvent ? clickEvent.target : document.querySelector('.btn-save');
+            const originalText = btn ? btn.textContent : '';
+
+            // First save the schedule data
+            saveSchedule();
+
+            try {
+                // Update schedule before capturing
+                updateSchedule();
+
+                // Show loading message
+                if (btn) {
+                    btn.textContent = '📸 Capturing...';
+                    btn.disabled = true;
+                }
+
+                // Get the output section to capture
+                const outputSection = document.querySelector('.output-section');
+                if (!outputSection) {
+                    throw new Error('Output section not found');
+                }
+
+                // Make the output section visible for capture
+                const originalDisplay = outputSection.style.display;
+                outputSection.style.display = 'block';
+
+                // Temporarily force layout for capture (half-letter size)
+                const originalMaxWidth = outputSection.style.maxWidth;
+                const originalWidth = outputSection.style.width;
+                outputSection.style.maxWidth = '850px';
+                outputSection.style.width = '850px';
+
+                // Force grid to 7 columns for export
+                const grid = outputSection.querySelector('.output-schedule-grid');
+                const originalGridColumns = grid ? grid.style.gridTemplateColumns : '';
+                if (grid) grid.style.gridTemplateColumns = 'repeat(7, 1fr)';
+
+                // Wait for layout to settle
+                await new Promise(resolve => setTimeout(resolve, 300));
+
+                // Check if html2canvas is available
+                if (typeof html2canvas === 'undefined') {
+                    throw new Error('html2canvas library not loaded');
+                }
+
+                // Use html2canvas to capture the schedule as an image
+                const canvas = await html2canvas(outputSection, {
+                    backgroundColor: '#ffffff',
+                    scale: 2,
+                    logging: true, // Enable logging for debugging
+                    useCORS: true,
+                    allowTaint: true,
+                    width: 850,
+                    windowWidth: 850
+                });
+
+                // Restore original styles
+                outputSection.style.display = originalDisplay;
+                outputSection.style.maxWidth = originalMaxWidth;
+                outputSection.style.width = originalWidth;
+                if (grid) grid.style.gridTemplateColumns = originalGridColumns;
+
+                // Convert canvas to blob
+                const blob = await new Promise((resolve, reject) => {
+                    canvas.toBlob((b) => {
+                        if (b) resolve(b);
+                        else reject(new Error('Failed to create blob'));
+                    }, 'image/png');
+                });
+
+                const fileName = `EZBath_Schedule_${new Date().toISOString().split('T')[0]}.png`;
+                const file = new File([blob], fileName, { type: 'image/png' });
+
+                // Try native share API with image
+                if (navigator.share && navigator.canShare && navigator.canShare({ files: [file] })) {
+                    await navigator.share({
+                        title: 'EZ Baths Weekly Schedule',
+                        text: 'My weekly availability schedule',
+                        files: [file]
+                    });
+                    console.log('✅ Schedule image shared successfully');
+                } else {
+                    // Fallback: Download the image
+                    const url = URL.createObjectURL(blob);
+                    const link = document.createElement('a');
+                    link.download = fileName;
+                    link.href = url;
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
+                    URL.revokeObjectURL(url);
+
+                    alert('� Schedule saved as image!\n\nCheck your downloads folder.');
+                }
+
+                // Restore button
+                if (btn) {
+                    btn.textContent = originalText;
+                    btn.disabled = false;
+                }
+
+            } catch (error) {
+                console.error('Error capturing schedule:', error);
+                alert('❌ Unable to capture: ' + error.message + '\n\nTry using "Print Schedule" instead.');
+
+                // Restore original display
+                const outputSection = document.querySelector('.output-section');
+                if (outputSection) outputSection.style.display = 'none';
+
+                // Restore button
+                if (btn) {
+                    btn.textContent = originalText || '💾 Save to Phone';
+                    btn.disabled = false;
+                }
+            }
+        }
+
+        async function shareSchedule(clickEvent) {
+            // Store button reference immediately
+            const btn = clickEvent ? clickEvent.target : document.querySelector('.btn-share');
+            const originalText = btn ? btn.textContent : '';
+
+            // First save the schedule
+            saveSchedule();
+
+            try {
+                // Update schedule before capturing
+                updateSchedule();
+
+                // Show loading message
+                if (btn) {
+                    btn.textContent = '📸 Capturing...';
+                    btn.disabled = true;
+                }
+
+                // Get the output section to capture
+                const outputSection = document.querySelector('.output-section');
+                if (!outputSection) {
+                    throw new Error('Output section not found');
+                }
+
+                // Make the output section visible for capture
+                const originalDisplay = outputSection.style.display;
+                outputSection.style.display = 'block';
+
+                // Temporarily force layout for capture (half-letter size)
+                const originalMaxWidth = outputSection.style.maxWidth;
+                const originalWidth = outputSection.style.width;
+                outputSection.style.maxWidth = '850px';
+                outputSection.style.width = '850px';
+
+                // Force grid to 7 columns for export
+                const grid = outputSection.querySelector('.output-schedule-grid');
+                const originalGridColumns = grid ? grid.style.gridTemplateColumns : '';
+                if (grid) grid.style.gridTemplateColumns = 'repeat(7, 1fr)';
+
+                // Wait for layout to settle
+                await new Promise(resolve => setTimeout(resolve, 300));
+
+                // Check if html2canvas is available
+                if (typeof html2canvas === 'undefined') {
+                    throw new Error('html2canvas library not loaded');
+                }
+
+                // Use html2canvas to capture the schedule as an image
+                const canvas = await html2canvas(outputSection, {
+                    backgroundColor: '#ffffff',
+                    scale: 2,
+                    logging: true,
+                    useCORS: true,
+                    allowTaint: true,
+                    width: 850,
+                    windowWidth: 850
+                });
+
+                // Restore original styles
+                outputSection.style.display = originalDisplay;
+                outputSection.style.maxWidth = originalMaxWidth;
+                outputSection.style.width = originalWidth;
+                if (grid) grid.style.gridTemplateColumns = originalGridColumns;
+
+                // Convert canvas to blob
+                const blob = await new Promise((resolve, reject) => {
+                    canvas.toBlob((b) => {
+                        if (b) resolve(b);
+                        else reject(new Error('Failed to create blob'));
+                    }, 'image/png');
+                });
+
+                const fileName = `EZBath_Schedule_${new Date().toISOString().split('T')[0]}.png`;
+                const file = new File([blob], fileName, { type: 'image/png' });
+
+                // Try native share API with image
+                if (navigator.share && navigator.canShare && navigator.canShare({ files: [file] })) {
+                    await navigator.share({
+                        title: 'EZ Baths Weekly Schedule',
+                        text: 'My weekly availability schedule',
+                        files: [file]
+                    });
+                    console.log('✅ Schedule image shared successfully');
+                } else {
+                    // Fallback: Download the image
+                    const url = URL.createObjectURL(blob);
+                    const link = document.createElement('a');
+                    link.download = fileName;
+                    link.href = url;
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
+                    URL.revokeObjectURL(url);
+
+                    alert('� Schedule saved as image!\n\nSharing not supported - check your downloads folder.');
+                }
+
+                // Restore button
+                if (btn) {
+                    btn.textContent = originalText;
+                    btn.disabled = false;
+                }
+
+            } catch (error) {
+                console.error('Error capturing schedule:', error);
+                alert('❌ Unable to capture: ' + error.message + '\n\nTry using "Save to Phone" instead.');
+
+                // Restore original display
+                const outputSection = document.querySelector('.output-section');
+                if (outputSection) outputSection.style.display = 'none';
+
+                // Restore button
+                if (btn) {
+                    btn.textContent = originalText || '📤 Share Schedule';
+                    btn.disabled = false;
+                }
+            }
+        }
+
+        // Initialize on page load
+        window.onload = function () {
+            setCurrentWeek();
+            loadSchedule(); // Load saved schedule first
+            loadVacationDates(); // Then load locked vacation dates
+            updateSchedule();
+
+            // Add event listeners
+            document.querySelectorAll('input[type="checkbox"]').forEach(checkbox => {
+                checkbox.addEventListener('change', updateSchedule);
+            });
+
+            document.querySelectorAll('#weekStartDate, #saturdayCount').forEach(input => {
+                input.addEventListener('input', updateSchedule);
+            });
+
+            // Special handling for consultant name - reload vacation dates when it changes
+            document.getElementById('consultantName').addEventListener('input', function () {
+                loadVacationDates();
+                updateSchedule();
+            });
+
+            // Update schedule and auto-save when vacation dates change
+            document.getElementById('vacationStartDate').addEventListener('change', function () {
+                autoSaveVacation();
+                updateSchedule();
+            });
+            document.getElementById('vacationEndDate').addEventListener('change', function () {
+                autoSaveVacation();
+                updateSchedule();
+            });
+
+            // Vacation toggle handler - show/hide fields
+            document.getElementById('vacationToggle').addEventListener('change', function () {
+                const toggle = document.getElementById('vacationToggle');
+                const fields = document.getElementById('vacationFields');
+
+                if (toggle.checked) {
+                    fields.style.display = 'block';
+                } else {
+                    fields.style.display = 'none';
+                    // Clear fields and storage for this consultant
+                    const consultantName = document.getElementById('consultantName').value;
+                    const vacationKey = consultantName ? `vacation_${consultantName.replace(/\s+/g, '_')}` : null;
+                    if (vacationKey) {
+                        localStorage.removeItem(vacationKey);
+                    }
+                    document.getElementById('vacationStartDate').value = '';
+                    document.getElementById('vacationEndDate').value = '';
+                }
+                updateSchedule();
+            });
+        };
+
+        // Auto-save vacation dates
+        function autoSaveVacation() {
+            const consultantName = document.getElementById('consultantName').value;
+            if (!consultantName) return;
+
+            const startDate = document.getElementById('vacationStartDate').value;
+            const endDate = document.getElementById('vacationEndDate').value;
+            const enabled = document.getElementById('vacationToggle').checked;
+
+            if (enabled && (startDate || endDate)) {
+                const vacationKey = `vacation_${consultantName.replace(/\s+/g, '_')}`;
+                const vacationData = {
+                    startDate: startDate,
+                    endDate: endDate,
+                    enabled: true
+                };
+                localStorage.setItem(vacationKey, JSON.stringify(vacationData));
+            }
+        }
+
+        // BACK BUTTON FUNCTION
+        function goBack() {
+            // Auto-save before leaving
+            saveSchedule();
+            // Mark module as accessed
+            markModuleProgress('scheduler');
+            // Return to navigation
+            window.location.href = 'index.html';
+        }
+
+        function resetScheduleCache() {
+            // Remove stored schedule data
+            localStorage.removeItem('schedulerData');
+
+            // Reset inputs
+            document.getElementById('consultantName').value = '';
+            document.getElementById('weekStartDate').value = '';
+            document.getElementById('saturdayCount').value = '6';
+
+            // Uncheck availability boxes
+            document.querySelectorAll('input[type="checkbox"][data-day][data-time]').forEach(cb => {
+                cb.checked = false;
+            });
+
+            // Clear output placeholders
+            document.getElementById('weekRange').textContent = '';
+            document.getElementById('outputDate').textContent = '________________';
+            document.getElementById('outputName').textContent = '________________________';
+
+            updateSchedule();
+        }
+
+        // SAVE SCHEDULE TO LOCALSTORAGE
+        function saveSchedule() {
+            const scheduleData = {
+                consultantName: document.getElementById('consultantName').value,
+                weekStartDate: document.getElementById('weekStartDate').value,
+                // Vacation dates are now stored separately per user, not in schedule data
+                saturdayCount: document.getElementById('saturdayCount').value,
+                checkboxes: {}
+            };
+
+            document.querySelectorAll('input[type="checkbox"]').forEach(checkbox => {
+                scheduleData.checkboxes[checkbox.id] = checkbox.checked;
+            });
+
+            localStorage.setItem('schedulerData', JSON.stringify(scheduleData));
+        }
+
+        // LOAD SCHEDULE FROM LOCALSTORAGE
+        function loadSchedule() {
+            const saved = localStorage.getItem('schedulerData');
+            if (saved) {
+                const data = JSON.parse(saved);
+                if (data.consultantName) document.getElementById('consultantName').value = data.consultantName;
+                if (data.weekStartDate) document.getElementById('weekStartDate').value = data.weekStartDate;
+                // Don't load vacationDates from schedulerData - use permanent storage instead
+                if (data.saturdayCount) document.getElementById('saturdayCount').value = data.saturdayCount;
+
+                if (data.checkboxes) {
+                    Object.keys(data.checkboxes).forEach(id => {
+                        const checkbox = document.getElementById(id);
+                        if (checkbox) checkbox.checked = data.checkboxes[id];
+                    });
+                }
+                updateSchedule();
+            }
+        }
+
+        // MARK MODULE AS COMPLETE
+        function markModuleProgress(moduleName) {
+            const progress = JSON.parse(localStorage.getItem('customerProgress') || '{}');
+            if (progress.modules) {
+                progress.modules[moduleName] = true;
+                localStorage.setItem('customerProgress', JSON.stringify(progress));
+            }
+        }
+
+        // VACATION DATES MANAGEMENT
+        // Save vacation dates permanently (locked to account)
+        function saveVacationDates() {
+            const vacationStartInput = document.getElementById('vacationStartDate');
+            const vacationEndInput = document.getElementById('vacationEndDate');
+            const startDate = vacationStartInput.value;
+            const endDate = vacationEndInput.value;
+            const vacationEnabled = document.getElementById('vacationToggle').checked;
+
+            if (!vacationEnabled) {
+                alert('⚠️ Please check "Need to take a vacation" before saving dates.');
+                return;
+            }
+
+            // Get current user (consultant name)
+            const consultantName = document.getElementById('consultantName').value;
+            if (!consultantName) {
+                alert('⚠️ Please enter your consultant name first!');
+                return;
+            }
+
+            // Validate dates
+            if (startDate && endDate && new Date(startDate) > new Date(endDate)) {
+                alert('⚠️ Start date cannot be after end date!');
+                return;
+            }
+
+            // Save to permanent storage per user
+            const vacationKey = `vacation_${consultantName.replace(/\s+/g, '_')}`;
+            const vacationData = {
+                startDate: startDate,
+                endDate: endDate,
+                enabled: true
+            };
+            localStorage.setItem(vacationKey, JSON.stringify(vacationData));
+
+            // Lock the inputs
+            vacationStartInput.readOnly = true;
+            vacationEndInput.readOnly = true;
+            document.getElementById('btnEditVacation').style.display = 'inline-block';
+            document.getElementById('btnSaveVacation').style.display = 'none';
+            document.getElementById('vacationLockedIndicator').style.display = 'block';
+
+            alert('✅ Vacation dates saved and locked! Click "Edit" to change them later.');
+            updateSchedule();
+        }
+
+        // Edit vacation dates (unlock)
+        function editVacationDates() {
+            const vacationStartInput = document.getElementById('vacationStartDate');
+            const vacationEndInput = document.getElementById('vacationEndDate');
+            document.getElementById('vacationToggle').checked = true;
+
+            // Unlock the inputs
+            vacationStartInput.readOnly = false;
+            vacationEndInput.readOnly = false;
+            vacationStartInput.focus();
+            document.getElementById('btnEditVacation').style.display = 'none';
+            document.getElementById('btnSaveVacation').style.display = 'inline-block';
+            document.getElementById('vacationLockedIndicator').style.display = 'none';
+        }
+
+        // Load vacation dates from permanent storage
+        function loadVacationDates() {
+            const consultantName = document.getElementById('consultantName').value;
+            const vacationFields = document.getElementById('vacationFields');
+            if (!consultantName) {
+                vacationFields.style.display = 'none';
+                return;
+            }
+
+            const vacationKey = `vacation_${consultantName.replace(/\s+/g, '_')}`;
+            const savedVacation = localStorage.getItem(vacationKey);
+
+            if (savedVacation) {
+                try {
+                    const vacationData = JSON.parse(savedVacation);
+                    const enabled = vacationData.enabled ?? !!(vacationData.startDate || vacationData.endDate);
+                    document.getElementById('vacationToggle').checked = enabled;
+                    document.getElementById('vacationStartDate').value = vacationData.startDate || '';
+                    document.getElementById('vacationEndDate').value = vacationData.endDate || '';
+
+                    // Show/hide vacation fields based on enabled state
+                    vacationFields.style.display = enabled ? 'block' : 'none';
+                } catch (e) {
+                    // Handle old format (plain text) - convert to new format
+                    document.getElementById('vacationStartDate').value = '';
+                    document.getElementById('vacationEndDate').value = '';
+                    vacationFields.style.display = 'none';
+                }
+            } else {
+                // First time or no vacation saved
+                document.getElementById('vacationToggle').checked = false;
+                document.getElementById('vacationStartDate').value = '';
+                document.getElementById('vacationEndDate').value = '';
+                vacationFields.style.display = 'none';
+            }
+        }
+
+        // Helper function to unlock vacation fields
+        function unlockVacationFields() {
+            document.getElementById('vacationStartDate').readOnly = false;
+            document.getElementById('vacationEndDate').readOnly = false;
+            document.getElementById('btnEditVacation').style.display = 'none';
+            document.getElementById('btnSaveVacation').style.display = 'inline-block';
+            document.getElementById('vacationLockedIndicator').style.display = 'none';
+        }
+
+        // Helper to lock/disable vacation when not needed
+        function lockVacationFields() {
+            document.getElementById('vacationStartDate').readOnly = true;
+            document.getElementById('vacationEndDate').readOnly = true;
+            document.getElementById('btnEditVacation').style.display = 'none';
+            document.getElementById('btnSaveVacation').style.display = 'none';
+            document.getElementById('vacationLockedIndicator').style.display = 'none';
+        }
+
+
+        // AUTO-SAVE EVERY 10 SECONDS
+        setInterval(() => {
+            saveSchedule();
+            console.log('Auto-saved scheduler at', new Date().toLocaleTimeString());
+        }, 10000);
+
+        // DISPLAY CUSTOMER NAME
+        const currentCustomer = localStorage.getItem('currentCustomer');
+        if (currentCustomer) {
+            document.getElementById('customerDisplay').textContent = `Customer: ${currentCustomer} - Select your available appointment times`;
+        }
+
+        // Note: loadSchedule() and updateSchedule() are called in window.onload above
+        // Vacation toggle handler is also set up in window.onload
+
+        // SAVE BEFORE PAGE UNLOAD
+        window.addEventListener('beforeunload', () => {
+            saveSchedule();
+        });
+
+        // Hamburger menu toggle
+        function toggleMenu() {
+            const navButtons = document.getElementById('navButtons');
+            navButtons.classList.toggle('active');
+        }
+
+        // Close menu when clicking outside
+        document.addEventListener('click', function (event) {
+            const navbar = document.querySelector('.navbar');
+            const navButtons = document.getElementById('navButtons');
+            if (!navbar.contains(event.target) && navButtons.classList.contains('active')) {
+                navButtons.classList.remove('active');
+            }
+        });
+    </script>
+</body>
+
+</html>

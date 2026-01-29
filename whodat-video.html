@@ -1,0 +1,629 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <title>WhoDAT Video - EZBaths</title>
+    <link rel="stylesheet" href="assets/css/responsive-fixes.css">
+    <script src="assets/js/toast-notifications.js" defer></script>
+    <script src="assets/js/loading-spinner.js" defer></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+            min-height: 100vh;
+            padding: 20px;
+            position: relative;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 10%;
+            left: 5%;
+            width: 300px;
+            height: 300px;
+            background: radial-gradient(circle, rgba(52, 152, 219, 0.15) 0%, transparent 70%);
+            border-radius: 50%;
+            animation: pulse 8s ease-in-out infinite;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        body::after {
+            content: '';
+            position: fixed;
+            bottom: 10%;
+            right: 5%;
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, rgba(46, 204, 113, 0.12) 0%, transparent 70%);
+            border-radius: 50%;
+            animation: pulse 10s ease-in-out infinite reverse;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        @keyframes pulse {
+
+            0%,
+            100% {
+                transform: scale(1);
+                opacity: 0.6;
+            }
+
+            50% {
+                transform: scale(1.1);
+                opacity: 0.8;
+            }
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 1;
+        }
+
+        .back-button {
+            background: linear-gradient(135deg, #3498db 0%, #2ecc71 100%);
+            border: none;
+            color: white;
+            padding: 8px 16px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 13px;
+            display: inline-block;
+            margin-bottom: 20px;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 8px rgba(52, 152, 219, 0.3);
+        }
+
+        .back-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(52, 152, 219, 0.5);
+        }
+
+        .header {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(52, 152, 219, 0.3);
+            border-radius: 20px;
+            padding: 30px;
+            text-align: center;
+            margin-bottom: 30px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+        }
+
+        .header h1 {
+            font-size: 32px;
+            color: #ffffff;
+            margin-bottom: 10px;
+            background: linear-gradient(135deg, #3498db 0%, #2ecc71 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .header p {
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 16px;
+        }
+
+        .video-card {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(52, 152, 219, 0.2);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        .form-group label {
+            display: block;
+            color: #3498db;
+            font-weight: 600;
+            margin-bottom: 10px;
+            font-size: 16px;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid rgba(52, 152, 219, 0.3);
+            border-radius: 12px;
+            background: rgba(15, 52, 96, 0.5);
+            color: white;
+            font-size: 16px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: #3498db;
+            box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.2);
+        }
+
+        .form-group input::placeholder {
+            color: rgba(255, 255, 255, 0.4);
+        }
+
+        .instructions {
+            background: rgba(52, 152, 219, 0.1);
+            border: 2px solid #3498db;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 25px;
+            color: white;
+        }
+
+        .instructions h3 {
+            color: #3498db;
+            margin-bottom: 10px;
+            font-size: 18px;
+        }
+
+        .instructions ul {
+            margin-left: 20px;
+            line-height: 1.8;
+        }
+
+        .btn {
+            width: 100%;
+            padding: 18px;
+            border: none;
+            border-radius: 12px;
+            font-size: 18px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-bottom: 15px;
+        }
+
+        .btn-record {
+            background: linear-gradient(135deg, #FF6B6B, #ff5252);
+            color: white;
+            box-shadow: 0 4px 12px rgba(255, 107, 107, 0.3);
+        }
+
+        .btn-record:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(255, 107, 107, 0.4);
+        }
+
+        .btn-record:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .video-preview {
+            display: none;
+            margin-top: 25px;
+        }
+
+        .video-preview.show {
+            display: block;
+        }
+
+        .video-preview video {
+            width: 100%;
+            border-radius: 12px;
+            margin-bottom: 15px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+        }
+
+        .btn-confirm {
+            background: linear-gradient(135deg, #4CAF50, #45a049);
+            color: white;
+        }
+
+        .btn-retake {
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            border: 2px solid rgba(52, 152, 219, 0.3);
+        }
+
+        .status-message {
+            text-align: center;
+            padding: 15px;
+            border-radius: 10px;
+            margin-top: 20px;
+            font-weight: 600;
+            display: none;
+        }
+
+        .status-message.success {
+            background: rgba(76, 175, 80, 0.2);
+            border: 2px solid #4CAF50;
+            color: #4CAF50;
+            display: block;
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 24px;
+            }
+
+            .btn {
+                padding: 15px;
+                font-size: 16px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <a href="tools.html" class="back-button">← Back</a>
+
+        <div class="header">
+            <h1>🎥 WhoDAT Video</h1>
+            <p>Record your customer introduction video</p>
+        </div>
+
+        <div class="video-card">
+            <div class="form-group">
+                <label for="customerName">Customer Name (Required)</label>
+                <input type="text" id="customerName" placeholder="Enter customer's full name" autocomplete="off">
+            </div>
+
+            <div class="instructions">
+                <h3>📋 Video Guidelines:</h3>
+                <ul>
+                    <li>📱 <strong>Works on phone & computer</strong> - will access your camera</li>
+                    <li>🎬 <strong>Introduce yourself</strong> and state the date</li>
+                    <li>👥 <strong>Introduce the customer(s)</strong> by full name</li>
+                    <li>📍 <strong>Mention the city and state</strong> of the job</li>
+                    <li>💰 <strong>State the contract amount</strong> (optional)</li>
+                    <li>⏱️ <strong>Keep it short</strong> - 30 seconds to 2 minutes</li>
+                </ul>
+                <div
+                    style="background: rgba(255, 184, 77, 0.1); padding: 12px; border-radius: 8px; margin-top: 15px; font-size: 14px; border: 1px solid rgba(255, 184, 77, 0.3);">
+                    <strong>📷 Camera Access:</strong> This will request access to your camera and microphone. Please
+                    allow permissions when prompted. Works on desktop and mobile devices.
+                </div>
+            </div>
+
+            <button class="btn btn-record" id="recordBtn" onclick="openVideoRecorder()">
+                🎥 Record Video
+            </button>
+
+            <div class="video-preview" id="videoPreview">
+                <video id="videoPlayer" controls></video>
+                <button class="btn btn-confirm" onclick="confirmVideo()">✅ Save Video</button>
+                <button class="btn btn-retake" onclick="retakeVideo()">🔄 Re-record</button>
+            </div>
+
+            <div class="status-message" id="statusMessage"></div>
+        </div>
+    </div>
+
+    <input type="file" id="videoInput" accept="video/*" capture="user" style="display: none;">
+
+    <script src="assets/js/universal-cache.js"></script>
+    <script>
+        let videoData = null;
+        const currentCustomer = localStorage.getItem('currentCustomer');
+        const VIDEO_CACHE_KEY = `whodat_cache_${currentCustomer || 'temp'}`;
+
+        // Setup auto-cache
+        UniversalCache.setupAutoSave('whodat-video');
+
+        // Load saved data
+        window.onload = function () {
+            // Auto-fill customer name from profile
+            if (currentCustomer) {
+                document.getElementById('customerName').value = currentCustomer;
+            }
+
+            // Load customer-specific cached video
+            const cachedVideo = localStorage.getItem(VIDEO_CACHE_KEY);
+
+            if (cachedVideo) {
+                try {
+                    videoData = JSON.parse(cachedVideo);
+                    if (videoData.data) {
+                        document.getElementById('videoPlayer').src = videoData.data;
+                        document.getElementById('videoPreview').classList.add('show');
+
+                        if (videoData.confirmed) {
+                            showStatus('✓ Video already saved! You can re-record if needed.', 'success');
+                        } else {
+                            showStatus('📹 Video cached - click "Save Video" to confirm', 'success');
+                        }
+                    }
+                } catch (error) {
+                    console.error('Error loading cached video:', error);
+                }
+            }
+
+            // Auto-save customer name
+            document.getElementById('customerName').addEventListener('input', function () {
+                localStorage.setItem('whodat_customer_name', this.value);
+            });
+
+            // Load other cached form data
+            UniversalCache.loadPageData('whodat-video');
+        };
+
+        // Auto-cache video data
+        function cacheVideo() {
+            if (videoData) {
+                localStorage.setItem(VIDEO_CACHE_KEY, JSON.stringify(videoData));
+                console.log('✓ Video cached');
+            }
+        }
+
+        async function openVideoRecorder() {
+            const customerName = document.getElementById('customerName').value.trim();
+
+            if (!customerName) {
+                alert('⚠️ Please enter customer name first!');
+                document.getElementById('customerName').focus();
+                return;
+            }
+
+            try {
+                // Request camera permission and start recording
+                const stream = await navigator.mediaDevices.getUserMedia({
+                    video: {
+                        facingMode: 'user',
+                        width: { ideal: 1280 },
+                        height: { ideal: 720 }
+                    },
+                    audio: true
+                });
+
+                // Create video element for live preview
+                const video = document.createElement('video');
+                video.srcObject = stream;
+                video.autoplay = true;
+                video.muted = true;
+                video.style.width = '100%';
+                video.style.borderRadius = '12px';
+
+                // Show camera preview
+                const previewContainer = document.getElementById('videoPreview');
+                previewContainer.innerHTML = '';
+                previewContainer.appendChild(video);
+                previewContainer.classList.add('show');
+
+                // Add recording controls
+                const controlsDiv = document.createElement('div');
+                controlsDiv.style.textAlign = 'center';
+                controlsDiv.style.marginTop = '15px';
+
+                const recordButton = document.createElement('button');
+                recordButton.className = 'btn btn-record';
+                recordButton.textContent = '🔴 Start Recording';
+
+                const stopButton = document.createElement('button');
+                stopButton.className = 'btn';
+                stopButton.textContent = '⏹️ Stop Recording';
+                stopButton.style.marginLeft = '10px';
+                stopButton.style.display = 'none';
+
+                controlsDiv.appendChild(recordButton);
+                controlsDiv.appendChild(stopButton);
+                previewContainer.appendChild(controlsDiv);
+
+                let mediaRecorder;
+                let recordedChunks = [];
+
+                recordButton.onclick = () => {
+                    recordedChunks = [];
+                    mediaRecorder = new MediaRecorder(stream);
+
+                    mediaRecorder.ondataavailable = (event) => {
+                        if (event.data.size > 0) {
+                            recordedChunks.push(event.data);
+                        }
+                    };
+
+                    mediaRecorder.onstop = () => {
+                        const blob = new Blob(recordedChunks, { type: 'video/webm' });
+                        const url = URL.createObjectURL(blob);
+
+                        // Replace live preview with recorded video
+                        const recordedVideo = document.createElement('video');
+                        recordedVideo.src = url;
+                        recordedVideo.controls = true;
+                        recordedVideo.style.width = '100%';
+                        recordedVideo.style.borderRadius = '12px';
+
+                        previewContainer.innerHTML = '';
+                        previewContainer.appendChild(recordedVideo);
+
+                        // Add download/save controls
+                        const finalControls = document.createElement('div');
+                        finalControls.style.textAlign = 'center';
+                        finalControls.style.marginTop = '15px';
+
+                        const downloadButton = document.createElement('button');
+                        downloadButton.className = 'btn';
+                        downloadButton.textContent = '💾 Save Video';
+                        downloadButton.onclick = () => {
+                            const a = document.createElement('a');
+                            a.href = url;
+                            a.download = `WhoDAT_${customerName}_${new Date().toISOString().split('T')[0]}.webm`;
+                            a.click();
+                        };
+
+                        const retryButton = document.createElement('button');
+                        retryButton.className = 'btn btn-record';
+                        retryButton.textContent = '🔄 Record Again';
+                        retryButton.style.marginLeft = '10px';
+                        retryButton.onclick = () => openVideoRecorder();
+
+                        finalControls.appendChild(downloadButton);
+                        finalControls.appendChild(retryButton);
+                        previewContainer.appendChild(finalControls);
+
+                        // Stop camera stream
+                        stream.getTracks().forEach(track => track.stop());
+                    };
+
+                    mediaRecorder.start();
+                    recordButton.style.display = 'none';
+                    stopButton.style.display = 'inline-block';
+                };
+
+                stopButton.onclick = () => {
+                    if (mediaRecorder && mediaRecorder.state === 'recording') {
+                        mediaRecorder.stop();
+                    }
+                };
+
+            } catch (error) {
+                console.error('Camera access error:', error);
+                alert('❌ Camera access denied or not available. Please ensure:\n\n1. Your browser supports camera access\n2. You granted camera permissions\n3. No other app is using your camera\n\nOn mobile: This will work best in Safari (iOS) or Chrome (Android)');
+
+                // Fallback to file input for older devices
+                const input = document.getElementById('videoInput');
+                input.onchange = handleVideoCapture;
+                input.click();
+            }
+        }
+
+        function handleVideoCapture(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function (e) {
+                const video = document.getElementById('videoPlayer');
+                video.src = e.target.result;
+
+                videoData = {
+                    data: e.target.result,
+                    confirmed: false,
+                    timestamp: new Date().toISOString(),
+                    customerName: document.getElementById('customerName').value.trim()
+                };
+
+                // Auto-cache the video
+                cacheVideo();
+
+                document.getElementById('videoPreview').classList.add('show');
+                document.getElementById('statusMessage').style.display = 'none';
+
+                // Scroll to preview
+                document.getElementById('videoPreview').scrollIntoView({
+                    behavior: 'smooth',
+                    block: 'center'
+                });
+            };
+            reader.readAsDataURL(file);
+        }
+
+        function confirmVideo() {
+            if (!videoData) return;
+
+            // Check if overwriting existing saved video
+            const existingSave = localStorage.getItem('ezbath_whodat_video');
+            if (existingSave) {
+                const confirmed = confirm('⚠️ A video is already saved for this customer.\n\nDo you want to overwrite the previous video?');
+                if (!confirmed) {
+                    return;
+                }
+            }
+
+            videoData.confirmed = true;
+
+            // Save to both cache and permanent storage
+            localStorage.setItem(VIDEO_CACHE_KEY, JSON.stringify(videoData));
+            localStorage.setItem('ezbath_whodat_video', JSON.stringify(videoData));
+
+            // Also save to EZAPP structure
+            if (typeof EZAPPData !== 'undefined') {
+                const data = EZAPPData.getCurrentData();
+                if (data) {
+                    data.video = videoData;
+                    data.metadata.lastModified = new Date().toISOString();
+                    localStorage.setItem('EZAPP_current', JSON.stringify(data));
+                }
+            }
+
+            // Show confirmation
+            UniversalCache.showSaveConfirmation('✓ WhoDAT Video saved successfully!');
+
+            // Download video
+            downloadVideo();
+
+            // Mark module as complete
+            markModuleProgress('whodat');
+        }
+
+        function retakeVideo() {
+            if (confirm('⚠️ This will discard the current video. Continue?')) {
+                document.getElementById('videoPreview').classList.remove('show');
+                videoData = null;
+
+                // Clear cache
+                localStorage.removeItem(VIDEO_CACHE_KEY);
+
+                document.getElementById('statusMessage').style.display = 'none';
+
+                // Clear the input
+                document.getElementById('videoInput').value = '';
+
+                // Reopen camera
+                setTimeout(() => openVideoRecorder(), 300);
+            }
+        }
+
+        function downloadVideo() {
+            if (!videoData || !videoData.confirmed) return;
+
+            const customerName = videoData.customerName.replace(/[^a-zA-Z0-9]/g, '_');
+            const fileName = `${customerName}_WhoDAT_Video.mp4`;
+
+            const link = document.createElement('a');
+            link.href = videoData.data;
+            link.download = fileName;
+            link.click();
+
+            setTimeout(() => {
+                showStatus(`✅ Video downloaded as: ${fileName}`, 'success');
+            }, 500);
+        }
+
+        function showStatus(message, type) {
+            const statusDiv = document.getElementById('statusMessage');
+            statusDiv.textContent = message;
+            statusDiv.className = 'status-message ' + type;
+        }
+
+        // MARK MODULE AS COMPLETE
+        function markModuleProgress(moduleName) {
+            const progress = JSON.parse(localStorage.getItem('customerProgress') || '{}');
+            if (progress.modules) {
+                progress.modules[moduleName] = true;
+                localStorage.setItem('customerProgress', JSON.stringify(progress));
+            }
+        }
+
+        // Save before leaving page
+        window.addEventListener('beforeunload', () => {
+            if (videoData && !videoData.confirmed) {
+                cacheVideo();
+            }
+        });
+    </script>
+</body>
+
+</html>
