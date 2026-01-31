@@ -2280,39 +2280,43 @@
                 return;
             }
 
-            // Download photos with customer last name
-            completed.forEach(photoId => {
-                let fileName = `${customerName}_${photoDescriptions[photoId]}`;
+            // Download photos with customer last name - stagger downloads to avoid browser blocking
+            completed.forEach((photoId, index) => {
+                setTimeout(() => {
+                    let fileName = `${customerName}_${photoDescriptions[photoId]}`;
 
-                // Append measurement if exists
-                if (photoData[photoId].measurement) {
-                    const measurementLabel = photoData[photoId].measurement.toString().replace(/[^a-zA-Z0-9.]/g, '_');
-                    fileName += `_${measurementLabel}`;
-                }
+                    // Append measurement if exists
+                    if (photoData[photoId].measurement) {
+                        const measurementLabel = photoData[photoId].measurement.toString().replace(/[^a-zA-Z0-9.]/g, '_');
+                        fileName += `_${measurementLabel}`;
+                    }
 
-                if (sessionDate) {
-                    fileName = `${customerName}_${sessionDate}_${photoDescriptions[photoId]}`;
-                }
+                    if (sessionDate) {
+                        fileName = `${customerName}_${sessionDate}_${photoDescriptions[photoId]}`;
+                    }
 
-                fileName += '.jpg';
+                    fileName += '.jpg';
 
-                const link = document.createElement('a');
-                link.href = photoData[photoId].data;
-                link.download = fileName;
-                link.click();
+                    const link = document.createElement('a');
+                    link.href = photoData[photoId].data;
+                    link.download = fileName;
+                    link.click();
+                }, index * 500); // 500ms delay between each download
             });
 
-            // Download video with customer name
+            // Download video with customer name - schedule after all photos
             if (videoData && videoData.confirmed) {
-                const videoFileName = sessionDate ? `${customerName}_${sessionDate}_WhoDAT_Video.mp4` : `${customerName}_WhoDAT_Video.mp4`;
-                const link = document.createElement('a');
-                link.href = videoData.data;
-                link.download = videoFileName;
-                link.click();
+                setTimeout(() => {
+                    const videoFileName = sessionDate ? `${customerName}_${sessionDate}_WhoDAT_Video.mp4` : `${customerName}_WhoDAT_Video.mp4`;
+                    const link = document.createElement('a');
+                    link.href = videoData.data;
+                    link.download = videoFileName;
+                    link.click();
+                }, completed.length * 500); // Download video after all photos
             }
 
             const totalItems = completed.length + (videoData && videoData.confirmed ? 1 : 0);
-            alert(`✅ Downloaded ${totalItems} items successfully!`);
+            alert(`✅ Downloading ${totalItems} items...\n\nPlease wait, files will download one at a time to avoid browser blocking.`);
         }
 
         // Share photos
@@ -2324,22 +2328,24 @@
                 return;
             }
 
-            // Download each photo with proper filename
-            completed.forEach(photoId => {
-                const photo = photoData[photoId];
-                const base64 = photo.data;
-                const fileName = photo.filename ? `${photo.filename}.jpg` : `${photoDescriptions[photoId]}.jpg`;
+            // Download each photo with proper filename - stagger downloads to avoid browser blocking
+            completed.forEach((photoId, index) => {
+                setTimeout(() => {
+                    const photo = photoData[photoId];
+                    const base64 = photo.data;
+                    const fileName = photo.filename ? `${photo.filename}.jpg` : `${photoDescriptions[photoId]}.jpg`;
 
-                // Create download link
-                const link = document.createElement('a');
-                link.href = base64;
-                link.download = fileName;
-                document.body.appendChild(link);
-                link.click();
-                document.body.removeChild(link);
+                    // Create download link
+                    const link = document.createElement('a');
+                    link.href = base64;
+                    link.download = fileName;
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
+                }, index * 500); // 500ms delay between each download
             });
 
-            alert(`✓ ${completed.length} photos downloaded!\n\nFiles saved with format: [LastName].[#].[measurement].jpg`);
+            alert(`✓ Downloading ${completed.length} photos...\n\nPlease wait, files will download one at a time to avoid browser blocking.`);
         }
 
         // Clear all photos
