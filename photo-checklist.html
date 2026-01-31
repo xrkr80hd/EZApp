@@ -2316,7 +2316,7 @@
             }
 
             const totalItems = completed.length + (videoData && videoData.confirmed ? 1 : 0);
-            alert(`✅ Downloading ${totalItems} items...\n\nPlease wait, files will download one at a time to avoid browser blocking.`);
+            alert(`✅ Starting download of ${totalItems} items...\n\nPlease wait, files will download one at a time to avoid browser blocking.`);
         }
 
         // Share photos
@@ -2345,7 +2345,7 @@
                 }, index * 500); // 500ms delay between each download
             });
 
-            alert(`✓ Downloading ${completed.length} photos...\n\nPlease wait, files will download one at a time to avoid browser blocking.`);
+            alert(`✓ Starting download of ${completed.length} photos...\n\nPlease wait, files will download one at a time to avoid browser blocking.`);
         }
 
         // Clear all photos
