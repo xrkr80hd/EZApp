@@ -56,7 +56,7 @@ const isStaticAsset = (request) => {
   const url = new URL(request.url);
   return (
     url.origin === self.location.origin &&
-    (url.pathname.startsWith('/assets/') ||
+    (url.pathname.includes('/assets/') ||
       url.pathname.endsWith('.css') ||
       url.pathname.endsWith('.js') ||
       url.pathname.endsWith('.png') ||
@@ -80,7 +80,7 @@ self.addEventListener('fetch', (event) => {
       try {
         const networkResponse = await fetch(request);
         const runtime = await caches.open(RUNTIME_CACHE);
-        runtime.put(request, networkResponse.clone());
+        await runtime.put(request, networkResponse.clone());
         return networkResponse;
       } catch {
         const cachedPage = await caches.match(request);
