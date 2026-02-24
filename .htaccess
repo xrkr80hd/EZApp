@@ -64,3 +64,22 @@ Options -Indexes
     AddOutputFilterByType DEFLATE application/javascript text/javascript
     AddOutputFilterByType DEFLATE image/svg+xml
 </IfModule>
+
+# Ensure fast update checks for PWA shell files
+<IfModule mod_headers.c>
+    <Files "service-worker.js">
+        Header set Cache-Control "no-cache, no-store, must-revalidate"
+        Header set Pragma "no-cache"
+        Header set Expires "0"
+    </Files>
+
+    <Files "manifest.json">
+        Header set Content-Type "application/manifest+json"
+        Header set Cache-Control "public, max-age=86400"
+    </Files>
+
+    <FilesMatch "\.(js|css|png|jpg|jpeg|svg|webp|woff|woff2|ttf)$">
+        Header set Cache-Control "public, max-age=31536000, immutable"
+    </FilesMatch>
+</IfModule>
+
