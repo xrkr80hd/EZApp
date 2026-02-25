@@ -1,0 +1,13 @@
+--- REMOTE ---
+
+--- CURRENT BRANCH ---
+
+--- STATUS (porcelain) ---
+
+--- STATUS (short) BEFORE FETCH ---
+
+--- FETCHING REMOTES ---
+
+--- STATUS (short) AFTER FETCH ---
+
+--- RECENT ORIGIN COMMITS (top 10) ---

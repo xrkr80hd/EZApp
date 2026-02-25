@@ -1,0 +1,12 @@
+node_modules
+npm-debug.log
+.next
+.DS_Store
+.vscode
+.env
+coverage
+dist
+build
+.idea
+/.git
+/old-versions-EZApp-2026-02-24

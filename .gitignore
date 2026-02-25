@@ -1,0 +1,14 @@
+.DS_Store
+
+next-pwa-app/node_modules/
+next-pwa-app/.next/
+next-pwa-app/dist/
+next-pwa-app/build/
+next-pwa-app/coverage/
+next-pwa-app/.env
+next-pwa-app/.env.local
+next-pwa-app/.env.development.local
+next-pwa-app/.env.test.local
+next-pwa-app/.env.production.local
+
+old-versions-EZApp-2026-02-24/

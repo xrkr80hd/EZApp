@@ -1,0 +1,9 @@
+services:
+  ezapp:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: ezapp-pwa-app
+    ports:
+      - "3000:3000"
+    restart: unless-stopped
