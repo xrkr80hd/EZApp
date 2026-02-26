@@ -72,3 +72,7 @@ Files:
 - Remote configured:
   - `origin git@github.com:xrkr80hd/EZApp.git`
 
+## Next Fixes (From Live Docker QA)
+- Vanity Form (`/tools/vanity-form`): some numeric overlay values on the generated Onyx order sheet are not landing in the correct printed positions.
+- Priority for next session: adjust text overlay coordinates in `next-pwa-app/src/app/tools/vanity-form/page.tsx` so order sheet numbers align exactly with the form boxes.
+- QA reference: user screenshot at Thu Feb 26, 2026 around 12:43 PM shows the misalignment case.

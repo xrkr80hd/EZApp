@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Navbar, PageFooter, PageHeader } from "@/components/ui";
 
 const PHOTO_SEQUENCE = [
@@ -21,19 +21,20 @@ const PHOTO_SEQUENCE = [
   "Any Damage or Problem Areas",
 ];
 
+type PhotoEntry = { name: string; dataUrl: string | null; measurement: string };
+
 type TipData = {
   highPrice: string;
   abovePar: string;
   totalDiscount: string;
   priceOffered: string;
-  cashOffer: string;
+  cashOfferAmount: string;
   cashOfferYN: "" | "Yes" | "No";
   financingUpgrade: boolean;
   financingLendhi: boolean;
   financingSynchrony: boolean;
   creditScore: string;
   secondaryOffers: string;
-  buyWindow: "";
   buyDate13: boolean;
   buyDateWeek: boolean;
   buyDate2Weeks: boolean;
@@ -42,24 +43,21 @@ type TipData = {
   buyDateNotes: string;
   painPoints: string;
   importantNotes: string;
-  rehashNotes: string;
+  callCenterNotes: string;
 };
-
-type PhotoEntry = { name: string; dataUrl: string | null; measurement: string };
 
 const DEFAULT_TIP: TipData = {
   highPrice: "",
   abovePar: "",
   totalDiscount: "",
   priceOffered: "",
-  cashOffer: "",
+  cashOfferAmount: "",
   cashOfferYN: "",
   financingUpgrade: false,
   financingLendhi: false,
   financingSynchrony: false,
   creditScore: "",
   secondaryOffers: "",
-  buyWindow: "",
   buyDate13: false,
   buyDateWeek: false,
   buyDate2Weeks: false,
@@ -68,7 +66,7 @@ const DEFAULT_TIP: TipData = {
   buyDateNotes: "",
   painPoints: "",
   importantNotes: "",
-  rehashNotes: "",
+  callCenterNotes: "",
 };
 
 export default function TipSheetPage() {
@@ -77,7 +75,6 @@ export default function TipSheetPage() {
   const [photos, setPhotos] = useState<PhotoEntry[]>(
     PHOTO_SEQUENCE.map((name) => ({ name, dataUrl: null, measurement: "" }))
   );
-  const fileRefs = useRef<(HTMLInputElement | null)[]>([]);
 
   const tipKey = useMemo(() => `tipSheet_${customerName}`, [customerName]);
   const photosKey = useMemo(() => `photos_${customerName}`, [customerName]);
@@ -85,12 +82,16 @@ export default function TipSheetPage() {
   useEffect(() => {
     const current = localStorage.getItem("currentCustomer") || "Customer";
     setCustomerName(current);
+
     const rawTip = localStorage.getItem(`tipSheet_${current}`);
     if (rawTip) {
       try {
         setTip({ ...DEFAULT_TIP, ...(JSON.parse(rawTip) as Partial<TipData>) });
-      } catch {}
+      } catch {
+        // ignore
+      }
     }
+
     const rawPhotos = localStorage.getItem(`photos_${current}`);
     if (rawPhotos) {
       try {
@@ -101,7 +102,9 @@ export default function TipSheetPage() {
             return { name, dataUrl: m?.dataUrl || null, measurement: m?.measurement || "" };
           })
         );
-      } catch {}
+      } catch {
+        // ignore
+      }
     }
   }, []);
 
@@ -109,26 +112,19 @@ export default function TipSheetPage() {
     localStorage.setItem(tipKey, JSON.stringify(tip));
   }, [tip, tipKey]);
 
+  const setField = <K extends keyof TipData>(k: K, v: TipData[K]) => setTip((p) => ({ ...p, [k]: v }));
+
   const saveNow = () => {
     localStorage.setItem(tipKey, JSON.stringify(tip));
     localStorage.setItem(photosKey, JSON.stringify(photos));
     alert("Tip sheet saved.");
   };
 
-  const setField = <K extends keyof TipData>(k: K, v: TipData[K]) => setTip((p) => ({ ...p, [k]: v }));
-
-  const updatePhoto = (index: number, next: Partial<PhotoEntry>) => {
-    const updated = [...photos];
-    updated[index] = { ...updated[index], ...next };
-    setPhotos(updated);
-    localStorage.setItem(photosKey, JSON.stringify(updated));
-  };
-
   return (
     <>
       <Navbar title="Tip Sheet" actions={[{ label: "Tools", href: "/tools" }]} />
-      <div className="max-w-[1100px] mx-auto px-5 pt-20 pb-10 space-y-6">
-        <PageHeader title="TIP SHEET" subtitle="$500 FOR 5 MINUTES! - Rehash Handoff" />
+      <div className="max-w-[1100px] mx-auto px-5 pt-20 pb-10 space-y-5">
+        <PageHeader title="TIP SHEET" subtitle="$500 FOR 5 MINUTES!" />
 
         <div className="grid md:grid-cols-2 gap-4">
           <Card title="Pricing">
@@ -137,9 +133,9 @@ export default function TipSheetPage() {
             <L label="Total Discount" value={tip.totalDiscount} onChange={(v) => setField("totalDiscount", v)} />
             <L label="Price Offered" value={tip.priceOffered} onChange={(v) => setField("priceOffered", v)} />
             <div className="grid grid-cols-[1fr_120px] gap-2">
-              <L label="Cash Offer $" value={tip.cashOffer} onChange={(v) => setField("cashOffer", v)} />
+              <L label="Cash Offer $" value={tip.cashOfferAmount} onChange={(v) => setField("cashOfferAmount", v)} />
               <Select
-                label="Y/N"
+                label="Y / N"
                 value={tip.cashOfferYN}
                 onChange={(v) => setField("cashOfferYN", v as "" | "Yes" | "No")}
                 options={["Yes", "No"]}
@@ -165,60 +161,41 @@ export default function TipSheetPage() {
               <Toggle label="1 Month" value={tip.buyDate1Month} onChange={(v) => setField("buyDate1Month", v)} />
               <Toggle label="Exact Date" value={tip.buyDateExact} onChange={(v) => setField("buyDateExact", v)} />
             </div>
-            <T label="Date / Buy Notes" rows={3} value={tip.buyDateNotes} onChange={(v) => setField("buyDateNotes", v)} />
+            <T label="Date / Timing Notes" rows={3} value={tip.buyDateNotes} onChange={(v) => setField("buyDateNotes", v)} />
           </Card>
 
-          <Card title="Pain Points + Important Notes">
+          <Card title="Pain Points / Important Notes">
             <T label="Pain Points" rows={3} value={tip.painPoints} onChange={(v) => setField("painPoints", v)} />
             <T label="Important Notes" rows={3} value={tip.importantNotes} onChange={(v) => setField("importantNotes", v)} />
-            <T label="Rehash Notes" rows={3} value={tip.rehashNotes} onChange={(v) => setField("rehashNotes", v)} />
           </Card>
         </div>
 
-        <Card title="Upload Photo Sequence">
+        <section className="rounded-xl border border-white/[0.08] bg-[#dfe6fb] p-4">
+          <h3 className="text-sm font-bold uppercase tracking-[0.1em] text-[#1f2a44] mb-2">Call Center Rehash Notes</h3>
+          <textarea
+            rows={5}
+            value={tip.callCenterNotes}
+            onChange={(e) => setField("callCenterNotes", e.target.value)}
+            className="w-full rounded-md border border-[#9aa8ca] bg-white px-2 py-2 text-sm text-[#1d2438]"
+          />
+        </section>
+
+        <Card title="Photo Sequence (Read Only)">
+          <p className="text-xs text-gray-500">Manage photo changes in Photo Checklist.</p>
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-3">
             {photos.map((photo, i) => (
               <div key={photo.name} className="rounded-lg border border-white/[0.1] bg-white/[0.02] p-2">
                 <p className="text-xs text-gray-300 truncate mb-1">
                   {i + 1}. {photo.name}
                 </p>
-                <button
-                  onClick={() => fileRefs.current[i]?.click()}
-                  className="relative w-full aspect-video rounded-md overflow-hidden border border-white/[0.12] bg-[#1f1f1f] flex items-center justify-center"
-                >
+                <div className="w-full aspect-video rounded-md overflow-hidden border border-white/[0.12] bg-[#1f1f1f] flex items-center justify-center">
                   {photo.dataUrl ? (
                     // eslint-disable-next-line @next/next/no-img-element
                     <img src={photo.dataUrl} alt={photo.name} className="w-full h-full object-cover" />
                   ) : (
                     <span className="text-xs text-gray-500">Upload photo</span>
                   )}
-                  {photo.measurement.trim() ? (
-                    <span className="absolute bottom-2 right-2 bg-black/70 text-white text-[11px] px-2 py-1 rounded">
-                      {photo.measurement}
-                    </span>
-                  ) : null}
-                </button>
-                <input
-                  ref={(el) => {
-                    fileRefs.current[i] = el;
-                  }}
-                  type="file"
-                  accept="image/*"
-                  className="hidden"
-                  onChange={(e) => {
-                    const file = e.target.files?.[0];
-                    if (!file) return;
-                    const reader = new FileReader();
-                    reader.onload = (ev) => updatePhoto(i, { dataUrl: ev.target?.result as string });
-                    reader.readAsDataURL(file);
-                  }}
-                />
-                <input
-                  value={photo.measurement}
-                  onChange={(e) => updatePhoto(i, { measurement: e.target.value })}
-                  placeholder="Measurement"
-                  className="mt-2 w-full rounded-md border border-white/[0.12] bg-black/20 px-2 py-2 text-xs text-gray-200"
-                />
+                </div>
               </div>
             ))}
           </div>
@@ -243,15 +220,7 @@ function Card({ title, children }: { title: string; children: React.ReactNode })
   );
 }
 
-function L({
-  label,
-  value,
-  onChange,
-}: {
-  label: string;
-  value: string;
-  onChange: (value: string) => void;
-}) {
+function L({ label, value, onChange }: { label: string; value: string; onChange: (value: string) => void }) {
   return (
     <label className="block">
       <span className="block text-xs text-gray-300 mb-1">{label}</span>

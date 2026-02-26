@@ -320,18 +320,20 @@ export default function SchedulerPage() {
 
         {/* Schedule Grid */}
         <div className="p-6">
-          <div className="grid grid-cols-7 gap-2">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-7 gap-3">
             {DAYS.map((day) => (
-              <div key={day} className="text-center">
-                <h4 className="text-[10px] sm:text-xs font-bold text-gray-400 uppercase mb-2 tracking-wider">
-                  {day.slice(0, 3)}
+              <div key={day} className="text-center rounded-lg border border-white/[0.08] bg-white/[0.02] p-2">
+                <h4 className="text-xs font-bold text-gray-300 uppercase mb-2 tracking-wider">
+                  {day}
                 </h4>
-                <div className="flex justify-center gap-1 text-[9px] text-gray-600 mb-1">
+                <div className="grid grid-cols-3 gap-1 text-[10px] text-gray-400 mb-1">
                   {SLOTS.map((s) => (
-                    <span key={s} className="w-8">{s}</span>
+                    <span key={s} className="w-full text-center bg-[#f6e05e] text-[#1a202c] rounded-sm py-0.5 font-bold border border-[#2d3748]">
+                      {s}
+                    </span>
                   ))}
                 </div>
-                <div className="flex justify-center gap-1">
+                <div className="grid grid-cols-3 gap-1">
                   {SLOTS.map((slot) => {
                     const key = `${day}-${slot}`;
                     const active = !!grid[key];
@@ -339,7 +341,7 @@ export default function SchedulerPage() {
                       <button
                         key={key}
                         onClick={() => toggleSlot(day, slot)}
-                        className={`w-8 h-8 rounded-md text-xs font-bold transition-all ${
+                        className={`w-full h-8 rounded-md text-xs font-bold transition-all ${
                           active
                             ? "bg-green-500 text-white shadow-lg shadow-green-500/20"
                             : "bg-[#2a2a2a] text-red-400 border border-white/[0.06]"
@@ -378,26 +380,29 @@ export default function SchedulerPage() {
               </div>
 
               <div className="p-6">
-              <div className="grid grid-cols-1 md:grid-cols-7 gap-2 mb-5">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-7 gap-2 mb-5">
                 {DAYS.map((day) => (
-                  <div key={`out-${day}`} className="bg-white border-2 border-[#cbd5e0] rounded-lg p-2 text-center">
-                    <h4 className="bg-[#4a5568] text-white text-[11px] rounded-md py-1 mb-2 font-semibold">
-                      {day}
+                  <div key={`out-${day}`} className="bg-white border-2 border-[#cbd5e0] rounded-lg p-2 text-center min-w-0">
+                    <h4 className="bg-[#4a5568] text-white text-[11px] rounded-md py-1 mb-2 font-semibold tracking-wide">
+                      {day.slice(0, 3)}
                     </h4>
-                    <div className="flex justify-center gap-1 mb-2">
+                    <div className="grid grid-cols-3 gap-1 mb-2">
                       {SLOTS.map((s) => (
-                        <span key={`lab-${day}-${s}`} className="bg-[#f6e05e] border-2 border-[#2d3748] text-[10px] px-2 rounded-sm font-bold text-[#1a202c]">
+                        <span
+                          key={`lab-${day}-${s}`}
+                          className="bg-[#f6e05e] border-2 border-[#2d3748] text-[10px] px-1 py-0.5 rounded-sm font-bold text-[#1a202c] w-full text-center"
+                        >
                           {s}
                         </span>
                       ))}
                     </div>
-                    <div className="flex justify-center gap-1">
+                    <div className="grid grid-cols-3 gap-1">
                       {SLOTS.map((slot) => {
                         const on = !!grid[`${day}-${slot}`];
                         return (
                           <div
                             key={`box-${day}-${slot}`}
-                            className={`w-6 h-6 border-2 rounded-sm flex items-center justify-center text-sm font-black ${
+                            className={`w-full h-7 border-2 rounded-sm flex items-center justify-center text-sm font-black ${
                               on ? "border-[#38a169] text-[#38a169] bg-[#f0fff4]" : "border-[#cbd5e0] text-[#e53e3e] bg-white"
                             }`}
                           >
@@ -453,7 +458,7 @@ export default function SchedulerPage() {
         </div>
 
         {/* Actions */}
-        <div className="px-6 pb-8 flex gap-3 justify-center">
+        <div className="px-6 pb-8 flex flex-wrap gap-3 justify-center">
           <button
             onClick={() => {
               localStorage.setItem(
@@ -462,27 +467,27 @@ export default function SchedulerPage() {
               );
               alert("Schedule saved!");
             }}
-            className="px-6 py-3 rounded-xl bg-brand-600 hover:bg-brand-700 text-white text-sm font-semibold transition-colors"
+            className="px-6 py-3 rounded-xl bg-brand-600 hover:bg-brand-700 text-white text-sm font-semibold transition-colors w-full sm:w-auto"
           >
             💾 Save Schedule
           </button>
           <button
             onClick={saveScheduleImage}
             disabled={busyAction !== null}
-            className="px-6 py-3 rounded-xl bg-[#2d7a3f] hover:bg-[#246634] disabled:opacity-60 text-white text-sm font-semibold transition-colors"
+            className="px-6 py-3 rounded-xl bg-[#2d7a3f] hover:bg-[#246634] disabled:opacity-60 text-white text-sm font-semibold transition-colors w-full sm:w-auto"
           >
             {busyAction === "save" ? "Capturing..." : "Save to Phone"}
           </button>
           <button
             onClick={shareScheduleImage}
             disabled={busyAction !== null}
-            className="px-6 py-3 rounded-xl bg-[#355f9d] hover:bg-[#294a7a] disabled:opacity-60 text-white text-sm font-semibold transition-colors"
+            className="px-6 py-3 rounded-xl bg-[#355f9d] hover:bg-[#294a7a] disabled:opacity-60 text-white text-sm font-semibold transition-colors w-full sm:w-auto"
           >
             {busyAction === "share" ? "Preparing..." : "Share Schedule"}
           </button>
           <button
             onClick={() => window.print()}
-            className="px-6 py-3 rounded-xl bg-[#5b4aa0] hover:bg-[#4a3d84] text-white text-sm font-semibold transition-colors"
+            className="px-6 py-3 rounded-xl bg-[#5b4aa0] hover:bg-[#4a3d84] text-white text-sm font-semibold transition-colors w-full sm:w-auto"
           >
             Print Schedule
           </button>
@@ -491,7 +496,7 @@ export default function SchedulerPage() {
               setGrid({});
               setSaturdayCount(6);
             }}
-            className="px-6 py-3 rounded-xl bg-[#333] hover:bg-[#444] text-gray-300 text-sm font-semibold transition-colors"
+            className="px-6 py-3 rounded-xl bg-[#333] hover:bg-[#444] text-gray-300 text-sm font-semibold transition-colors w-full sm:w-auto"
           >
             🔄 Reset
           </button>
