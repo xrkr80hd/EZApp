@@ -36,6 +36,12 @@ const DOCUMENTS: DocCard[] = [
     href: "/tools/commission-calculator",
     storagePrefix: "commission_",
   },
+  {
+    title: "Vanity Order Form",
+    description: "Onyx lavatory order form generator",
+    href: "/tools/vanity-form",
+    storagePrefix: "vanityForm_",
+  },
 ];
 
 export default function PostSaleDocumentsPage() {

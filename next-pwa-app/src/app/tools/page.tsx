@@ -80,6 +80,12 @@ export default function ToolsPage() {
             description="Measurement calculator"
           />
           <ToolCard
+            href="/tools/vanity-form"
+            icon="🧱"
+            title="Vanity Form"
+            description="Onyx lavatory order form"
+          />
+          <ToolCard
             href="https://designstudio.bathplanet.com/"
             icon="/icons/goto_bathplanet.svg"
             iconType="svg"

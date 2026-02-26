@@ -25,6 +25,57 @@ export default function CustomerSurveyPage() {
   const [answers, setAnswers] = useState<Record<number, string>>({});
   const [customerName, setCustomerName] = useState("Customer");
 
+  const mapAnswersToLegacySurvey = (name: string, source: Record<number, string>) => {
+    const get = (i: number) => (source[i] || "").trim();
+    const mobilityRaw = get(7).toLowerCase();
+    const mobilityIssue =
+      mobilityRaw.includes("yes") || mobilityRaw.includes("y") || mobilityRaw.includes("wheel") ? "Yes" : "";
+
+    return {
+      customerName: name,
+      q1: get(0),
+      q2: [get(8), get(6)].filter(Boolean).join(" | "),
+      bathroomType: get(8),
+      mobilityIssue,
+      q6notes: get(7),
+      q7: get(10),
+      q8: get(12),
+      q9: get(3),
+      targetProject: get(3),
+      q10notes: get(11),
+      q12: get(13) || get(5),
+      q13: get(4),
+      productType: get(8),
+      takeawayNotes: get(14),
+      easyClean: "",
+      warranty: "",
+      americanMade: "",
+      bathrooms: [],
+      inspirationPhotos: [],
+      source: "survey-lite",
+      timestamp: new Date().toISOString(),
+    };
+  };
+
+  const saveSurveyWithWireup = () => {
+    const name = localStorage.getItem("currentCustomer") || customerName;
+    if (!name) return;
+
+    localStorage.setItem(`survey_${name}`, JSON.stringify(answers));
+
+    const legacySurvey = mapAnswersToLegacySurvey(name, answers);
+    localStorage.setItem(`surveyStructured_${name}`, JSON.stringify(legacySurvey));
+
+    const ezRaw = localStorage.getItem("EZAPP_current");
+    try {
+      const ez = ezRaw ? (JSON.parse(ezRaw) as Record<string, unknown>) : {};
+      ez.survey = legacySurvey;
+      localStorage.setItem("EZAPP_current", JSON.stringify(ez));
+    } catch {
+      localStorage.setItem("EZAPP_current", JSON.stringify({ survey: legacySurvey }));
+    }
+  };
+
   useEffect(() => {
     const name = localStorage.getItem("currentCustomer");
     if (name) {
@@ -41,7 +92,7 @@ export default function CustomerSurveyPage() {
     const name = localStorage.getItem("currentCustomer");
     if (!name) return;
     const timer = setInterval(() => {
-      localStorage.setItem(`survey_${name}`, JSON.stringify(answers));
+      saveSurveyWithWireup();
     }, 30000);
     return () => clearInterval(timer);
   }, [answers]);
@@ -78,11 +129,8 @@ export default function CustomerSurveyPage() {
         <div className="mt-6 flex gap-3">
           <button
             onClick={() => {
-              const name = localStorage.getItem("currentCustomer");
-              if (name) {
-                localStorage.setItem(`survey_${name}`, JSON.stringify(answers));
-                alert("Survey saved!");
-              }
+              saveSurveyWithWireup();
+              alert("Survey saved and wired to 4-Square.");
             }}
             className="flex-1 py-3 rounded-xl bg-brand-600 hover:bg-brand-700 text-white text-sm font-semibold transition-colors"
           >
