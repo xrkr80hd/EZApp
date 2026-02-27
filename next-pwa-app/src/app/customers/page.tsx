@@ -1,6 +1,7 @@
 import Image from "next/image";
 import { BackLink, PageFooter } from "@/components/ui";
 import Link from "next/link";
+import LogoutButton from "@/components/logout-button";
 
 export default function CustomersPage() {
   return (
@@ -50,6 +51,8 @@ export default function CustomersPage() {
             </div>
             <span className="text-lg text-gray-600 group-hover:text-gray-400 group-hover:translate-x-0.5 transition-all">›</span>
           </Link>
+
+          <LogoutButton variant="stack" />
         </nav>
 
         <PageFooter />

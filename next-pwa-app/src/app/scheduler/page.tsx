@@ -370,7 +370,11 @@ export default function SchedulerPage() {
 
         {showPreview && (
           <div className="px-6 pb-6">
-            <div ref={exportRef} className="rounded-2xl overflow-hidden border-[3px] border-[#2d3748] bg-[#f7fafc] text-black shadow-xl">
+            <div
+              ref={exportRef}
+              className="rounded-2xl overflow-hidden border-[3px] border-[#2d3748] bg-[#f7fafc] text-black shadow-xl"
+              style={{ fontFamily: "Arial, Helvetica, sans-serif", letterSpacing: "0.01em", wordSpacing: "0.08em" }}
+            >
               <div className="bg-gradient-to-br from-[#dbeafe] to-[#e2e8f0] px-6 py-8 border-b-2 border-[#2d3748]">
                 <div className="text-center mb-2">
                   <div className="text-3xl font-black tracking-[0.2em] text-[#2563eb]">EZ BATHS</div>
@@ -417,7 +421,7 @@ export default function SchedulerPage() {
 
               <div className="grid md:grid-cols-2 gap-4 mb-4">
                 <div className="bg-white border-[3px] border-[#4a5568] p-4 rounded-lg">
-                  <h3 className="font-bold text-base mb-2">Weekly Requirements</h3>
+                  <h3 className="font-bold text-base mb-2">Weekly&nbsp;Requirements</h3>
                   <ul className="text-sm space-y-1">
                     <li>✓ 15 of 21 Slots Open - Weekly Minimum</li>
                     <li>✓ 6 Saturday Slots Open - Monthly Minimum</li>
@@ -426,7 +430,7 @@ export default function SchedulerPage() {
                   </ul>
                 </div>
                 <div className="bg-[#ebf8ff] border-[3px] border-[#3182ce] p-4 text-center rounded-lg">
-                  <h3 className="font-bold text-sm mb-2 text-[#2c5282]">SATURDAY SLOTS OPENED MONTH TO DATE</h3>
+                  <h3 className="font-bold text-sm mb-2 text-[#2c5282]">SATURDAY&nbsp;SLOTS&nbsp;OPENED&nbsp;MONTH&nbsp;TO&nbsp;DATE</h3>
                   <div className="grid grid-cols-5 gap-1 max-w-[180px] mx-auto">
                     {Array.from({ length: 15 }, (_, i) => (
                       <div
@@ -444,11 +448,11 @@ export default function SchedulerPage() {
               </div>
 
               <div className="border-2 border-[#3182ce] rounded-lg p-3 bg-white">
-                <div className="text-sm"><strong>30 Day+ Vacation Notice:</strong> {vacationDisplay}</div>
-                <div className="text-sm"><strong>Week Schedule:</strong> {weekRangeCompact}</div>
-                <div className="text-sm"><strong>Consultant Name:</strong> {name || "________________"}</div>
+                <div className="text-sm"><strong>30 Day+ Vacation&nbsp;Notice:&nbsp;</strong>{vacationDisplay}</div>
+                <div className="text-sm"><strong>Week&nbsp;Schedule:&nbsp;</strong>{weekRangeCompact}</div>
+                <div className="text-sm"><strong>Consultant&nbsp;Name:&nbsp;</strong>{name || "________________"}</div>
                 <div className="text-xs text-[#856404] mt-2 bg-[#fff3cd] border border-[#ffc107] rounded px-2 py-1">
-                  Marks the blocks that {name || "[Consultant Name]"} requests OFF next week
+                  Marks the blocks that{" "}{name || "[Consultant Name]"}{" "}requests OFF next week
                 </div>
               </div>
               </div>

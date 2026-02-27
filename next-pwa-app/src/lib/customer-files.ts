@@ -136,3 +136,49 @@ export function buildCustomerExport(id: string): string | null {
   };
   return JSON.stringify(exportData, null, 2);
 }
+
+export function deleteCustomerFile(id: string): boolean {
+  if (!canUseStorage()) return false;
+  const normalizedId = normalizeCustomerId(id);
+  if (!normalizedId) return false;
+
+  // Remove primary customer payload and known customer-scoped tool records.
+  const directKeys = [
+    `customer_${normalizedId}`,
+    `survey_${normalizedId}`,
+    `surveyStructured_${normalizedId}`,
+    `photos_${normalizedId}`,
+    `foursquare_${normalizedId}`,
+    `measurements_${normalizedId}`,
+    `postSaleChecklist_${normalizedId}`,
+    `tipSheet_${normalizedId}`,
+    `vanityForm_${normalizedId}`,
+    `bathroomMeasurement_${normalizedId}`,
+  ];
+  directKeys.forEach((key) => localStorage.removeItem(key));
+
+  // Remove timestamped/legacy patterns tied to this customer.
+  const allKeys = Object.keys(localStorage);
+  const relatedPrefixes = [
+    `four_square_${normalizedId}_`,
+    `survey_cache_${normalizedId}`,
+    `post_sale_checklist_${normalizedId}`,
+  ];
+  for (const key of allKeys) {
+    if (relatedPrefixes.some((prefix) => key.startsWith(prefix))) {
+      localStorage.removeItem(key);
+    }
+  }
+
+  // Remove from registry.
+  const registry = readRegistry().filter((entry) => entry.id !== normalizedId);
+  writeRegistry(registry);
+
+  // Clear current customer if deleting active.
+  if (getCurrentCustomerId() === normalizedId) {
+    localStorage.removeItem(CURRENT_CUSTOMER_KEY);
+    localStorage.removeItem("currentCustomer");
+  }
+
+  return true;
+}

@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { BackLink, PageHeader, PageFooter } from "@/components/ui";
 import {
+  deleteCustomerFile,
   importCustomerFile,
   listCustomerFiles,
   setCurrentCustomer,
@@ -25,6 +26,23 @@ export default function LoadCustomerPage() {
     setCurrentCustomer(id);
     setLoaded(id);
     setTimeout(() => router.push("/tools"), 500);
+  };
+
+  const removeCustomer = (id: string) => {
+    const confirmed = window.confirm(
+      `Delete customer "${id}" and related local tool data?\n\nThis cannot be undone.`
+    );
+    if (!confirmed) return;
+
+    const ok = deleteCustomerFile(id);
+    if (!ok) {
+      setError("Could not delete customer file.");
+      return;
+    }
+
+    setCustomers(listCustomerFiles());
+    setError("");
+    if (loaded === id) setLoaded(null);
   };
 
   const handleFile = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -66,17 +84,30 @@ export default function LoadCustomerPage() {
             <h2 className="text-xs uppercase tracking-wider text-gray-400 mb-2">Existing EZAPP Files</h2>
             <div className="space-y-2">
               {customers.map((customer) => (
-                <button
+                <div
                   key={customer.id}
-                  type="button"
-                  onClick={() => openCustomer(customer.id)}
-                  className="w-full text-left px-3 py-2 rounded-lg border border-white/[0.08] bg-[#1f1f1f] hover:border-brand-500/40 transition-colors"
+                  className="w-full px-3 py-2 rounded-lg border border-white/[0.08] bg-[#1f1f1f]"
                 >
-                  <div className="text-sm font-semibold text-white">{customer.lastName}</div>
-                  <div className="text-xs text-gray-500">
-                    Updated: {new Date(customer.updatedAt).toLocaleString()}
+                  <button
+                    type="button"
+                    onClick={() => openCustomer(customer.id)}
+                    className="w-full text-left hover:text-brand-200 transition-colors"
+                  >
+                    <div className="text-sm font-semibold text-white">{customer.lastName}</div>
+                    <div className="text-xs text-gray-500">
+                      Updated: {new Date(customer.updatedAt).toLocaleString()}
+                    </div>
+                  </button>
+                  <div className="mt-2 flex justify-end">
+                    <button
+                      type="button"
+                      onClick={() => removeCustomer(customer.id)}
+                      className="text-xs px-2 py-1 rounded border border-red-400/40 text-red-300 hover:bg-red-900/20"
+                    >
+                      Delete
+                    </button>
                   </div>
-                </button>
+                </div>
               ))}
             </div>
           </div>

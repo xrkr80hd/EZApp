@@ -4,6 +4,7 @@ import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
+import LogoutButton from "@/components/logout-button";
 
 const menuItems = [
   {
@@ -107,6 +108,7 @@ export default function HomePage() {
               </span>
             </Link>
           ))}
+          <LogoutButton variant="stack" />
         </nav>
 
         {/* Footer */}

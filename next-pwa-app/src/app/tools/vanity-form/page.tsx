@@ -94,11 +94,11 @@ export default function VanityFormPage() {
 
     // Bowl selection circles
     // Venetian center
-    drawRedCircle(ctx, redCircle, 202, 546, form.bowlStyle === "venetian", 52);
+    drawRedCircle(ctx, redCircle, 202, 546, form.bowlStyle === "venetian", 72);
     // Oval center
-    drawRedCircle(ctx, redCircle, 406, 546, form.bowlStyle === "oval", 52);
+    drawRedCircle(ctx, redCircle, 406, 546, form.bowlStyle === "oval", 72);
     // No bowl checkbox
-    drawRedCircle(ctx, redCircle, 527, 480, form.bowlStyle === "none", 28);
+    drawRedCircle(ctx, redCircle, 527, 480, form.bowlStyle === "none", 40);
 
     // Optional little credit/note line
     ctx.font = "14px Arial";
@@ -120,37 +120,52 @@ export default function VanityFormPage() {
     <>
       <Navbar title="Vanity Form" actions={[{ label: "Tools", href: "/tools" }]} />
       <div className="max-w-[1100px] mx-auto px-5 pt-20 pb-10 space-y-5">
-        <PageHeader title="Onyx Lavatory Order Form" subtitle="Simple entry -> generate filled template" />
+        <PageHeader title="Onyx Lavatory Order Form" subtitle="Same function, clearer field-to-form mapping" />
+
+        <div className="rounded-xl border border-[#2b4f86] bg-[#0d1a2b] p-3 text-sm text-[#c5d9ff]">
+          <p className="font-semibold text-[#8dc0ff] mb-1">How to fill this</p>
+          <p>Use the left panel in this order: <strong>Size</strong> {"->"} <strong>Colors</strong> {"->"} <strong>Bowl Style</strong> {"->"} <strong>Notes</strong>. Each label matches the same section name on the printed Onyx form.</p>
+        </div>
 
         <div className="grid lg:grid-cols-2 gap-4">
-          <section className="rounded-xl border border-white/[0.08] bg-white/[0.03] p-4 space-y-3">
-            <h3 className="text-sm font-semibold text-white">Input</h3>
-            <Field label="Order Form #" value={form.orderForm} onChange={(v) => setField("orderForm", v)} />
-            <Field label="Length" value={form.length} onChange={(v) => setField("length", v)} />
-            <Field label="Depth" value={form.depth} onChange={(v) => setField("depth", v)} />
-            <Field label="Special Size" value={form.specialSize} onChange={(v) => setField("specialSize", v)} />
-            <Field label="Deck Color" value={form.lavatoryDeckColor} onChange={(v) => setField("lavatoryDeckColor", v)} />
-            <Field label="Bowl Color" value={form.bowlColor} onChange={(v) => setField("bowlColor", v)} />
-            <Field label="Additional Notes" value={form.creditNote} onChange={(v) => setField("creditNote", v)} />
+          <section className="rounded-xl border border-[#274c82] bg-[#081221] p-4 space-y-3">
+            <h3 className="text-sm font-semibold text-[#9dc8ff]">Input</h3>
+            <div className="rounded-lg border border-[#355f9d] bg-[#10233d] p-3 space-y-2">
+              <p className="text-xs uppercase tracking-[0.12em] text-[#9dc8ff] font-semibold">Order Header</p>
+              <Field label="Order Form # (top-right box)" value={form.orderForm} onChange={(v) => setField("orderForm", v)} />
+            </div>
 
-            <div>
-              <p className="text-xs text-gray-300 mb-1">Bowl Style</p>
+            <div className="rounded-lg border border-[#355f9d] bg-[#10233d] p-3 space-y-2">
+              <p className="text-xs uppercase tracking-[0.12em] text-[#9dc8ff] font-semibold">1) Size Section</p>
+              <Field label="Length of Lavatory" value={form.length} onChange={(v) => setField("length", v)} />
+              <Field label="Depth of Lavatory" value={form.depth} onChange={(v) => setField("depth", v)} />
+              <Field label="Special Size" value={form.specialSize} onChange={(v) => setField("specialSize", v)} />
+            </div>
+
+            <div className="rounded-lg border border-[#355f9d] bg-[#10233d] p-3 space-y-2">
+              <p className="text-xs uppercase tracking-[0.12em] text-[#9dc8ff] font-semibold">2) Color Section</p>
+              <Field label="Lavatory Deck Color" value={form.lavatoryDeckColor} onChange={(v) => setField("lavatoryDeckColor", v)} />
+              <Field label="Bowl(s) Color" value={form.bowlColor} onChange={(v) => setField("bowlColor", v)} />
+            </div>
+
+            <div className="rounded-lg border border-[#355f9d] bg-[#10233d] p-3 space-y-2">
+              <p className="text-xs uppercase tracking-[0.12em] text-[#9dc8ff] font-semibold">3) Bowl / Notes</p>
+              <Field label="Additional Note (small line)" value={form.creditNote} onChange={(v) => setField("creditNote", v)} />
               <div className="grid grid-cols-3 gap-2">
                 <Toggle label="Venetian" active={form.bowlStyle === "venetian"} onClick={() => setField("bowlStyle", "venetian")} />
                 <Toggle label="Oval" active={form.bowlStyle === "oval"} onClick={() => setField("bowlStyle", "oval")} />
                 <Toggle label="No Bowl" active={form.bowlStyle === "none"} onClick={() => setField("bowlStyle", "none")} />
               </div>
+              <label className="block">
+                <span className="block text-xs text-[#d7e8ff] mb-1">Special Instructions (bottom notes area)</span>
+                <textarea
+                  rows={4}
+                  value={form.specialInstructions}
+                  onChange={(e) => setField("specialInstructions", e.target.value)}
+                  className="w-full rounded-md border border-[#4f79b4] bg-[#dceaff] px-2 py-2 text-sm text-[#0d1a2b]"
+                />
+              </label>
             </div>
-
-            <label className="block">
-              <span className="block text-xs text-gray-300 mb-1">Special Instructions</span>
-              <textarea
-                rows={4}
-                value={form.specialInstructions}
-                onChange={(e) => setField("specialInstructions", e.target.value)}
-                className="w-full rounded-md border border-white/[0.12] bg-black/20 px-2 py-2 text-sm text-gray-100"
-              />
-            </label>
 
             <div className="flex gap-2">
               <button
@@ -168,8 +183,8 @@ export default function VanityFormPage() {
             </div>
           </section>
 
-          <section className="rounded-xl border border-white/[0.08] bg-white/[0.03] p-3">
-            <p className="text-xs text-gray-400 mb-2">Preview</p>
+          <section className="rounded-xl border border-[#274c82] bg-[#081221] p-3">
+            <p className="text-xs text-[#9dc8ff] mb-2">Preview</p>
             <canvas ref={canvasRef} className="w-full h-auto rounded-lg border border-white/[0.08] bg-[#111]" />
           </section>
         </div>
@@ -189,7 +204,10 @@ function drawRedCircle(
   size = 48
 ) {
   if (!active) return;
+  ctx.save();
+  ctx.globalAlpha = 0.75;
   ctx.drawImage(circleAsset, x - size / 2, y - size / 2, size, size);
+  ctx.restore();
 }
 
 function drawWrappedText(
@@ -232,7 +250,7 @@ function Field({
       <input
         value={value}
         onChange={(e) => onChange(e.target.value)}
-        className="w-full rounded-md border border-white/[0.12] bg-black/20 px-2 py-2 text-sm text-gray-100"
+        className="w-full rounded-md border border-[#4f79b4] bg-[#dceaff] px-2 py-2 text-sm text-[#0d1a2b]"
       />
     </label>
   );
@@ -251,7 +269,7 @@ function Toggle({
     <button
       onClick={onClick}
       className={`rounded-md border px-2 py-2 text-xs ${
-        active ? "border-brand-500/60 bg-brand-500/20 text-white" : "border-white/[0.15] text-gray-300"
+        active ? "border-[#8cc2ff] bg-[#2d5f9b] text-white" : "border-[#4f79b4] bg-[#dceaff] text-[#0d1a2b]"
       }`}
     >
       {label}
