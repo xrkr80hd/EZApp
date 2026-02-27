@@ -150,6 +150,14 @@ interface PhotoEntry {
   fileName?: string;
 }
 
+function getFriendlyUploadError(err: unknown): string {
+  const message = err instanceof Error ? err.message : "Unknown upload error.";
+  if (message.toLowerCase().includes("load image")) {
+    return "This image format could not be processed. Try JPG or PNG from your photo library.";
+  }
+  return message;
+}
+
 export default function PhotoChecklistPage() {
   const [photos, setPhotos] = useState<PhotoEntry[]>(
     PHOTO_ITEMS.map((name) => ({ name, dataUrl: null, rawDataUrl: null, measurement: "", fileName: "" }))
@@ -157,6 +165,7 @@ export default function PhotoChecklistPage() {
   const [customerName, setCustomerName] = useState("Customer");
   const [previewImage, setPreviewImage] = useState<string | null>(null);
   const [previewLabel, setPreviewLabel] = useState("");
+  const [uploadMessage, setUploadMessage] = useState<string>("");
   const fileRefs = useRef<(HTMLInputElement | null)[]>([]);
 
   useEffect(() => {
@@ -202,7 +211,15 @@ export default function PhotoChecklistPage() {
     if (!current?.rawDataUrl) return;
     const photoNumber = index + 1;
     const label = buildFrameLabel(customerName, photoNumber, measurement);
-    const framed = await addPhotoFrame(current.rawDataUrl, label);
+    let framed = current.rawDataUrl;
+    try {
+      framed = await addPhotoFrame(current.rawDataUrl, label);
+      setUploadMessage("");
+    } catch (err) {
+      setUploadMessage(
+        `Measurement saved for photo ${photoNumber}, but the text overlay could not be refreshed. ${getFriendlyUploadError(err)}`
+      );
+    }
     setPhoto(index, {
       dataUrl: framed,
       measurement,
@@ -212,10 +229,19 @@ export default function PhotoChecklistPage() {
 
   const handlePhotoUpload = async (index: number, file: File) => {
     const rawDataUrl = await toDataUrl(file);
+    if (!rawDataUrl) throw new Error("Empty image data. Please try another file.");
     const photoNumber = index + 1;
     const measurement = photos[index]?.measurement || "";
     const label = buildFrameLabel(customerName, photoNumber, measurement);
-    const framed = await addPhotoFrame(rawDataUrl, label);
+    let framed = rawDataUrl;
+    try {
+      framed = await addPhotoFrame(rawDataUrl, label);
+      setUploadMessage("");
+    } catch (err) {
+      setUploadMessage(
+        `Photo ${photoNumber} uploaded, but label overlay could not be applied. ${getFriendlyUploadError(err)}`
+      );
+    }
     setPhoto(index, {
       rawDataUrl,
       dataUrl: framed,
@@ -236,6 +262,11 @@ export default function PhotoChecklistPage() {
           <p className="text-xs uppercase tracking-[0.12em] text-gray-500 mb-1">Required sequence order</p>
           <p className="text-xs text-gray-600">No camera access required. Choose files from your photo library or Files app.</p>
         </div>
+        {uploadMessage && (
+          <div className="rounded-lg border border-amber-500/40 bg-amber-950/30 px-3 py-2 mb-4">
+            <p className="text-xs text-amber-200">{uploadMessage}</p>
+          </div>
+        )}
 
         <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4">
           {photos.map((photo, i) => {
@@ -285,7 +316,9 @@ export default function PhotoChecklistPage() {
                   try {
                     await handlePhotoUpload(i, f);
                   } catch (err) {
-                    alert((err as Error).message || "Could not process this image.");
+                    setUploadMessage(
+                      `Photo ${photoNumber} failed to upload. ${getFriendlyUploadError(err)}`
+                    );
                   } finally {
                     e.currentTarget.value = "";
                   }
@@ -322,7 +355,9 @@ export default function PhotoChecklistPage() {
                     try {
                       await refreshFramedPhoto(i, e.target.value);
                     } catch (err) {
-                      alert((err as Error).message || "Could not apply measurement label.");
+                      setUploadMessage(
+                        `Could not apply measurement label on photo ${photoNumber}. ${getFriendlyUploadError(err)}`
+                      );
                     }
                   }}
                   placeholder='e.g. 32 7/8"'
