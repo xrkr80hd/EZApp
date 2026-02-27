@@ -4,6 +4,24 @@ import { useEffect, useMemo, useState } from "react";
 import { Navbar, PageFooter, PageHeader } from "@/components/ui";
 
 const PHOTO_SEQUENCE = [
+  "Driving up to the house",
+  "Hallway leading to the bathroom",
+  "Entire wet area – front view",
+  "Entire left wall view (remove all peripherals)",
+  "Entire right wall view (remove all peripherals)",
+  "Measure and photo of left wall depth",
+  "Measure and photo of right wall depth",
+  "Measure and photo of soap dish wall depth",
+  "Measure and photo of ceiling height (FLOOR to CEILING)",
+  "Downward photo of bath or tub floor",
+  "Entire ceiling above tub",
+  "Height of shower above tub",
+  "Width of the tub",
+  "Window – measure and photo of width",
+  "Window – measure and photo of height",
+];
+
+const LEGACY_PHOTO_SEQUENCE = [
   "Front of House",
   "Bathroom Entry Door",
   "Full Bathroom Wide Shot",
@@ -97,8 +115,11 @@ export default function TipSheetPage() {
       try {
         const parsed = JSON.parse(rawPhotos) as Partial<PhotoEntry>[];
         setPhotos(
-          PHOTO_SEQUENCE.map((name) => {
-            const m = parsed.find((p) => p.name === name);
+          PHOTO_SEQUENCE.map((name, index) => {
+            const m =
+              parsed.find((p) => p.name === name) ??
+              parsed.find((p) => p.name === LEGACY_PHOTO_SEQUENCE[index]) ??
+              parsed[index];
             return { name, dataUrl: m?.dataUrl || null, measurement: m?.measurement || "" };
           })
         );

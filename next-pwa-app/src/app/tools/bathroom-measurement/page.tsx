@@ -162,13 +162,28 @@ export default function BathroomMeasurementPage() {
         // Photo 6 / left wall depth -> B
         // Photo 7 / right wall depth -> E
         // Photo 8 / soap dish wall depth -> D
-        if (photo.id === 6 || d.includes("left wall depth") || n.includes("wall condition - left")) {
+        if (
+          photo.id === 6 ||
+          d.includes("left wall depth") ||
+          n.includes("left wall depth") ||
+          n.includes("wall condition - left")
+        ) {
           next.measureB = m;
         }
-        if (photo.id === 7 || d.includes("right wall depth") || n.includes("wall condition - right")) {
+        if (
+          photo.id === 7 ||
+          d.includes("right wall depth") ||
+          n.includes("right wall depth") ||
+          n.includes("wall condition - right")
+        ) {
           next.measureE = m;
         }
-        if (photo.id === 8 || d.includes("soap dish") || n.includes("drain area")) {
+        if (
+          photo.id === 8 ||
+          d.includes("soap dish") ||
+          n.includes("soap dish wall depth") ||
+          n.includes("drain area")
+        ) {
           next.measureD = m;
         }
       }

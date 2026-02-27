@@ -50,7 +50,7 @@ export default function SchedulerPage() {
   const [vacEnd, setVacEnd] = useState("");
   const [showPreview, setShowPreview] = useState(false);
   const exportRef = useRef<HTMLDivElement>(null);
-  const [busyAction, setBusyAction] = useState<"save" | "share" | null>(null);
+  const [busyAction, setBusyAction] = useState<"save" | "share" | "print" | null>(null);
 
   // Load saved data
   useEffect(() => {
@@ -61,7 +61,9 @@ export default function SchedulerPage() {
         if (d.name) setName(d.name);
         if (d.weekStart) setWeekStart(d.weekStart);
         if (d.grid) setGrid(d.grid);
-        if (d.saturdayCount) setSaturdayCount(d.saturdayCount);
+        if (typeof d.saturdayCount === "number") {
+          setSaturdayCount(Math.max(0, Math.min(15, d.saturdayCount)));
+        }
         if (d.vacation) setVacation(d.vacation);
         if (d.vacStart) setVacStart(d.vacStart);
         if (d.vacEnd) setVacEnd(d.vacEnd);
@@ -99,10 +101,6 @@ export default function SchedulerPage() {
     : "None Scheduled";
 
   const captureScheduleBlob = useCallback(async () => {
-    if (!showPreview) {
-      setShowPreview(true);
-      await new Promise((resolve) => setTimeout(resolve, 100));
-    }
     if (!exportRef.current) {
       throw new Error("Scheduler view not ready.");
     }
@@ -121,7 +119,7 @@ export default function SchedulerPage() {
     });
 
     return blob;
-  }, [showPreview]);
+  }, []);
 
   const getScheduleFileName = useCallback(() => {
     const cleanName = (name || "CONSULTANT").replace(/\s+/g, "_").toUpperCase();
@@ -176,6 +174,32 @@ export default function SchedulerPage() {
     }
   }, [captureScheduleBlob, getScheduleFileName]);
 
+  const printScheduleImage = useCallback(async () => {
+    try {
+      setBusyAction("print");
+      const blob = await captureScheduleBlob();
+      const url = URL.createObjectURL(blob);
+      const win = window.open("", "_blank");
+      if (!win) {
+        URL.revokeObjectURL(url);
+        throw new Error("Pop-up blocked. Please allow pop-ups and try again.");
+      }
+      win.document.write(
+        `<!doctype html><html><head><title>Schedule</title><style>html,body{margin:0;padding:0;background:#fff}img{width:100%;height:auto;display:block}</style></head><body><img src="${url}" alt="Schedule export" /></body></html>`
+      );
+      win.document.close();
+      win.onload = () => {
+        win.focus();
+        win.print();
+      };
+      setTimeout(() => URL.revokeObjectURL(url), 10000);
+    } catch (err) {
+      alert((err as Error).message || "Could not print schedule image.");
+    } finally {
+      setBusyAction(null);
+    }
+  }, [captureScheduleBlob]);
+
   return (
     <div className="min-h-screen px-4 py-5">
       <div className="max-w-[1100px] mx-auto bg-[#1e1e1e]/[0.98] rounded-2xl overflow-hidden shadow-2xl">
@@ -209,7 +233,8 @@ export default function SchedulerPage() {
                 value={weekStart}
                 onChange={(e) => setWeekStart(e.target.value)}
                 title="Select week start date"
-                className="w-full px-3 py-2.5 rounded-lg bg-white/10 border border-white/10 text-white text-sm focus:outline-none focus:border-white/30"
+                className="w-full px-3 py-2.5 rounded-lg bg-white/10 border border-white/10 text-white text-sm focus:outline-none focus:border-white/30 text-left"
+                style={{ textAlign: "left" }}
               />
               {weekStart && (
                 <p className="text-xs text-gray-400 mt-1">{formatDateRange(weekStart)}</p>
@@ -242,8 +267,8 @@ export default function SchedulerPage() {
                   <p className="text-xs text-amber-300 mb-2">
                     Must notify office 30 days prior to vacation date.
                   </p>
-                  <div className="flex gap-3 items-center">
-                    <div className="flex-1">
+                  <div className="grid grid-cols-1 gap-3">
+                    <div>
                       <label htmlFor="vacStart" className="block text-xs text-gray-400 mb-1">Start</label>
                       <input
                         id="vacStart"
@@ -254,8 +279,7 @@ export default function SchedulerPage() {
                         className="w-full px-3 py-2 rounded-lg bg-white/10 border border-white/10 text-white text-sm focus:outline-none focus:border-white/30"
                       />
                     </div>
-                    <span className="text-gray-500 mt-5">→</span>
-                    <div className="flex-1">
+                    <div>
                       <label htmlFor="vacEnd" className="block text-xs text-gray-400 mb-1">End</label>
                       <input
                         id="vacEnd"
@@ -287,22 +311,21 @@ export default function SchedulerPage() {
               </div>
               <div className="flex items-center justify-between">
                 <span className="text-sm text-gray-300">Saturday Slots (Monthly)</span>
-                <div className="flex gap-1">
-                  {Array.from({ length: 15 }, (_, i) => (
-                    <button
-                      key={i}
-                      onClick={() => setSaturdayCount(i + 1)}
-                      className={`w-5 h-5 rounded-full text-[9px] font-bold transition-colors ${
-                        i < saturdayCount
-                          ? i + 1 >= MIN_SATURDAY_MONTHLY
-                            ? "bg-green-500 text-white"
-                            : "bg-yellow-500 text-black"
-                          : "bg-gray-700 text-gray-500"
-                      }`}
-                    >
-                      {i + 1}
-                    </button>
-                  ))}
+                <div className="flex items-center gap-2">
+                  <input
+                    type="number"
+                    min={0}
+                    max={15}
+                    step={1}
+                    value={saturdayCount}
+                    onChange={(e) => {
+                      const next = Number(e.target.value);
+                      if (!Number.isFinite(next)) return;
+                      setSaturdayCount(Math.max(0, Math.min(15, Math.floor(next))));
+                    }}
+                    className="w-20 px-2 py-1 rounded-md bg-white/10 border border-white/10 text-white text-sm text-right focus:outline-none focus:border-white/30"
+                  />
+                  <span className="text-xs text-gray-400">0-15</span>
                 </div>
               </div>
               <div className="flex items-center justify-between">
@@ -369,92 +392,72 @@ export default function SchedulerPage() {
         </div>
 
         {showPreview && (
-          <div className="px-6 pb-6">
-            <div
-              ref={exportRef}
-              className="rounded-2xl overflow-hidden border-[3px] border-[#2d3748] bg-[#f7fafc] text-black shadow-xl"
-              style={{ fontFamily: "Arial, Helvetica, sans-serif", letterSpacing: "0.01em", wordSpacing: "0.08em" }}
-            >
-              <div className="bg-gradient-to-br from-[#dbeafe] to-[#e2e8f0] px-6 py-8 border-b-2 border-[#2d3748]">
-                <div className="text-center mb-2">
-                  <div className="text-3xl font-black tracking-[0.2em] text-[#2563eb]">EZ BATHS</div>
-                  <div className="text-[11px] text-[#4a5568] tracking-[0.2em] uppercase">Transform Your Bathroom Experience</div>
-                  <h2 className="text-base tracking-[0.12em] mt-2 font-semibold text-[#1a202c]">CONSULTANT WEEKLY SCHEDULER</h2>
+          <div className="px-4 sm:px-6 pb-6">
+            <div className="rounded-2xl border border-[#2a5f98]/60 bg-[#0f172a]/40 p-4 sm:p-5 space-y-4">
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                <div className="rounded-lg border border-white/10 bg-white/5 p-3">
+                  <p className="text-[11px] uppercase tracking-wide text-gray-400">Consultant</p>
+                  <p className="text-sm font-semibold text-white truncate">{name || "Not set"}</p>
+                </div>
+                <div className="rounded-lg border border-white/10 bg-white/5 p-3">
+                  <p className="text-[11px] uppercase tracking-wide text-gray-400">Week</p>
+                  <p className="text-sm font-semibold text-white">{weekRangeCompact}</p>
+                </div>
+                <div className="rounded-lg border border-white/10 bg-white/5 p-3">
+                  <p className="text-[11px] uppercase tracking-wide text-gray-400">Open Slots</p>
+                  <p className={`text-sm font-semibold ${meetsWeekly ? "text-green-300" : "text-red-300"}`}>{openSlots}/21</p>
+                </div>
+                <div className="rounded-lg border border-white/10 bg-white/5 p-3">
+                  <p className="text-[11px] uppercase tracking-wide text-gray-400">Evenings Off</p>
+                  <p className={`text-sm font-semibold ${meetsEvening ? "text-green-300" : "text-red-300"}`}>{eveningOff}/3</p>
                 </div>
               </div>
 
-              <div className="p-6">
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-7 gap-2 mb-5">
-                {DAYS.map((day) => (
-                  <div key={`out-${day}`} className="bg-white border-2 border-[#cbd5e0] rounded-lg p-2 text-center min-w-0">
-                    <h4 className="bg-[#4a5568] text-white text-[11px] rounded-md py-1 mb-2 font-semibold tracking-wide">
-                      {day.slice(0, 3)}
-                    </h4>
-                    <div className="grid grid-cols-3 gap-1 mb-2">
-                      {SLOTS.map((s) => (
-                        <span
-                          key={`lab-${day}-${s}`}
-                          className="bg-[#f6e05e] border-2 border-[#2d3748] text-[10px] px-1 py-0.5 rounded-sm font-bold text-[#1a202c] w-full text-center"
-                        >
-                          {s}
-                        </span>
-                      ))}
-                    </div>
-                    <div className="grid grid-cols-3 gap-1">
-                      {SLOTS.map((slot) => {
-                        const on = !!grid[`${day}-${slot}`];
-                        return (
-                          <div
-                            key={`box-${day}-${slot}`}
-                            className={`w-full h-7 border-2 rounded-sm flex items-center justify-center text-sm font-black ${
-                              on ? "border-[#38a169] text-[#38a169] bg-[#f0fff4]" : "border-[#cbd5e0] text-[#e53e3e] bg-white"
-                            }`}
-                          >
-                            {on ? "✓" : "✕"}
-                          </div>
-                        );
-                      })}
-                    </div>
-                  </div>
-                ))}
+              <div className="rounded-xl border border-white/10 bg-white/[0.04] p-3">
+                <div className="flex items-center justify-between mb-2">
+                  <h3 className="text-xs uppercase tracking-wider text-gray-300 font-semibold">Saturday Slots</h3>
+                  <span className="text-sm font-semibold text-cyan-300">{saturdayCount}/15</span>
+                </div>
+                <div className="h-2 rounded-full bg-white/10 overflow-hidden mb-2">
+                  <div
+                    className="h-full bg-gradient-to-r from-[#2a9df4] to-[#4cc9f0]"
+                    style={{ width: `${(Math.max(0, Math.min(15, saturdayCount)) / 15) * 100}%` }}
+                  />
+                </div>
+                <p className="text-xs text-gray-400">Minimum target: 6 monthly slots</p>
               </div>
 
-              <div className="grid md:grid-cols-2 gap-4 mb-4">
-                <div className="bg-white border-[3px] border-[#4a5568] p-4 rounded-lg">
-                  <h3 className="font-bold text-base mb-2">Weekly&nbsp;Requirements</h3>
-                  <ul className="text-sm space-y-1">
-                    <li>✓ 15 of 21 Slots Open - Weekly Minimum</li>
-                    <li>✓ 6 Saturday Slots Open - Monthly Minimum</li>
-                    <li>✓ 3 Night Slots Off - Weekly Maximum</li>
-                    <li>✓ 2.5 Hour Drive - Territory Max One Way</li>
-                  </ul>
-                </div>
-                <div className="bg-[#ebf8ff] border-[3px] border-[#3182ce] p-4 text-center rounded-lg">
-                  <h3 className="font-bold text-sm mb-2 text-[#2c5282]">SATURDAY&nbsp;SLOTS&nbsp;OPENED&nbsp;MONTH&nbsp;TO&nbsp;DATE</h3>
-                  <div className="grid grid-cols-5 gap-1 max-w-[180px] mx-auto">
-                    {Array.from({ length: 15 }, (_, i) => (
-                      <div
-                        key={`sat-preview-${i + 1}`}
-                        className={`w-7 h-7 rounded-full border-2 border-[#2196F3] flex items-center justify-center text-xs font-bold ${
-                          i + 1 <= saturdayCount ? "bg-[#2196F3] text-white" : "bg-white text-[#2196F3]"
-                        }`}
-                      >
-                        {i + 1}
+              <div className="rounded-xl border border-white/10 bg-white/[0.04] p-3">
+                <h3 className="text-xs uppercase tracking-wider text-gray-300 font-semibold mb-2">Availability Snapshot</h3>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                  {DAYS.map((day) => (
+                    <div key={`quick-${day}`} className="rounded-md border border-white/10 bg-black/20 px-2 py-1.5">
+                      <div className="flex items-center justify-between gap-2">
+                        <span className="text-[11px] font-semibold tracking-wide text-gray-300">{day.slice(0, 3)}</span>
+                        <div className="flex gap-1">
+                          {SLOTS.map((slot) => {
+                            const on = !!grid[`${day}-${slot}`];
+                            return (
+                              <span
+                                key={`quick-${day}-${slot}`}
+                                className={`inline-flex min-w-7 justify-center rounded px-1.5 py-0.5 text-[10px] font-bold ${
+                                  on ? "bg-green-500/90 text-white" : "bg-[#2a2a2a] text-red-300 border border-white/10"
+                                }`}
+                              >
+                                {slot}
+                              </span>
+                            );
+                          })}
+                        </div>
                       </div>
-                    ))}
-                  </div>
-                  <div className="text-xs mt-2 text-[#0d47a1]">/ 6 minimum required</div>
+                    </div>
+                  ))}
                 </div>
               </div>
 
-              <div className="border-2 border-[#3182ce] rounded-lg p-3 bg-white">
-                <div className="text-sm"><strong>30 Day+ Vacation&nbsp;Notice:&nbsp;</strong>{vacationDisplay}</div>
-                <div className="text-sm"><strong>Week&nbsp;Schedule:&nbsp;</strong>{weekRangeCompact}</div>
-                <div className="text-sm"><strong>Consultant&nbsp;Name:&nbsp;</strong>{name || "________________"}</div>
-                <div className="text-xs text-[#856404] mt-2 bg-[#fff3cd] border border-[#ffc107] rounded px-2 py-1">
-                  Marks the blocks that{" "}{name || "[Consultant Name]"}{" "}requests OFF next week
-                </div>
-              </div>
+              <div className="rounded-xl border border-white/10 bg-white/[0.04] p-3">
+                <p className="text-xs text-gray-300"><strong className="text-white">Vacation:</strong> {vacationDisplay}</p>
+                <p className="text-xs text-gray-300 mt-1"><strong className="text-white">Note:</strong> Marks the blocks {name || "[Consultant Name]"} requests OFF next week.</p>
               </div>
             </div>
           </div>
@@ -490,10 +493,11 @@ export default function SchedulerPage() {
             {busyAction === "share" ? "Preparing..." : "Share Schedule"}
           </button>
           <button
-            onClick={() => window.print()}
-            className="px-6 py-3 rounded-xl bg-[#5b4aa0] hover:bg-[#4a3d84] text-white text-sm font-semibold transition-colors w-full sm:w-auto"
+            onClick={printScheduleImage}
+            disabled={busyAction !== null}
+            className="px-6 py-3 rounded-xl bg-[#5b4aa0] hover:bg-[#4a3d84] disabled:opacity-60 text-white text-sm font-semibold transition-colors w-full sm:w-auto"
           >
-            Print Schedule
+            {busyAction === "print" ? "Preparing..." : "Print Schedule"}
           </button>
           <button
             onClick={() => {
@@ -508,6 +512,96 @@ export default function SchedulerPage() {
 
         <div className="px-6 pb-6">
           <PageFooter />
+        </div>
+      </div>
+
+      <div className="fixed -left-[10000px] top-0 opacity-0 pointer-events-none">
+        <div
+          ref={exportRef}
+          className="w-[1120px] rounded-2xl overflow-hidden border-[3px] border-[#2d3748] bg-[#f7fafc] text-black shadow-xl"
+          style={{ fontFamily: "Arial, Helvetica, sans-serif", letterSpacing: "0.01em", wordSpacing: "0.08em" }}
+        >
+          <div className="bg-gradient-to-br from-[#dbeafe] to-[#e2e8f0] px-6 py-8 border-b-2 border-[#2d3748]">
+            <div className="text-center mb-2">
+              <div className="text-3xl font-black tracking-[0.2em] text-[#2563eb]">EZ BATHS</div>
+              <div className="text-[11px] text-[#4a5568] tracking-[0.2em] uppercase">Transform Your Bathroom Experience</div>
+              <h2 className="text-base tracking-[0.12em] mt-2 font-semibold text-[#1a202c]">CONSULTANT WEEKLY SCHEDULER</h2>
+            </div>
+          </div>
+
+          <div className="p-6">
+            <div className="grid grid-cols-7 gap-2 mb-5">
+              {DAYS.map((day) => (
+                <div key={`out-${day}`} className="bg-white border-2 border-[#cbd5e0] rounded-lg p-2 text-center min-w-0">
+                  <h4 className="bg-[#4a5568] text-white text-[11px] rounded-md py-1 mb-2 font-semibold tracking-wide">
+                    {day.slice(0, 3)}
+                  </h4>
+                  <div className="grid grid-cols-3 gap-1 mb-2">
+                    {SLOTS.map((s) => (
+                      <span
+                        key={`lab-${day}-${s}`}
+                        className="bg-[#f6e05e] border-2 border-[#2d3748] text-[10px] px-1 py-0.5 rounded-sm font-bold text-[#1a202c] w-full text-center"
+                      >
+                        {s}
+                      </span>
+                    ))}
+                  </div>
+                  <div className="grid grid-cols-3 gap-1">
+                    {SLOTS.map((slot) => {
+                      const on = !!grid[`${day}-${slot}`];
+                      return (
+                        <div
+                          key={`box-${day}-${slot}`}
+                          className={`w-full h-7 border-2 rounded-sm flex items-center justify-center text-sm font-black ${
+                            on ? "border-[#38a169] text-[#38a169] bg-[#f0fff4]" : "border-[#cbd5e0] text-[#e53e3e] bg-white"
+                          }`}
+                        >
+                          {on ? "✓" : "✕"}
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            <div className="grid grid-cols-2 gap-4 mb-4">
+              <div className="bg-white border-[3px] border-[#4a5568] p-4 rounded-lg">
+                <h3 className="font-bold text-base mb-2">Weekly Requirements</h3>
+                <ul className="text-sm space-y-1">
+                  <li>✓ 15 of 21 Slots Open - Weekly Minimum</li>
+                  <li>✓ 6 Saturday Slots Open - Monthly Minimum</li>
+                  <li>✓ 3 Night Slots Off - Weekly Maximum</li>
+                  <li>✓ 2.5 Hour Drive - Territory Max One Way</li>
+                </ul>
+              </div>
+              <div className="bg-[#ebf8ff] border-[3px] border-[#3182ce] p-4 text-center rounded-lg">
+                <h3 className="font-bold text-sm mb-2 text-[#2c5282]">SATURDAY SLOTS OPENED MONTH TO DATE</h3>
+                <div className="grid grid-cols-5 gap-1 max-w-[180px] mx-auto">
+                  {Array.from({ length: 15 }, (_, i) => (
+                    <div
+                      key={`sat-export-${i + 1}`}
+                      className={`w-7 h-7 rounded-full border-2 border-[#2196F3] flex items-center justify-center text-xs font-bold ${
+                        i + 1 <= saturdayCount ? "bg-[#2196F3] text-white" : "bg-white text-[#2196F3]"
+                      }`}
+                    >
+                      {i + 1}
+                    </div>
+                  ))}
+                </div>
+                <div className="text-xs mt-2 text-[#0d47a1]">/ 6 minimum required</div>
+              </div>
+            </div>
+
+            <div className="border-2 border-[#3182ce] rounded-lg p-3 bg-white">
+              <div className="text-sm"><strong>30 Day+ Vacation Notice: </strong>{vacationDisplay}</div>
+              <div className="text-sm"><strong>Week Schedule: </strong>{weekRangeCompact}</div>
+              <div className="text-sm"><strong>Consultant Name: </strong>{name || "________________"}</div>
+              <div className="text-xs text-[#856404] mt-2 bg-[#fff3cd] border border-[#ffc107] rounded px-2 py-1">
+                Marks the blocks that {name || "[Consultant Name]"} requests OFF next week
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </div>
