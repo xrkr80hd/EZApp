@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Navbar, PageFooter, PageHeader } from "@/components/ui";
 
 type SurveyData = {
@@ -136,6 +136,8 @@ export default function CustomerSurveyPage() {
   const [customerName, setCustomerName] = useState("Customer");
   const [form, setForm] = useState<SurveyData>(DEFAULT_SURVEY);
   const [cacheKey, setCacheKey] = useState("survey_cache_default");
+  const [toastMessage, setToastMessage] = useState<string | null>(null);
+  const toastTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const saveSurvey = (input: SurveyData) => {
     const name = localStorage.getItem("currentCustomer") || customerName || "Customer";
@@ -199,6 +201,18 @@ export default function CustomerSurveyPage() {
     });
   };
 
+  const showToast = (message: string) => {
+    setToastMessage(message);
+    if (toastTimerRef.current) clearTimeout(toastTimerRef.current);
+    toastTimerRef.current = setTimeout(() => setToastMessage(null), 2200);
+  };
+
+  useEffect(() => {
+    return () => {
+      if (toastTimerRef.current) clearTimeout(toastTimerRef.current);
+    };
+  }, []);
+
   return (
     <>
       <Navbar title="Customer Survey" actions={[{ label: "Tools", href: "/tools" }]} />
@@ -250,7 +264,7 @@ export default function CustomerSurveyPage() {
         <button
           onClick={() => {
             saveSurvey(form);
-            alert("Survey saved with reference-compatible keys.");
+            showToast("Survey saved.");
           }}
           className="w-full py-3 rounded-xl bg-brand-600 hover:bg-brand-700 text-white text-sm font-semibold transition-colors"
         >
@@ -259,6 +273,11 @@ export default function CustomerSurveyPage() {
 
         <PageFooter />
       </div>
+      {toastMessage && (
+        <div className="fixed bottom-5 right-5 z-[70] rounded-lg border border-emerald-500/40 bg-emerald-950/90 px-4 py-2 text-sm text-emerald-100 shadow-lg">
+          {toastMessage}
+        </div>
+      )}
     </>
   );
 }
