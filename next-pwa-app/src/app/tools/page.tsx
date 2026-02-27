@@ -93,17 +93,17 @@ export default function ToolsPage() {
             description="Bath Planet design tools"
             external
           />
+          <ToolCard
+            href="/tools/training-videos"
+            icon="🎬"
+            title="Training Videos"
+            description="Watch YouTube training links"
+          />
         </div>
 
         {/* Post Appointment */}
         <SectionHeader>Post Appointment</SectionHeader>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-          <ToolCard
-            href="/tools/post-appointment"
-            icon="📋"
-            title="Post Appointment Docs"
-            description="Complete sale or no-sale forms"
-          />
           <ToolCard
             href="/tools/post-sale-checklist"
             icon="✅"
