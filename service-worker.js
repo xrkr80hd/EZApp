@@ -1,102 +1,119 @@
-/* EZBaths Portal - Enhanced Service Worker */
-const CACHE = 'ezbaths-v5';
-const ASSETS = [
-    './',
-    './index.html',
-    './portal.html',
-    './create-customer.html',
-    './scheduler.html',
-    './customer-survey.html',
-    './photo-checklist.html',
-    './whodat-video.html',
-    './bathroom-measurement.html',
-    './commission_calculator.html',
-    './tools.html',
-    './tip-sheet.html',
-    './4-square.html',
-    './post-appointment.html',
-    './post-sale-checklist.html',
-    './post-sale-documents.html',
-    './joc-complete.html',
-    './joc-complete-new.html',
-    './joc-page1.html',
-    './joc-page2.html',
-    './office-processing.html',
-    './login.html',
-    './admin-users.html',
-    './offline.html',
-    './manifest.json',
-    './assets/js/ezapp-data.js',
-    './assets/js/universal-cache.js',
-    './assets/js/toast-notifications.js',
-    './assets/js/loading-spinner.js',
-    './assets/js/html2canvas.min.js',
-    './assets/js/auth-check.js',
-    './assets/css/responsive-fixes.css',
-    './assets/css/styles.css',
-    './assets/app_icons/bathtub.svg',
-    './assets/app_icons/icon-180.png',
-    './assets/app_icons/icon-192.png',
-    './assets/app_icons/icon-512.png',
-    './assets/images/EZBATHS-graphic.jpg'
+/* EZBaths Portal - PWA Service Worker */
+const STATIC_CACHE = 'ezbaths-static-v6';
+const RUNTIME_CACHE = 'ezbaths-runtime-v6';
+const OFFLINE_URL = './offline.html';
+
+const PRECACHE_ASSETS = [
+  './',
+  './index.html',
+  './portal.html',
+  './login.html',
+  './offline.html',
+  './manifest.json',
+  './assets/css/responsive-fixes.css',
+  './assets/css/styles.css',
+  './assets/js/toast-notifications.js',
+  './assets/js/loading-spinner.js',
+  './assets/js/auth-check.js',
+  './assets/js/ezapp-data.js',
+  './assets/js/universal-cache.js',
+  './assets/app_icons/icon-180.png',
+  './assets/app_icons/icon-192.png',
+  './assets/app_icons/icon-512.png',
+  './assets/images/EZBATHS-graphic.jpg'
 ];
 
 self.addEventListener('install', (event) => {
-    event.waitUntil(
-        caches.open(CACHE).then((cache) => {
-            return cache.addAll(ASSETS).catch((err) => {
-                console.error('Cache install failed for some assets:', err);
-                // Continue anyway - partial cache is better than no cache
-            });
-        })
+  event.waitUntil((async () => {
+    const cache = await caches.open(STATIC_CACHE);
+    await Promise.allSettled(
+      PRECACHE_ASSETS.map(async (asset) => {
+        const response = await fetch(asset, { cache: 'no-cache' });
+        if (response.ok) {
+          await cache.put(asset, response);
+        }
+      })
     );
-    self.skipWaiting();
+    await self.skipWaiting();
+  })());
 });
 
 self.addEventListener('activate', (event) => {
-    event.waitUntil(
-        caches.keys().then((keys) =>
-            Promise.all(keys.filter((k) => k !== CACHE).map((k) => caches.delete(k)))
-        )
+  event.waitUntil((async () => {
+    const keys = await caches.keys();
+    await Promise.all(
+      keys
+        .filter((key) => key !== STATIC_CACHE && key !== RUNTIME_CACHE)
+        .map((key) => caches.delete(key))
     );
-    self.clients.claim();
+    await self.clients.claim();
+  })());
 });
 
-// Network-first for navigations, cache-first for static assets
+const isHtmlNavigation = (request) => request.mode === 'navigate';
+
+const isStaticAsset = (request) => {
+  const url = new URL(request.url);
+  return (
+    url.origin === self.location.origin &&
+    (url.pathname.includes('/assets/') ||
+      url.pathname.endsWith('.css') ||
+      url.pathname.endsWith('.js') ||
+      url.pathname.endsWith('.png') ||
+      url.pathname.endsWith('.svg') ||
+      url.pathname.endsWith('.jpg') ||
+      url.pathname.endsWith('.jpeg') ||
+      url.pathname.endsWith('.webp') ||
+      url.pathname.endsWith('.json'))
+  );
+};
+
 self.addEventListener('fetch', (event) => {
-    const { request } = event;
-    if (request.method !== 'GET') return;
+  const { request } = event;
 
-    // Handle page navigations with offline fallback
-    if (request.mode === 'navigate') {
-        event.respondWith(
-            fetch(request)
-                .then((response) => {
-                    // Cache successful navigations
-                    const copy = response.clone();
-                    caches.open(CACHE).then((cache) => cache.put(request, copy)).catch(() => { });
-                    return response;
-                })
-                .catch(async () => {
-                    const cache = await caches.open(CACHE);
-                    const offline = await cache.match('./offline.html');
-                    return offline || new Response('Offline', { status: 503, statusText: 'Offline' });
-                })
-        );
-        return;
-    }
+  if (request.method !== 'GET' || !request.url.startsWith('http')) {
+    return;
+  }
 
-    // For other GET requests: cache-first, then network
-    event.respondWith(
-        caches.match(request).then((cached) => {
-            const fetchPromise = fetch(request)
-                .then((response) => {
-                    const copy = response.clone();
-                    caches.open(CACHE).then((cache) => cache.put(request, copy)).catch(() => { });
-                    return response;
-                })
-                .catch(() => cached);
-            return cached || fetchPromise;
+  if (isHtmlNavigation(request)) {
+    event.respondWith((async () => {
+      try {
+        const networkResponse = await fetch(request);
+        const runtime = await caches.open(RUNTIME_CACHE);
+        await runtime.put(request, networkResponse.clone());
+        return networkResponse;
+      } catch {
+        const cachedPage = await caches.match(request);
+        return cachedPage || caches.match(OFFLINE_URL);
+      }
+    })());
+    return;
+  }
+
+  if (isStaticAsset(request)) {
+    event.respondWith((async () => {
+      const cache = await caches.open(RUNTIME_CACHE);
+      const cached = await cache.match(request);
+
+      const networkFetch = fetch(request)
+        .then((response) => {
+          if (response.ok) {
+            cache.put(request, response.clone());
+          }
+          return response;
         })
-    );
+        .catch(() => cached);
+
+      return cached || networkFetch;
+    })());
+    return;
+  }
+
+  event.respondWith((async () => {
+    try {
+      return await fetch(request);
+    } catch {
+      return caches.match(request);
+    }
+  })());
 });
